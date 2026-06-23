@@ -18,6 +18,16 @@ http://YOUR_IPV4:8001/prototype.html
 
 Share that link with computers on the same network.
 
+## GitHub Pages
+
+This project is a static HTML5 prototype with no build step. GitHub Pages can serve it directly from the `main` branch root.
+
+Public URL format:
+
+```text
+https://longnguyentien-commits.github.io/desktop-tutorial/
+```
+
 ## Main files
 
 - `prototype.html` - playable single-file prototype.
