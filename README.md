@@ -1,5 +1,27 @@
-# Welcome to GitHub Desktop!
+# Dragon vs Monsters Prototype
 
-This is your README. READMEs are where you can communicate what your project is and how to use it.
+HTML5 prototype for a dragon defense auto-battler inspired by Plants vs. Zombies and Teamfight Tactics.
 
-Write your name on line 6, save it, and then head back to GitHub Desktop.
+## Play locally
+
+Open `prototype.html` in a browser, or run the LAN server:
+
+```bat
+server.bat
+```
+
+The server prints a LAN link like:
+
+```text
+http://YOUR_IPV4:8001/prototype.html
+```
+
+Share that link with computers on the same network.
+
+## Main files
+
+- `prototype.html` - playable single-file prototype.
+- `server.bat` - starts the LAN server for local network testing.
+- `lan-server.ps1` - small static file server used by `server.bat`.
+- `GDD/` - game design document.
+- `Asset DML/`, `Asset Pack/`, `Resource Asset/` - game assets.

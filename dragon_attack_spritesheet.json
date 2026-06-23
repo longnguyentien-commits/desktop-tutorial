@@ -1,0 +1,6 @@
+{
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "frameCount": 12,
+  "animation": "dragon_attack_fireball"
+}

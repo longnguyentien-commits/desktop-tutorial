@@ -1,0 +1,2360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dragon vs Monsters Prototype</title>
+  <style>
+    :root { --ui-scale: 1; }
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      margin: 0;
+      height: 100vh;
+      background: #172016;
+      color: #f3f4df;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      background: #f3c94f;
+      color: #251d0a;
+      font-weight: 800;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    button.secondary { background: #314634; color: #f3f4df; border: 1px solid #58745b; }
+    .app {
+      width: min(1500px, 100vw);
+      height: 100vh;
+      margin: 0 auto;
+      padding: 8px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 8px;
+    }
+    .topbar {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(120px, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+    .pill {
+      min-height: 40px;
+      border-radius: 8px;
+      background: #233226;
+      border: 1px solid #3b523c;
+      padding: 6px 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .pill strong { display: block; font-size: 16px; }
+    .icon { width: 22px; height: 22px; image-rendering: pixelated; object-fit: contain; }
+    .main {
+      display: grid;
+      grid-template-columns: 310px minmax(640px, 1fr) 150px;
+      gap: 8px;
+      align-items: stretch;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .main > section, .main > aside {
+      min-height: 0;
+      overflow: hidden;
+    }
+    .panel {
+      border-radius: 8px;
+      background: #223026;
+      border: 1px solid #415942;
+      padding: 8px;
+      max-height: 100%;
+      overflow: hidden;
+    }
+    .panel h2 {
+      font-size: 18px;
+      margin: 0 0 8px;
+      color: #ffe08a;
+    }
+    .left-panel {
+      display: grid;
+      grid-template-rows: auto 1fr auto auto;
+      gap: 8px;
+    }
+    .trait {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 15px;
+      cursor: help;
+    }
+    .trait:last-child { border-bottom: 0; }
+    .trait img { width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated; }
+    .trait b { font-size: 13px; color: #b8caa7; }
+    .trait.active b { color: #ffe08a; }
+    .trait-empty {
+      color: #8fa58e;
+      font-size: 13px;
+      padding: 8px 0;
+    }
+    .trait-stacks {
+      display: inline-flex;
+      gap: 3px;
+      justify-content: flex-end;
+    }
+    .trait-stack {
+      min-width: 22px;
+      padding: 2px 4px;
+      border-radius: 5px;
+      background: rgba(255,255,255,.07);
+      color: #9fb39b;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .trait-stack.active {
+      background: #f3c94f;
+      color: #251d0a;
+      box-shadow: 0 0 8px rgba(243,201,79,.55);
+    }
+    .drop-rate-panel {
+      border-top: 1px solid rgba(255,255,255,.12);
+      padding-top: 8px;
+    }
+    .drop-rate-panel h2 {
+      margin-top: 0;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+    .drop-rate-table {
+      display: grid;
+      gap: 3px;
+      font-size: 10px;
+    }
+    .drop-rate-row {
+      display: grid;
+      grid-template-columns: 36px repeat(5, 1fr);
+      align-items: center;
+      gap: 3px;
+      min-height: 20px;
+      padding: 2px 0;
+      color: #dceacb;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .drop-rate-row:last-child { border-bottom: 0; }
+    .drop-rate-row.header {
+      color: #ffe08a;
+      font-weight: 900;
+    }
+    .drop-rate-row.active {
+      color: #fff7c7;
+      background: rgba(243, 201, 79, .09);
+      border-radius: 5px;
+    }
+    .drop-rate-row span {
+      text-align: center;
+      white-space: nowrap;
+    }
+    .drop-rate-row span:first-child {
+      text-align: left;
+      font-weight: 900;
+    }
+    .gold-cost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+    .gold-cost img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .drop-tier-1 { color: #cfd4d8; }
+    .drop-tier-2 { color: #63d87a; }
+    .drop-tier-3 { color: #5db4ff; }
+    .drop-tier-4 { color: #b783ff; }
+    .drop-tier-5 { color: #f3c94f; }
+    .board-wrap {
+      border-radius: 8px;
+      background: #101912;
+      border: 1px solid #405940;
+      padding: 8px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto auto auto auto auto;
+      gap: 5px;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+      max-width: 100%;
+      justify-self: center;
+      align-self: center;
+      display: block;
+      border-radius: 6px;
+      background: #1c2a1e;
+      cursor: default;
+    }
+    .shop-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      margin-top: 0;
+      align-items: stretch;
+    }
+    .bench-title, .shop-title {
+      margin: 0;
+      color: #ffe08a;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 12px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .card {
+      position: relative;
+      height: 146px;
+      min-height: 146px;
+      border-radius: 8px;
+      background: #233226;
+      border: 2px solid #456047;
+      padding: 7px;
+      cursor: grab;
+      display: grid;
+      grid-template-columns: 94px 1fr;
+      grid-template-rows: 20px 78px 24px;
+      gap: 3px;
+      overflow: hidden;
+    }
+    .card.selected { outline: 3px solid #f3c94f; }
+    .card:active { cursor: grabbing; }
+    .card.dragging .dragon-img { opacity: 0; }
+    .card.empty {
+      cursor: default;
+      background: #18221b;
+      border: 2px dashed #3c513e;
+      opacity: .65;
+    }
+    .card.unaffordable {
+      background: linear-gradient(135deg, #303533, #171b19);
+      border-color: #6d7470;
+      filter: grayscale(.85);
+      opacity: .72;
+    }
+    .tier-1 { background: linear-gradient(135deg, #31363a, #1f2427); border-color: #858b91; }
+    .tier-2 { background: linear-gradient(135deg, #1f4a2e, #162d20); border-color: #4ec06a; }
+    .tier-3 { background: linear-gradient(135deg, #1d4165, #14283d); border-color: #4aa3ff; }
+    .tier-4 { background: linear-gradient(135deg, #49306b, #2c1d42); border-color: #a46cff; }
+    .tier-5 { background: linear-gradient(135deg, #776018, #3f310d); border-color: #f3c94f; }
+    .card-title {
+      font-size: 12px;
+      line-height: 1.15;
+      min-height: 24px;
+      font-weight: 800;
+      grid-column: 1 / 3;
+      position: relative;
+      z-index: 1;
+    }
+    .dragon-img {
+      position: absolute;
+      left: 100px;
+      top: 36px;
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      transform: scaleX(-1);
+      margin-left: 0;
+    }
+    .cost, .elements {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+    .elements {
+      align-self: start;
+      grid-column: 1;
+      grid-row: 2;
+      width: 88px;
+      height: 78px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      align-content: start;
+      gap: 1px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    .cost {
+      grid-column: 1;
+      grid-row: 3;
+      align-self: center;
+      margin-left: 3px;
+      width: 58px;
+      height: 24px;
+      padding: 3px 6px;
+      border-radius: 7px;
+      background: rgba(0,0,0,.35);
+      border: 1px solid rgba(255,255,255,.14);
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    .cost .icon { width: 18px; height: 18px; flex: 0 0 auto; }
+    .element-tag {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      min-width: 0;
+      max-width: 88px;
+      height: 25px;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      text-shadow: 0 1px 2px rgba(0,0,0,.7);
+      white-space: nowrap;
+    }
+    .element-dot {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .control-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 8px;
+    }
+    .side-actions {
+      display: grid;
+      gap: 8px;
+      grid-template-rows: 52px minmax(86px, 1fr) 52px 52px 52px 52px;
+      min-height: 0;
+    }
+    .side-actions button {
+      padding: 10px 8px;
+      font-size: 14px;
+      min-height: 52px;
+    }
+    .tool-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+    .tool-button img { width: 24px; height: 24px; object-fit: contain; image-rendering: pixelated; }
+    .tool-button { cursor: grab; }
+    .tool-button:active { cursor: grabbing; }
+    .bench {
+      margin-top: 0;
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 5px;
+    }
+    .bench-slot {
+      min-width: 0;
+      min-height: 78px;
+      border-radius: 6px;
+      background: #18241c;
+      border: 1px dashed #486149;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      place-items: center;
+      padding: 3px;
+      font-size: 11px;
+      color: #8fa58e;
+      cursor: default;
+      overflow: hidden;
+    }
+    .bench-slot.filled { cursor: grab; border-style: solid; background: #203026; }
+    .bench-slot.filled.tier-1 { border-color: #858b91; }
+    .bench-slot.filled.tier-2 { border-color: #4ec06a; }
+    .bench-slot.filled.tier-3 { border-color: #4aa3ff; }
+    .bench-slot.filled.tier-4 { border-color: #a46cff; }
+    .bench-slot.filled.tier-5 { border-color: #f3c94f; }
+    .bench-slot.drag-over { outline: 3px solid #f3c94f; }
+    .bench-slot img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      transform: scaleX(-1);
+    }
+    .bench-name {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 6px;
+      background: rgba(0,0,0,.58);
+      color: #ffe08a;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 15px;
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .bench-name span:last-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rank-icon {
+      flex: 0 0 auto;
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+    }
+    .rank-1 {
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 13px solid #b57735;
+      filter: drop-shadow(0 1px 1px rgba(0,0,0,.7));
+    }
+    .rank-2 {
+      width: 12px;
+      height: 12px;
+      background: linear-gradient(135deg, #f5f7ff, #9aa7bb);
+      transform: rotate(45deg);
+      box-shadow: 0 0 6px rgba(220,230,255,.7);
+    }
+    .rank-3 {
+      width: 15px;
+      height: 15px;
+      background: #ffe65a;
+      clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
+      filter: drop-shadow(0 0 6px #fff1a8) drop-shadow(0 0 10px #ffd33f);
+    }
+    .sell-zone {
+      min-height: 86px;
+      margin-top: 0;
+      border-radius: 8px;
+      border: 2px dashed #d95b5b;
+      background: rgba(112, 22, 22, .28);
+      color: #ffd6d6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 11px;
+    }
+    .sell-zone img { width: 20px; height: 20px; object-fit: contain; image-rendering: pixelated; }
+    .sell-zone.drag-over {
+      border-color: #ffe08a;
+      background: rgba(217, 91, 91, .44);
+      box-shadow: inset 0 0 0 3px rgba(255,224,138,.35);
+    }
+    .log {
+      display: none;
+    }
+    .stat-popover {
+      position: fixed;
+      z-index: 10;
+      min-width: 230px;
+      max-width: 380px;
+      border-radius: 8px;
+      background: #172016;
+      border: 1px solid #f3c94f;
+      box-shadow: 0 12px 28px rgba(0,0,0,.38);
+      padding: 10px;
+      display: none;
+      pointer-events: auto;
+      overflow: hidden;
+    }
+    .play-again {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 20;
+      display: none;
+      min-width: 148px;
+      min-height: 54px;
+      border: 2px solid #ffe08a;
+      box-shadow: 0 8px 22px rgba(0,0,0,.38);
+      font-size: 18px;
+    }
+    .stat-popover h3 {
+      margin: 0 0 8px;
+      color: #ffe08a;
+      font-size: 15px;
+    }
+    .stat-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      font-size: 13px;
+    }
+    .trait-tier-line {
+      border-radius: 6px;
+      padding: 4px 6px;
+      background: rgba(255,255,255,.04);
+    }
+    .trait-tier-line.active {
+      background: #f3c94f;
+      color: #251d0a;
+      font-weight: 900;
+      box-shadow: 0 0 10px rgba(243,201,79,.55);
+    }
+    .stat-line img { width: 20px; height: 20px; image-rendering: pixelated; object-fit: contain; }
+    .stat-elements {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .stat-elements img {
+      width: 30px;
+      height: 30px;
+      image-rendering: pixelated;
+      object-fit: contain;
+    }
+    .trait-roster {
+      margin-top: 9px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      display: grid;
+      gap: 5px;
+    }
+    .trait-roster h4 {
+      margin: 0 0 2px;
+      color: #ffe08a;
+      font-size: 13px;
+    }
+    .trait-roster-list {
+      display: grid;
+      gap: 4px;
+      max-height: none;
+      overflow: visible;
+      padding-right: 0;
+    }
+    .trait-dragon-row {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: #e8f1d6;
+    }
+    .trait-dragon-row.inactive {
+      opacity: .36;
+      filter: grayscale(1);
+    }
+    .trait-dragon-row img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+      image-rendering: pixelated;
+      transform: scaleX(-1);
+    }
+    .trait-dragon-row b { color: #ffe08a; }
+    .trait-dragon-name {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      line-height: 1.1;
+    }
+    .trait-dragon-name .gold-cost {
+      flex: 0 0 28px;
+      justify-content: flex-start;
+      gap: 2px;
+    }
+    .trait-dragon-name .gold-cost img {
+      width: 12px;
+      height: 12px;
+      transform: none;
+    }
+    .trait-dragon-name .name-text {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .trait-dragon-elements {
+      display: inline-flex;
+      gap: 2px;
+    }
+    .trait-dragon-elements img {
+      width: 22px;
+      height: 22px;
+      transform: none;
+    }
+    .trait-icon-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 8px 0;
+    }
+    .trait-tier {
+      display: grid;
+      place-items: center;
+      gap: 3px;
+      min-width: 48px;
+      color: #ffe08a;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .trait-tier img {
+      width: 30px;
+      height: 30px;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    @media (max-width: 1000px) {
+      .topbar { grid-template-columns: repeat(2, 1fr); }
+      .main { grid-template-columns: 1fr; }
+      .shop-row { grid-template-columns: repeat(2, 1fr); }
+      .side-actions { grid-template-columns: repeat(5, 1fr); grid-template-rows: 42px; }
+      .bench { grid-template-columns: repeat(5, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="pill"><span>Wave</span><strong id="waveText">1</strong></div>
+      <div class="pill"><img class="icon" src="Resource Asset/Health_Icon.png" alt="" /><span>Castle HP</span><strong id="hpText">5</strong></div>
+      <div class="pill"><img class="icon" src="Resource Asset/Gold_Icon.png" alt="" /><span>Gold</span><strong id="goldText">10</strong></div>
+      <div class="pill"><span>Keeper</span><strong id="levelText">Lv. 1 0/4</strong></div>
+      <div class="pill"><span>Board Cap</span><strong id="capText">0 / 5</strong></div>
+      <div class="pill"><span>Drag</span><strong id="selectedText">Shop to board</strong></div>
+    </div>
+
+    <div class="main">
+      <aside class="panel left-panel">
+        <h2>Traits</h2>
+        <div id="traitPanel"></div>
+        <div class="drop-rate-panel">
+          <h2>Drop Rates</h2>
+          <div id="dropRatePanel" class="drop-rate-table"></div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="board-wrap">
+          <canvas id="game" width="1280" height="720"></canvas>
+          <div class="bench-title">Bench</div>
+          <div class="bench" id="bench"></div>
+          <div class="shop-title">Shop</div>
+          <div class="shop-row" id="shopRow"></div>
+          <div class="log" id="logText">Drag a dragon from the shop into the bench or directly onto the board.</div>
+        </div>
+      </section>
+
+      <aside class="panel control-panel">
+        <h2>Controls</h2>
+        <div class="side-actions">
+          <button id="shovelBtn" class="secondary tool-button" draggable="true">
+            <img src="Resource Asset/Shovel.png" alt="" /> Shovel
+          </button>
+          <div class="sell-zone" id="sellZone">
+            <img src="Resource Asset/Gold_Icon.png" alt="" /> Sell Dragon
+          </div>
+          <button id="buyXpBtn" class="secondary">Buy XP</button>
+          <button id="rerollBtn">Reroll</button>
+          <button id="spawnBtn" class="secondary">Start Wave</button>
+          <button id="speedBtn" class="secondary tool-button">
+            <img src="Resource Asset/Double_Arrow.svg" alt="" /> Speed Up
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <div class="stat-popover" id="statPopover"></div>
+  <button id="playAgainBtn" class="play-again">Play Again</button>
+
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+    const ROWS = 5;
+    const COLS = 9;
+    const PLACE_COLS = COLS;
+    const CELL_W = canvas.width / COLS;
+    const CELL_H = canvas.height / ROWS;
+
+    function fitCanvasToScreen() {
+      const wrap = document.querySelector(".board-wrap");
+      if (!wrap) return;
+      const style = getComputedStyle(wrap);
+      const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const availableW = Math.max(320, wrap.clientWidth - padX);
+      const drawW = Math.floor(availableW);
+      const drawH = Math.floor(drawW * 9 / 16);
+      canvas.style.width = `${Math.floor(drawW)}px`;
+      canvas.style.height = `${Math.floor(drawH)}px`;
+    }
+    const MAX_BOARD = 15;
+    const keeperBoardCaps = {
+      1: 5,
+      2: 7,
+      3: 9,
+      4: 10,
+      5: 12,
+      6: 14,
+      7: 15,
+    };
+    const STARTING_GOLD = 10;
+    const REROLL_COST = 2;
+    const BUY_XP_COST = 4;
+    const BUY_XP_AMOUNT = 4;
+    const FREE_WAVE_XP = 2;
+    const MAX_KEEPER_LEVEL = 7;
+    const xpToNextLevel = {
+      1: 4,
+      2: 6,
+      3: 8,
+      4: 12,
+      5: 16,
+      6: 22,
+    };
+    const keeperDropRates = [
+      { level: 1, rates: [100, 0, 0, 0, 0] },
+      { level: 2, rates: [75, 25, 0, 0, 0] },
+      { level: 3, rates: [55, 30, 15, 0, 0] },
+      { level: 4, rates: [35, 35, 25, 5, 0] },
+      { level: 5, rates: [20, 30, 30, 18, 2] },
+      { level: 6, rates: [10, 25, 30, 30, 5] },
+      { level: 7, rates: [5, 15, 25, 35, 20] },
+    ];
+
+    const icon = {
+      gold: "Resource Asset/Gold_Icon.png",
+      damage: "Resource Asset/Damage_Icon.png",
+      hp: "Resource Asset/Health_Icon.png",
+      attackSpeed: "Resource Asset/Attack_Speed_Icon.png",
+      shovel: "Resource Asset/Shovel.png",
+      doubleArrow: "Resource Asset/Double_Arrow.svg",
+    };
+
+    const elements = {
+      Fire: { icon: "Asset DML/Fire Element/Fire_(Element)_Icon.png", color: "#f45d42" },
+      Water: { icon: "Asset DML/Water Element/Water_(Element)_Icon.png", color: "#43a7ff" },
+      Ice: { icon: "Asset DML/Ice Element/Ice_(Element)_Icon.png", color: "#8ce7ff" },
+      Wind: { icon: "Asset DML/Wind Element/Wind_(Element)_Icon.png", color: "#eff6ff" },
+      Plant: { icon: "Asset DML/Plant Element/Plant_(Element)_Icon.png", color: "#71d36b" },
+      Earth: { icon: "Asset DML/Earth Element/Earth_(Element)_Icon.png", color: "#a9784b" },
+      Energy: { icon: "Asset DML/Energy Element/Energy_(Element)_Icon.png", color: "#f9d34a" },
+      Metal: { icon: "Asset DML/Metal Element/Metal_(Element)_Icon.png", color: "#a8b4c4" },
+    };
+
+    const traitNotes = {
+      Fire: {
+        summary: "Attacks can apply burn damage over time.",
+        tiers: ["2: 20% burn chance", "4: 35% burn chance", "6: 55% burn chance", "8: 75% burn chance and burn lasts 4 seconds"],
+      },
+      Water: {
+        summary: "Attacks can create a curved Wave bonus hit.",
+        tiers: ["2: 15% Wave chance, 50% bonus damage", "4: 30% Wave chance, 60% bonus damage", "6: 50% Wave chance, 70% bonus damage", "8: 70% Wave chance, 80% bonus damage"],
+      },
+      Ice: {
+        summary: "Attacks can slow monsters.",
+        tiers: ["2: 15% slow chance", "4: 30% slow chance", "6: 50% slow chance", "8: 70% slow chance and stronger slow"],
+      },
+      Wind: {
+        summary: "Increases attack speed for all dragons.",
+        tiers: ["2: +12% attack speed", "4: +25% attack speed", "6: +45% attack speed", "8: +65% attack speed"],
+      },
+      Plant: {
+        summary: "Increases total damage for all dragons.",
+        tiers: ["2: +10% total damage", "4: +25% total damage", "6: +45% total damage", "8: +70% total damage"],
+      },
+      Earth: {
+        summary: "Attacks can stun monsters",
+        tiers: ["2: 10% stun chance", "4: 20% stun chance", "6: 35% stun chance", "8: 50% stun chance and stun lasts 0.75 seconds"],
+      },
+      Energy: {
+        summary: "Attacks can chain lightning to another monster in the same row.",
+        tiers: ["2: 15% chain chance", "4: 30% chain chance", "6: 50% chain chance", "8: 70% chain chance and 65% chain damage"],
+      },
+      Metal: {
+        summary: "Increases critical chance for all dragons.",
+        tiers: ["2: +10% critical chance", "4: +22% critical chance", "6: +38% critical chance", "8: +55% critical chance"],
+      },
+    };
+
+    const dragonPool = [
+      { name: "Heavenly Dragon", cost: 1, elements: ["Fire"], baby: "Asset DML/Fire Element/Heavenly_Dragon_Baby.png", adult: "Asset DML/Fire Element/Heavenly_Dragon.png" },
+      { name: "Fire Dragon", cost: 2, elements: ["Fire", "Wind"], baby: "Asset DML/Fire Element/Fire_Dragon_Baby.png", adult: "Asset DML/Fire Element/Fire_Dragon.png" },
+      { name: "Lava Dragon", cost: 3, elements: ["Fire", "Ice"], baby: "Asset DML/Fire Element/Lava_Dragon_Baby.png", adult: "Asset DML/Fire Element/Lava_Dragon.png" },
+      { name: "Boiling Dragon", cost: 4, elements: ["Fire", "Water", "Energy"], baby: "Asset DML/Fire Element/Boiling_Dragon_Baby.png", adult: "Asset DML/Fire Element/Boiling_Dragon.png" },
+      { name: "Bludgeon Dragon", cost: 5, elements: ["Fire", "Earth", "Metal"], baby: "Asset DML/Fire Element/Bludgeon_Dragon_Baby.png", adult: "Asset DML/Fire Element/Bludgeon_Dragon.png" },
+      { name: "Vibrant Dragon", cost: 1, elements: ["Water"], baby: "Asset DML/Water Element/Vibrant_Dragon_Baby.png", adult: "Asset DML/Water Element/Vibrant_Dragon_Adult.png" },
+      { name: "Rain Dragon", cost: 2, elements: ["Water", "Ice"], baby: "Asset DML/Water Element/Rain_Dragon_Baby.png", adult: "Asset DML/Water Element/Rain_Dragon.png" },
+      { name: "Razor Dragon", cost: 3, elements: ["Water", "Plant"], baby: "Asset DML/Water Element/Razor_Dragon_Baby.png", adult: "Asset DML/Water Element/Razor_Dragon.png" },
+      { name: "Seahorse Dragon", cost: 4, elements: ["Water", "Ice", "Plant"], baby: "Asset DML/Water Element/Seahorse_Dragon_Baby.png", adult: "Asset DML/Water Element/Seahorse_Dragon.png" },
+      { name: "Duskwing Dragon", cost: 5, elements: ["Water", "Energy", "Wind"], baby: "Asset DML/Water Element/Duskwing_Dragon_Baby.png", adult: "Asset DML/Water Element/Duskwing_Dragon.png" },
+      { name: "Flutterby Dragon", cost: 1, elements: ["Ice"], baby: "Asset DML/Ice Element/Flutterby_Dragon_Baby.png", adult: "Asset DML/Ice Element/Flutterby_Dragon.png" },
+      { name: "Iceberg Dragon", cost: 2, elements: ["Ice", "Plant"], baby: "Asset DML/Ice Element/Iceberg_Dragon_Baby.png", adult: "Asset DML/Ice Element/Iceberg_Dragon.png" },
+      { name: "Ice Dragon", cost: 3, elements: ["Ice", "Water"], baby: "Asset DML/Ice Element/Ice_Dragon_Baby.png", adult: "Asset DML/Ice Element/Ice_Dragon.png" },
+      { name: "Manta Ray Dragon", cost: 4, elements: ["Ice", "Water", "Wind"], baby: "Asset DML/Ice Element/Manta_Ray_Dragon_Baby.png", adult: "Asset DML/Ice Element/Manta_Ray_Dragon.png" },
+      { name: "Glacial Dragon", cost: 5, elements: ["Ice", "Earth", "Energy"], baby: "Asset DML/Ice Element/Glacial_Dragon_Baby.png", adult: "Asset DML/Ice Element/Glacial_Dragon.png" },
+      { name: "Luck Dragon", cost: 1, elements: ["Wind"], baby: "Asset DML/Wind Element/Luck_Dragon_Baby.png", adult: "Asset DML/Wind Element/Luck_Dragon.png" },
+      { name: "Tundra Dragon", cost: 2, elements: ["Wind", "Ice"], baby: "Asset DML/Wind Element/Tundra_Dragon_Baby.png", adult: "Asset DML/Wind Element/Tundra_Dragon.png" },
+      { name: "Icefeather Dragon", cost: 3, elements: ["Wind", "Ice"], baby: "Asset DML/Wind Element/Icefeather_Dragon_Baby.png", adult: "Asset DML/Wind Element/Icefeather_Dragon.png" },
+      { name: "Porcelain Dragon", cost: 4, elements: ["Wind", "Metal", "Water"], baby: "Asset DML/Wind Element/Porcelain_Dragon_Baby.png", adult: "Asset DML/Wind Element/Porcelain_Dragon.png" },
+      { name: "Centurion Dragon", cost: 5, elements: ["Wind", "Metal", "Energy"], baby: "Asset DML/Wind Element/Centurion_Dragon_Baby.png", adult: "Asset DML/Wind Element/Centurion_Dragon.png" },
+      { name: "Mud Dragon", cost: 1, elements: ["Earth"], baby: "Asset DML/Earth Element/Mud_Dragon_Baby.png", adult: "Asset DML/Earth Element/Mud_Dragon.png" },
+      { name: "Armadillo Dragon", cost: 2, elements: ["Earth", "Ice"], baby: "Asset DML/Earth Element/Armadillo_Dragon_Baby.png", adult: "Asset DML/Earth Element/Armadillo_Dragon.png" },
+      { name: "Elephant Dragon", cost: 3, elements: ["Earth", "Plant"], baby: "Asset DML/Earth Element/Elephant_Dragon_Baby.png", adult: "Asset DML/Earth Element/Elephant_Dragon.png" },
+      { name: "Sylvan Dragon", cost: 4, elements: ["Earth", "Plant", "Water"], baby: "Asset DML/Earth Element/Sylvan_Dragon_Baby.png", adult: "Asset DML/Earth Element/Sylvan_Dragon.png" },
+      { name: "Quake Dragon", cost: 5, elements: ["Earth", "Metal", "Fire"], baby: "Asset DML/Earth Element/Quake_Dragon_Baby.png", adult: "Asset DML/Earth Element/Quake_Dragon.png" },
+      { name: "Melon Dragon", cost: 1, elements: ["Plant"], baby: "Asset DML/Plant Element/Melon_Dragon_Baby.png", adult: "Asset DML/Plant Element/Melon_Dragon.png" },
+      { name: "Sunflower Dragon", cost: 2, elements: ["Plant", "Fire"], baby: "Asset DML/Plant Element/Sunflower_Dragon_Baby.png", adult: "Asset DML/Plant Element/Sunflower_Dragon_Adult.png" },
+      { name: "Poison Dragon", cost: 3, elements: ["Plant", "Water"], baby: "Asset DML/Plant Element/Poison_Dragon_Baby.png", adult: "Asset DML/Plant Element/Poison_Dragon.png" },
+      { name: "Bamboo Dragon", cost: 4, elements: ["Plant", "Earth", "Wind"], baby: "Asset DML/Plant Element/Bamboo_Dragon_Baby.png", adult: "Asset DML/Plant Element/Bamboo_Dragon.png" },
+      { name: "Warden Dragon", cost: 5, elements: ["Plant", "Earth", "Metal"], baby: "Asset DML/Plant Element/Warden_Dragon_Baby.png", adult: "Asset DML/Plant Element/Warden_Dragon.png" },
+      { name: "Shooting Star Dragon", cost: 1, elements: ["Energy"], baby: "Asset DML/Energy Element/Shooting_Star_Dragon_Baby.png", adult: "Asset DML/Energy Element/Shooting_Star_Dragon.png" },
+      { name: "Amber Dragon", cost: 2, elements: ["Energy", "Fire"], baby: "Asset DML/Energy Element/Amber_Dragon_Baby.png", adult: "Asset DML/Energy Element/Amber_Dragon.png" },
+      { name: "Steampunk Dragon", cost: 3, elements: ["Energy", "Wind"], baby: "Asset DML/Energy Element/Steampunk_Dragon_Baby.png", adult: "Asset DML/Energy Element/Steampunk_Dragon.png" },
+      { name: "Citrine Dragon", cost: 4, elements: ["Energy", "Fire", "Metal"], baby: "Asset DML/Energy Element/Citrine_Dragon_Baby.png", adult: "Asset DML/Energy Element/Citrine_Dragon.png" },
+      { name: "Sulfur Dragon", cost: 5, elements: ["Energy", "Fire", "Earth"], baby: "Asset DML/Energy Element/Sulfur_Dragon_Baby.png", adult: "Asset DML/Energy Element/Sulfur_Dragon.png" },
+      { name: "Metal Dragon", cost: 1, elements: ["Metal"], baby: "Asset DML/Metal Element/Metal_Dragon_Baby.png", adult: "Asset DML/Metal Element/Metal_Dragon.png" },
+      { name: "Armored Dragon", cost: 2, elements: ["Metal", "Wind"], baby: "Asset DML/Metal Element/Armored_Dragon_Baby.png", adult: "Asset DML/Metal Element/Armored_Dragon.png" },
+      { name: "Steel Dragon", cost: 3, elements: ["Metal", "Plant"], baby: "Asset DML/Metal Element/Steel_Dragon_Baby.png", adult: "Asset DML/Metal Element/Steel_Dragon.png" },
+      { name: "Runestone Dragon", cost: 4, elements: ["Metal", "Earth", "Energy"], baby: "Asset DML/Metal Element/Runestone_Dragon_Baby.png", adult: "Asset DML/Metal Element/Runestone_Dragon.png" },
+      { name: "Armory Dragon", cost: 5, elements: ["Metal", "Fire", "Energy"], baby: "Asset DML/Metal Element/Armory_Dragon_Baby.png", adult: "Asset DML/Metal Element/Armory_Dragon.png" },
+    ];
+
+    const baseStats = {
+      1: { damage: 14, attackSpeed: 0.90, hp: 120 },
+      2: { damage: 20, attackSpeed: 0.90, hp: 180 },
+      3: { damage: 30, attackSpeed: 0.85, hp: 260 },
+      4: { damage: 44, attackSpeed: 0.80, hp: 380 },
+      5: { damage: 65, attackSpeed: 0.75, hp: 560 },
+    };
+
+    const enemyTypes = [
+      { name: "Crimson Imp", img: "Asset Pack/Basic Demon Animations/crimson imp/CrimsonImp.gif", hp: 80, speed: 34, unlock: 1 },
+      { name: "Red Cap", img: "Asset Pack/Basic Monster Animations/Red Cap/RedCap.gif", hp: 110, speed: 24, unlock: 1 },
+      { name: "Decrepit Bones", img: "Asset Pack/Basic Undead Animations/Decrepit Bones/DecrepitBones.gif", hp: 140, speed: 19, unlock: 2 },
+      { name: "Goblin Fighter", img: "Asset Pack/Basic Humanoid Animations/goblin fighter/GoblinFighter.gif", hp: 125, speed: 26, unlock: 3 },
+      { name: "Toxic Sludge", img: "Asset Pack/Toxic Sludge Animations/3/3 Animation.gif", hp: 170, speed: 18, unlock: 4 },
+      { name: "Floating Eye", img: "Asset Pack/Basic Demon Animations/floating eye/FloatingEye.gif", hp: 120, speed: 31, unlock: 5 },
+      { name: "Bound Cadaver", img: "Asset Pack/Basic Undead Animations/Bound Cadaver/BoundCadaver.gif", hp: 220, speed: 15, unlock: 6 },
+      { name: "Ocular Watcher", img: "Asset Pack/Basic Monster Animations/Ocular Watcher/OcularWatcher.gif", hp: 210, speed: 17, unlock: 7 },
+      { name: "Lizardfolk Spearman", img: "Asset Pack/Basic Humanoid Animations/lizardfolk spearman/LizardfolkSpearman.gif", hp: 210, speed: 23, unlock: 8 },
+      { name: "Yeti", img: "Asset Pack/Yeti Animations/1/1.gif", hp: 380, speed: 13, unlock: 10 },
+      { name: "Pit Balor", img: "Asset Pack/Basic Demon Animations/pit balor/PitBalor.gif", hp: 430, speed: 12, unlock: 12 },
+      { name: "Crushing Cyclops", img: "Asset Pack/Basic Monster Animations/Crushing Cyclops/CrushingCyclops.gif", hp: 500, speed: 11, unlock: 14 },
+    ];
+    const finalBossType = {
+      name: "Ancient Siege Boss",
+      img: "Asset Pack/Basic Demon Animations/pit balor/PitBalor.gif",
+      hp: 3200,
+      speed: 8,
+      boss: true,
+      size: 138,
+    };
+
+    const images = new Map();
+    let dragGhost = null;
+    const state = {
+      shop: [],
+      selected: null,
+      dragging: null,
+      hoverCell: null,
+      pendingMerge: null,
+      bench: Array(10).fill(null),
+      dragons: [],
+      enemies: [],
+      projectiles: [],
+      effects: [],
+      hp: 5,
+      gold: STARTING_GOLD,
+      keeperLevel: 1,
+      keeperXp: 0,
+      wave: 1,
+      nextId: 1,
+      lastTs: 0,
+      spawnTimer: 0,
+      enemiesSpawned: 0,
+      enemiesToSpawn: 0,
+      waveReward: 0,
+      gameSpeed: 1,
+      waveRunning: false,
+      gameOver: false,
+      gameResult: null,
+    };
+
+    const tierClass = cost => `tier-${cost}`;
+    const rankIconHtml = (star = 1) => `<span class="rank-icon rank-${Math.min(3, Math.max(1, star))}"></span>`;
+    const goldCostHtml = amount => `<span class="gold-cost"><img src="${icon.gold}" alt="" />${amount}</span>`;
+
+    function assetForUnit(unit) {
+      return (unit.star || 1) >= 2 ? unit.adult : unit.baby;
+    }
+
+    function makeDragGhost(unit) {
+      if (dragGhost) dragGhost.remove();
+      dragGhost = document.createElement("div");
+      dragGhost.style.position = "fixed";
+      dragGhost.style.left = "-200px";
+      dragGhost.style.top = "-200px";
+      dragGhost.style.width = "128px";
+      dragGhost.style.height = "128px";
+      dragGhost.style.display = "grid";
+      dragGhost.style.placeItems = "center";
+      dragGhost.style.pointerEvents = "none";
+      dragGhost.style.zIndex = "-1";
+      const image = document.createElement("img");
+      image.src = assetForUnit(unit);
+      image.style.width = "120px";
+      image.style.height = "120px";
+      image.style.objectFit = "contain";
+      image.style.imageRendering = "pixelated";
+      image.style.transform = "scaleX(-1)";
+      dragGhost.appendChild(image);
+      document.body.appendChild(dragGhost);
+      return dragGhost;
+    }
+
+    function makeShovelGhost() {
+      if (dragGhost) dragGhost.remove();
+      dragGhost = document.createElement("div");
+      dragGhost.style.position = "fixed";
+      dragGhost.style.left = "-200px";
+      dragGhost.style.top = "-200px";
+      dragGhost.style.width = "96px";
+      dragGhost.style.height = "96px";
+      dragGhost.style.display = "grid";
+      dragGhost.style.placeItems = "center";
+      dragGhost.style.pointerEvents = "none";
+      dragGhost.style.zIndex = "-1";
+      const image = document.createElement("img");
+      image.src = icon.shovel;
+      image.style.width = "88px";
+      image.style.height = "88px";
+      image.style.objectFit = "contain";
+      image.style.imageRendering = "pixelated";
+      dragGhost.appendChild(image);
+      document.body.appendChild(dragGhost);
+      return dragGhost;
+    }
+
+    function clearDragGhost() {
+      if (dragGhost) {
+        dragGhost.remove();
+        dragGhost = null;
+      }
+      document.querySelectorAll(".card.dragging").forEach(card => card.classList.remove("dragging"));
+    }
+
+    function img(path) {
+      if (!images.has(path)) {
+        const image = new Image();
+        image.src = path;
+        images.set(path, image);
+      }
+      return images.get(path);
+    }
+
+    function rand(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    function maxedDragonNames() {
+      return new Set(ownedSlots()
+        .filter(slot => (slot.unit.star || 1) >= 3)
+        .map(slot => slot.unit.name));
+    }
+
+    function shopPool() {
+      const maxed = maxedDragonNames();
+      const available = dragonPool.filter(unit => !maxed.has(unit.name));
+      return available.length ? available : dragonPool;
+    }
+
+    function xpNeededForCurrentLevel() {
+      return xpToNextLevel[state.keeperLevel] || 0;
+    }
+
+    function boardCapForLevel(level = state.keeperLevel) {
+      return keeperBoardCaps[level] || MAX_BOARD;
+    }
+
+    function dropRatesForLevel(level = state.keeperLevel) {
+      return keeperDropRates.find(row => row.level === level)?.rates || keeperDropRates[keeperDropRates.length - 1].rates;
+    }
+
+    function rollCostForLevel(level = state.keeperLevel) {
+      const rates = dropRatesForLevel(level);
+      let roll = Math.random() * 100;
+      for (let i = 0; i < rates.length; i++) {
+        roll -= rates[i];
+        if (roll <= 0) return i + 1;
+      }
+      return rates.length;
+    }
+
+    function addKeeperXp(amount) {
+      if (state.keeperLevel >= MAX_KEEPER_LEVEL) {
+        state.keeperXp = 0;
+        return 0;
+      }
+      let levelsGained = 0;
+      state.keeperXp += amount;
+      while (state.keeperLevel < MAX_KEEPER_LEVEL && state.keeperXp >= xpNeededForCurrentLevel()) {
+        state.keeperXp -= xpNeededForCurrentLevel();
+        state.keeperLevel += 1;
+        levelsGained += 1;
+        log(`Keeper reached Level ${state.keeperLevel}. Shop odds improved.`);
+      }
+      if (state.keeperLevel >= MAX_KEEPER_LEVEL) state.keeperXp = 0;
+      return levelsGained;
+    }
+
+    function buyKeeperXp() {
+      if (state.keeperLevel >= MAX_KEEPER_LEVEL) {
+        log("Keeper is already max level.");
+        return;
+      }
+      if (!spendGold(BUY_XP_COST, `Need ${BUY_XP_COST} Gold to buy XP.`)) {
+        renderUi();
+        return;
+      }
+      addKeeperXp(BUY_XP_AMOUNT);
+      renderUi();
+    }
+
+    function rollShopDragon() {
+      const available = shopPool();
+      const targetCost = rollCostForLevel();
+      const costPool = available.filter(unit => unit.cost === targetCost);
+      return rand(costPool.length ? costPool : available);
+    }
+
+    function spendGold(amount, failMessage = "Not enough Gold.") {
+      if (state.gold < amount) {
+        log(failMessage);
+        return false;
+      }
+      state.gold -= amount;
+      return true;
+    }
+
+    function spendForShopUnit(source, unit) {
+      if (source?.source !== "shop") return true;
+      if (!spendGold(unit.cost, `Need ${unit.cost} Gold to buy ${unit.name}.`)) return false;
+      state.shop[source.index] = null;
+      return true;
+    }
+
+    function waveEnemyCount(wave = state.wave) {
+      if (wave >= 20) return ROWS;
+      return Math.min(50, 11 + Math.floor(wave * 2.15));
+    }
+
+    function waveClearReward(wave = state.wave) {
+      if (wave >= 20) return 40;
+      return 5 + Math.floor(wave * 1.5);
+    }
+
+    function availableEnemyTypes(wave = state.wave) {
+      const pool = enemyTypes.filter(type => type.unlock <= wave);
+      return pool.length ? pool : enemyTypes.slice(0, 2);
+    }
+
+    function completeRun(result) {
+      state.waveRunning = false;
+      state.gameOver = true;
+      state.gameResult = result;
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      log(result === "won" ? "You Won" : "You Lost");
+      renderUi();
+    }
+
+    function finishWave() {
+      const reward = waveClearReward();
+      state.gold += reward;
+      const levelsGained = addKeeperXp(FREE_WAVE_XP);
+      if (state.wave >= 20) {
+        completeRun("won");
+        return;
+      }
+      state.wave += 1;
+      state.waveRunning = false;
+      state.enemiesSpawned = 0;
+      state.enemiesToSpawn = 0;
+      state.waveReward = 0;
+      rollShop(true);
+      log(`Wave ${state.wave - 1} cleared: +${reward} Gold, +${FREE_WAVE_XP} XP${levelsGained ? `, Keeper Lv.${state.keeperLevel}` : ""}. Shop refreshed for free.`);
+    }
+
+    function startWave() {
+      if (state.gameOver) return;
+      if (state.waveRunning) {
+        log("This wave is already running.");
+        return;
+      }
+      state.waveRunning = true;
+      state.spawnTimer = 0;
+      state.enemiesSpawned = 0;
+      state.enemiesToSpawn = waveEnemyCount();
+      state.waveReward = waveClearReward();
+      log(state.wave >= 20
+        ? "Final wave started. Five bosses are attacking every lane."
+        : `Wave ${state.wave} started: ${state.enemiesToSpawn} monsters incoming.`);
+      renderUi();
+    }
+
+    function resetGame() {
+      state.shop = [];
+      state.selected = null;
+      state.dragging = null;
+      state.hoverCell = null;
+      state.pendingMerge = null;
+      state.bench = Array(10).fill(null);
+      state.dragons = [];
+      state.enemies = [];
+      state.projectiles = [];
+      state.effects = [];
+      state.hp = 5;
+      state.gold = STARTING_GOLD;
+      state.keeperLevel = 1;
+      state.keeperXp = 0;
+      state.wave = 1;
+      state.nextId = 1;
+      state.spawnTimer = 0;
+      state.enemiesSpawned = 0;
+      state.enemiesToSpawn = 0;
+      state.waveReward = 0;
+      state.gameSpeed = 1;
+      state.waveRunning = false;
+      state.gameOver = false;
+      state.gameResult = null;
+      clearDragGhost();
+      rollShop(true);
+      renderUi();
+    }
+
+    function removeMaxedDragonsFromShop() {
+      const maxed = maxedDragonNames();
+      if (!maxed.size) return;
+      state.shop = state.shop.map(unit => unit && maxed.has(unit.name) ? null : unit);
+    }
+
+    function makeOwnedUnit(template) {
+      return {
+        ...template,
+        star: template.star || 1,
+        ownedId: state.nextId++,
+      };
+    }
+
+    function rollShop(free = false) {
+      if (!free && !spendGold(REROLL_COST, `Need ${REROLL_COST} Gold to reroll.`)) {
+        renderUi();
+        return;
+      }
+      state.shop = Array.from({ length: 5 }, () => rollShopDragon());
+      state.selected = null;
+      renderUi();
+      log(free ? "Starting shop is ready." : `Shop rerolled for ${REROLL_COST} Gold.`);
+    }
+
+    function statsFor(unit) {
+      const base = baseStats[unit.cost];
+      const starHp = unit.star === 3 ? 3.2 : unit.star === 2 ? 1.8 : 1;
+      const starDamage = unit.star === 3 ? 3.0 : unit.star === 2 ? 1.7 : 1;
+      return {
+        damage: Math.round(base.damage * starDamage),
+        attackSpeed: base.attackSpeed,
+        hp: Math.round(base.hp * starHp),
+      };
+    }
+
+    function syncDragonHp(unit, keepRatio = true) {
+      const nextMax = statsFor(unit).hp;
+      const ratio = keepRatio && unit.maxHp ? Math.max(0, unit.hp || unit.maxHp) / unit.maxHp : 1;
+      unit.maxHp = nextMax;
+      unit.hp = Math.max(1, Math.round(nextMax * Math.min(1, ratio)));
+    }
+
+    function ownedSlots() {
+      return [
+        ...state.dragons.map((unit, index) => ({ place: "board", index, unit })),
+        ...state.bench.map((unit, index) => unit ? { place: "bench", index, unit } : null).filter(Boolean),
+      ];
+    }
+
+    function removeOwnedSlot(slot) {
+      if (slot.place === "bench") {
+        state.bench[slot.index] = null;
+        return;
+      }
+      state.dragons = state.dragons.filter(d => d.id !== slot.unit.id);
+    }
+
+    function promoteSlot(slot) {
+      const unit = slot.unit;
+      unit.star = Math.min(3, (unit.star || 1) + 1);
+      if (slot.place === "board") syncDragonHp(unit, false);
+      return unit;
+    }
+
+    function boardMergeCandidates(unit) {
+      if (!unit || (unit.star || 1) >= 3) return [];
+      return state.dragons.filter(d => d.name === unit.name && (d.star || 1) === (unit.star || 1));
+    }
+
+    function isPendingCandidate(unit) {
+      return !!state.pendingMerge?.candidateIds.includes(unit.id);
+    }
+
+    function isBlinkCandidate(unit) {
+      if (isPendingCandidate(unit)) return true;
+      const draggingUnit = state.dragging?.unit;
+      if (!draggingUnit) return false;
+      const candidates = boardMergeCandidates(draggingUnit);
+      return candidates.length >= 2 && candidates.some(d => d.id === unit.id);
+    }
+
+    function completeBoardMerge(keepDragon) {
+      const pending = state.pendingMerge;
+      if (!pending || !keepDragon || !pending.candidateIds.includes(keepDragon.id)) return false;
+      const consumedBoard = pending.candidateIds.find(id => id !== keepDragon.id);
+      state.dragons = state.dragons.filter(d => d.id !== consumedBoard);
+      keepDragon.star = Math.min(3, (keepDragon.star || 1) + 1);
+      syncDragonHp(keepDragon, false);
+      state.pendingMerge = null;
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      log(`${keepDragon.name} merged to ${keepDragon.star}-star.`);
+      removeMaxedDragonsFromShop();
+      renderUi();
+      return true;
+    }
+
+    function startBoardMergeChoice(unit, source) {
+      const ownedUnit = source?.source === "shop" ? makeOwnedUnit(unit) : unit;
+      const candidates = boardMergeCandidates(ownedUnit);
+      if (candidates.length < 2) return false;
+      if (!spendForShopUnit(source, unit)) return true;
+      if (source?.source === "bench") state.bench[source.index] = null;
+      state.pendingMerge = {
+        unit: ownedUnit,
+        candidateIds: candidates.slice(0, 2).map(d => d.id),
+      };
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      log(`Choose a blinking ${ownedUnit.name} on the board to merge to the next star.`);
+      renderUi();
+      return true;
+    }
+
+    function maybeMergeByDroppingOnBoard(unit, source, row, col) {
+      const candidates = boardMergeCandidates(unit);
+      if (candidates.length < 2) return false;
+      const target = dragonAtCell(row, col);
+      if (!target || !candidates.some(d => d.id === target.id)) {
+        log(`Drop ${unit.name} onto one of the blinking board copies to choose the upgraded dragon.`);
+        return true;
+      }
+      if (!spendForShopUnit(source, unit)) return true;
+      if (source?.source === "bench") state.bench[source.index] = null;
+      const consumedBoard = candidates.find(d => d.id !== target.id);
+      state.dragons = state.dragons.filter(d => d.id !== consumedBoard.id);
+      target.star = Math.min(3, (target.star || 1) + 1);
+      syncDragonHp(target, false);
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      log(`${target.name} merged to ${target.star}-star.`);
+      removeMaxedDragonsFromShop();
+      renderUi();
+      return true;
+    }
+
+    function autoMerge() {
+      const messages = [];
+      let merged = true;
+      while (merged) {
+        merged = false;
+        const groups = new Map();
+        for (const slot of ownedSlots()) {
+          const star = slot.unit.star || 1;
+          if (star >= 3) continue;
+          const key = `${slot.unit.name}|${star}`;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(slot);
+        }
+
+        for (const slots of groups.values()) {
+          if (slots.length < 3) continue;
+          const boardSlots = slots.filter(slot => slot.place === "board");
+          if (boardSlots.length >= 2) continue;
+          const keep =
+            slots.find(slot => slot.place === "board") ||
+            slots.filter(slot => slot.place === "bench").sort((a, b) => a.index - b.index)[0];
+          const consumed = slots.filter(slot => slot !== keep).slice(0, 2);
+          for (const slot of consumed) removeOwnedSlot(slot);
+          const promoted = promoteSlot(keep);
+          messages.push(`${promoted.name} merged to ${promoted.star}-star.`);
+          merged = true;
+          break;
+        }
+      }
+      if (messages.length) {
+        removeMaxedDragonsFromShop();
+        log(messages[messages.length - 1]);
+      }
+      return messages.length > 0;
+    }
+
+    function traitStacks() {
+      const stacks = {};
+      for (const key of Object.keys(elements)) stacks[key] = 0;
+      for (const d of state.dragons) {
+        for (const e of d.elements) stacks[e] += 1;
+      }
+      return stacks;
+    }
+
+    function activeTier(count) {
+      if (count >= 8) return 8;
+      if (count >= 6) return 6;
+      if (count >= 4) return 4;
+      if (count >= 2) return 2;
+      return 0;
+    }
+
+    function traitBonuses() {
+      const stacks = traitStacks();
+      const tier = Object.fromEntries(Object.entries(stacks).map(([k, v]) => [k, activeTier(v)]));
+      return {
+        stacks,
+        tier,
+        damageMult: tier.Plant === 8 ? 1.70 : tier.Plant === 6 ? 1.45 : tier.Plant === 4 ? 1.25 : tier.Plant === 2 ? 1.10 : 1,
+        attackSpeedMult: tier.Wind === 8 ? 1.65 : tier.Wind === 6 ? 1.45 : tier.Wind === 4 ? 1.25 : tier.Wind === 2 ? 1.12 : 1,
+        critChance: tier.Metal === 8 ? 0.55 : tier.Metal === 6 ? 0.38 : tier.Metal === 4 ? 0.22 : tier.Metal === 2 ? 0.10 : 0,
+      };
+    }
+
+    function renderUi() {
+      document.getElementById("waveText").textContent = state.wave;
+      document.getElementById("hpText").textContent = state.hp;
+      document.getElementById("goldText").textContent = state.gold;
+      const xpNeed = xpNeededForCurrentLevel();
+      document.getElementById("levelText").textContent = state.keeperLevel >= MAX_KEEPER_LEVEL
+        ? `Lv. ${state.keeperLevel} MAX`
+        : `Lv. ${state.keeperLevel} ${state.keeperXp}/${xpNeed}`;
+      document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
+      document.getElementById("selectedText").textContent = state.pendingMerge ? "Choose merge" : state.dragging?.unit ? state.dragging.unit.name : state.dragging?.source === "shovel" ? "Shovel" : "Shop to board";
+
+      const stacks = traitStacks();
+      const activeTraits = Object.entries(elements)
+        .map(([name, data]) => ({ name, data, count: stacks[name] || 0, tier: activeTier(stacks[name] || 0) }))
+        .filter(item => item.count > 0);
+      document.getElementById("traitPanel").innerHTML = activeTraits.length ? activeTraits.map(({ name, data, count, tier }) => {
+        return `<div class="trait ${tier > 0 ? "active" : ""}" data-trait="${name}">
+          <img src="${data.icon}" alt="" />
+          <span>${name}</span>
+          <div class="trait-stacks">
+            ${[2, 4, 6, 8].map(mark => `<span class="trait-stack ${tier === mark ? "active" : ""}">${mark}</span>`).join("")}
+          </div>
+        </div>`;
+      }).join("") : `<div class="trait-empty">No active traits yet.</div>`;
+
+      document.querySelectorAll("[data-trait]").forEach(row => {
+        row.addEventListener("click", ev => {
+          ev.stopPropagation();
+          showTraitNote(row.dataset.trait);
+        });
+        row.addEventListener("contextmenu", ev => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          showTraitNote(row.dataset.trait, ev.clientX, ev.clientY);
+        });
+      });
+
+      document.getElementById("dropRatePanel").innerHTML = `
+        <div class="drop-rate-row header">
+          <span>Lv</span>
+          ${[1, 2, 3, 4, 5].map(cost => `<span class="drop-tier-${cost}">${goldCostHtml(cost)}</span>`).join("")}
+        </div>
+        ${keeperDropRates.map(row => `<div class="drop-rate-row ${row.level === state.keeperLevel ? "active" : ""}">
+          <span>Lv.${row.level}</span>
+          ${row.rates.map((rate, index) => `<span class="drop-tier-${index + 1}">${rate}%</span>`).join("")}
+        </div>`).join("")}
+      `;
+
+      document.getElementById("shopRow").innerHTML = state.shop.map((d, i) => {
+        if (!d) {
+          return `<div class="card empty" data-shop-empty="${i}"></div>`;
+        }
+        const unaffordable = state.gold < d.cost;
+        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""}" data-shop="${i}" draggable="true">
+          <div class="card-title">${d.name}</div>
+          <div class="elements">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
+          <img class="dragon-img" src="${d.baby}" alt="" />
+          <div class="cost"><img class="icon" src="${icon.gold}" alt="" /> ${d.cost}</div>
+        </div>`;
+      }).join("");
+
+      document.querySelectorAll("[data-shop]").forEach(card => {
+        card.addEventListener("click", () => {
+          if (state.gameOver) return;
+          const index = Number(card.dataset.shop);
+          const unit = state.shop[index];
+          if (!unit) return;
+          buyToBench(index);
+        });
+        card.addEventListener("dragstart", ev => {
+          if (state.gameOver) {
+            ev.preventDefault();
+            return;
+          }
+          const index = Number(card.dataset.shop);
+          const unit = state.shop[index];
+          if (!unit) return;
+          if (state.gold < unit.cost) {
+            ev.preventDefault();
+            log(`Need ${unit.cost} Gold to buy ${unit.name}.`);
+            renderUi();
+            return;
+          }
+          state.dragging = { source: "shop", index, unit };
+          ev.dataTransfer.setData("text/plain", JSON.stringify({ source: "shop", index }));
+          ev.dataTransfer.effectAllowed = "copy";
+          ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
+          card.classList.add("dragging");
+          document.getElementById("selectedText").textContent = unit.name;
+        });
+        card.addEventListener("dragend", () => {
+          state.dragging = null;
+          clearDragGhost();
+          renderUi();
+        });
+        card.addEventListener("contextmenu", ev => {
+          ev.preventDefault();
+          const unit = state.shop[Number(card.dataset.shop)];
+          if (unit) showStats(unit, ev.clientX, ev.clientY, "Shop unit");
+        });
+      });
+      const rerollBtn = document.getElementById("rerollBtn");
+      rerollBtn.innerHTML = `Reroll ${goldCostHtml(REROLL_COST)}`;
+      rerollBtn.disabled = state.gameOver || state.gold < REROLL_COST;
+      rerollBtn.onclick = () => rollShop();
+      const buyXpBtn = document.getElementById("buyXpBtn");
+      buyXpBtn.innerHTML = state.keeperLevel >= MAX_KEEPER_LEVEL ? "XP MAX" : `Buy XP ${goldCostHtml(BUY_XP_COST)}`;
+      buyXpBtn.disabled = state.gameOver || state.keeperLevel >= MAX_KEEPER_LEVEL || state.gold < BUY_XP_COST;
+      buyXpBtn.onclick = buyKeeperXp;
+      const shovelBtn = document.getElementById("shovelBtn");
+      shovelBtn.disabled = state.gameOver;
+      shovelBtn.onclick = () => {
+        log("Drag the shovel onto a board dragon to remove it.");
+      };
+      shovelBtn.ondragstart = ev => {
+        if (state.gameOver) {
+          ev.preventDefault();
+          return;
+        }
+        state.dragging = { source: "shovel" };
+        ev.dataTransfer.setData("text/plain", JSON.stringify({ source: "shovel" }));
+        ev.dataTransfer.effectAllowed = "move";
+        ev.dataTransfer.setDragImage(makeShovelGhost(), 48, 48);
+        document.getElementById("selectedText").textContent = "Shovel";
+      };
+      shovelBtn.ondragend = () => {
+        state.dragging = null;
+        clearDragGhost();
+        renderUi();
+      };
+      const spawnBtn = document.getElementById("spawnBtn");
+      spawnBtn.textContent = state.waveRunning ? "Wave Running" : state.wave >= 20 ? "Start Boss" : "Start Wave";
+      spawnBtn.disabled = state.gameOver || state.waveRunning;
+      spawnBtn.onclick = startWave;
+      const speedBtn = document.getElementById("speedBtn");
+      speedBtn.disabled = state.gameOver;
+      speedBtn.innerHTML = `<img src="${icon.doubleArrow}" alt="" /> ${state.gameSpeed > 1 ? "Speed 2x" : "Speed Up"}`;
+      speedBtn.onclick = () => {
+        if (state.gameOver) return;
+        state.gameSpeed = state.gameSpeed > 1 ? 1 : 2;
+        renderUi();
+      };
+      const playAgainBtn = document.getElementById("playAgainBtn");
+      playAgainBtn.style.display = state.gameOver ? "block" : "none";
+      playAgainBtn.onclick = resetGame;
+
+      const bench = document.getElementById("bench");
+      bench.innerHTML = state.bench.map((d, i) => {
+        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)}` : ""}" data-bench="${i}" ${d ? 'draggable="true"' : ""}>
+          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${d.name}" /><div class="bench-name" title="${d.name}">${rankIconHtml(d.star)}<span>${d.name}</span></div>` : ""}
+        </div>`;
+      }).join("");
+
+      document.querySelectorAll("[data-bench]").forEach(slot => {
+        slot.addEventListener("dragover", ev => {
+          ev.preventDefault();
+          slot.classList.add("drag-over");
+          ev.dataTransfer.dropEffect = state.dragging?.source === "bench" ? "move" : "copy";
+        });
+        slot.addEventListener("dragleave", () => slot.classList.remove("drag-over"));
+        slot.addEventListener("drop", ev => {
+          ev.preventDefault();
+          slot.classList.remove("drag-over");
+          const index = Number(slot.dataset.bench);
+          dropToBench(index);
+        });
+        slot.addEventListener("dragstart", ev => {
+          const index = Number(slot.dataset.bench);
+          const unit = state.bench[index];
+          if (!unit) return;
+          state.dragging = { source: "bench", index, unit };
+          ev.dataTransfer.setData("text/plain", JSON.stringify({ source: "bench", index }));
+          ev.dataTransfer.effectAllowed = "move";
+          ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
+          document.getElementById("selectedText").textContent = unit.name;
+        });
+        slot.addEventListener("dragend", () => {
+          state.dragging = null;
+          clearDragGhost();
+          renderUi();
+        });
+        slot.addEventListener("contextmenu", ev => {
+          const index = Number(slot.dataset.bench);
+          const unit = state.bench[index];
+          if (!unit) return;
+          ev.preventDefault();
+          showStats(unit, ev.clientX, ev.clientY, "Bench unit");
+        });
+      });
+
+      const sellZone = document.getElementById("sellZone");
+      sellZone.ondragover = ev => {
+        if (!state.dragging || state.dragging.source !== "bench") return;
+        ev.preventDefault();
+        sellZone.classList.add("drag-over");
+        ev.dataTransfer.dropEffect = "move";
+      };
+      sellZone.ondragleave = () => sellZone.classList.remove("drag-over");
+      sellZone.ondrop = ev => {
+        ev.preventDefault();
+        sellZone.classList.remove("drag-over");
+        sellDraggedDragon();
+      };
+      requestAnimationFrame(fitCanvasToScreen);
+    }
+
+    function log(text) {
+      document.getElementById("logText").textContent = text;
+    }
+
+    function showStats(unit, x, y, label = "Dragon") {
+      const popover = document.getElementById("statPopover");
+      const s = baseStats[unit.cost];
+      const nextAttack = 1 / s.attackSpeed;
+      popover.innerHTML = `
+        <h3>${unit.name} <span style="color:#b8caa7">(${label})</span></h3>
+        <div class="stat-line"><img src="${icon.damage}" alt="" /> Damage <strong>${s.damage}</strong></div>
+        <div class="stat-line"><img src="${icon.attackSpeed}" alt="" /> Next Attack <strong>${nextAttack.toFixed(2)}s</strong></div>
+        <div class="stat-line"><img src="${icon.hp}" alt="" /> HP <strong>${s.hp}</strong></div>
+        <div class="stat-line"><img src="${icon.gold}" alt="" /> Cost <strong>${unit.cost}</strong></div>
+        <div class="stat-line"><span class="stat-elements">${unit.elements.map(name => `<img src="${elements[name].icon}" alt="${name}" title="${name}" />`).join("")}</span></div>
+      `;
+      popover.style.left = `${Math.min(window.innerWidth - 250, x + 12)}px`;
+      popover.style.top = `${Math.min(window.innerHeight - 190, y + 12)}px`;
+      popover.style.width = "";
+      popover.style.maxHeight = "";
+      popover.style.overflowY = "";
+      popover.style.display = "block";
+      clearTimeout(showStats.hideTimer);
+      showStats.hideTimer = setTimeout(() => popover.style.display = "none", 3600);
+    }
+
+    function traitRosterHtml(name) {
+      const roster = dragonPool
+        .filter(unit => unit.elements.includes(name))
+        .sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
+      const boardNames = new Set(state.dragons.map(unit => unit.name));
+      return `<div class="trait-roster">
+        <h4>Dragons with this trait</h4>
+        <div class="trait-roster-list">
+          ${roster.map(unit => `<div class="trait-dragon-row ${boardNames.has(unit.name) ? "" : "inactive"}">
+            <img src="${unit.baby}" alt="" />
+            <span class="trait-dragon-name">${goldCostHtml(unit.cost)}<span class="name-text">${unit.name}</span></span>
+            <span class="trait-dragon-elements">${unit.elements.map(e => `<img src="${elements[e].icon}" alt="${e}" title="${e}" />`).join("")}</span>
+          </div>`).join("")}
+        </div>
+      </div>`;
+    }
+
+    function positionTraitPopover(popover) {
+      const traitPanel = document.getElementById("traitPanel");
+      const panelRect = traitPanel.closest(".panel").getBoundingClientRect();
+      const top = Math.max(8, panelRect.top);
+      const preferredLeft = panelRect.right + 10;
+      const width = Math.min(380, window.innerWidth - 24);
+      const left = preferredLeft + width <= window.innerWidth - 8
+        ? preferredLeft
+        : Math.max(8, panelRect.left);
+      popover.style.width = `${width}px`;
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+      popover.style.maxHeight = "";
+      popover.style.overflowY = "";
+    }
+
+    function positionTraitPopoverAtPointer(popover, x, y) {
+      const width = Math.min(380, window.innerWidth - 24);
+      popover.style.width = `${width}px`;
+      popover.style.left = "-9999px";
+      popover.style.top = "-9999px";
+      popover.style.display = "block";
+      const height = popover.offsetHeight;
+      const left = Math.min(window.innerWidth - width - 8, x + 12);
+      const top = Math.max(8, Math.min(window.innerHeight - height - 8, y - height / 2));
+      popover.style.left = `${Math.max(8, left)}px`;
+      popover.style.top = `${top}px`;
+      popover.style.maxHeight = "";
+      popover.style.overflowY = "";
+    }
+
+    function showTraitNote(name, x = null, y = null) {
+      const popover = document.getElementById("statPopover");
+      const note = traitNotes[name];
+      const stacks = traitStacks()[name] || 0;
+      const tier = activeTier(stacks);
+      popover.innerHTML = `
+        <h3><span style="color:${elements[name].color}">${name}</span> Trait</h3>
+        <div class="stat-line"><img src="${elements[name].icon}" alt="" /> Current <strong>${stacks} stacks (${tier || "-"}/8)</strong></div>
+        <p>${note.summary}</p>
+        ${note.tiers.map((text, index) => {
+          const mark = Number(text.match(/^(\d+)/)?.[1] || [2, 4, 6, 8][index]);
+          return `<div class="stat-line trait-tier-line ${tier === mark ? "active" : ""}">${text}</div>`;
+        }).join("")}
+        ${traitRosterHtml(name)}
+      `;
+      if (x !== null && y !== null) {
+        positionTraitPopoverAtPointer(popover, x, y);
+      } else {
+        positionTraitPopover(popover);
+      }
+      popover.style.display = "block";
+      clearTimeout(showStats.hideTimer);
+      showStats.hideTimer = setTimeout(() => popover.style.display = "none", 6000);
+    }
+
+    function dragonAtPoint(x, y) {
+      for (let i = state.dragons.length - 1; i >= 0; i--) {
+        const d = state.dragons[i];
+        if (Math.hypot(d.x - x, d.y - y) < 64) return d;
+      }
+      return null;
+    }
+
+    function dragonAtCell(row, col) {
+      return state.dragons.find(d => d.row === row && d.col === col) || null;
+    }
+
+    function dragonAtDropPoint(x, y) {
+      const directHit = dragonAtPoint(x, y);
+      if (directHit) return directHit;
+      const row = Math.max(0, Math.min(ROWS - 1, Math.floor(y / CELL_H)));
+      const col = Math.max(0, Math.min(COLS - 1, Math.floor(x / CELL_W)));
+      return dragonAtCell(row, col);
+    }
+
+    function refundFor(unit) {
+      const star = unit.star || 1;
+      const totalCost = unit.cost * Math.pow(3, star - 1);
+      if (star === 1) return unit.cost;
+      if (star === 2) return Math.floor(totalCost * 0.8);
+      return Math.floor(totalCost * 0.7);
+    }
+
+    function sellUnit(unit, source) {
+      if (!unit) return;
+      const refund = refundFor(unit);
+      if (source?.source === "bench") state.bench[source.index] = null;
+      if (source?.source === "board") state.dragons = state.dragons.filter(d => d.id !== unit.id);
+      state.gold += refund;
+      log(`Sold ${unit.name} for ${refund} Gold.`);
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      renderUi();
+    }
+
+    function sellDraggedDragon() {
+      const drag = state.dragging;
+      if (!drag?.unit) return log("Drag a bench dragon into the sell zone.");
+      if (drag.source !== "bench") return log("Only bench dragons can be sold here. Use the shovel to sell board dragons.");
+      sellUnit(drag.unit, drag);
+    }
+
+    function draggedUnitFromEvent(ev) {
+      if (state.dragging) return state.dragging;
+      try {
+        const data = JSON.parse(ev.dataTransfer.getData("text/plain"));
+        if (data.source === "shovel") return { source: "shovel" };
+        if (data.source === "shop") return { source: "shop", index: data.index, unit: state.shop[data.index] };
+        if (data.source === "bench") return { source: "bench", index: data.index, unit: state.bench[data.index] };
+        if (data.source === "board") {
+          const unit = state.dragons.find(d => d.id === data.id);
+          return { source: "board", id: data.id, unit };
+        }
+      } catch {}
+      return null;
+    }
+
+    function dropToBench(index) {
+      const drag = state.dragging;
+      if (!drag?.unit) return log("Drag a dragon from the shop or bench first.");
+      if (drag.source === "shop" && startBoardMergeChoice(drag.unit, drag)) return;
+      if (drag.source === "bench" && drag.index === index) {
+        state.dragging = null;
+        clearDragGhost();
+        renderUi();
+        return;
+      }
+      if (state.bench[index]) {
+        if (drag.source !== "bench") return log("That bench slot is already occupied.");
+        const targetUnit = state.bench[index];
+        state.bench[index] = drag.unit;
+        state.bench[drag.index] = targetUnit;
+        log(`Swapped ${drag.unit.name} with ${targetUnit.name}.`);
+        state.dragging = null;
+        state.hoverCell = null;
+        clearDragGhost();
+        renderUi();
+        return;
+      }
+      if (!spendForShopUnit(drag, drag.unit)) {
+        renderUi();
+        return;
+      }
+      state.bench[index] = drag.source === "shop" ? makeOwnedUnit(drag.unit) : drag.unit;
+      if (drag.source === "bench") state.bench[drag.index] = null;
+      log(`${drag.unit.name} moved to bench slot ${index + 1}.`);
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      autoMerge();
+      renderUi();
+    }
+
+    function buyToBench(shopIndex) {
+      const unit = state.shop[shopIndex];
+      if (!unit) return;
+      if (startBoardMergeChoice(unit, { source: "shop", index: shopIndex })) return;
+      const benchIndex = state.bench.findIndex(slot => !slot);
+      if (benchIndex === -1) return log("Bench is full. Drag directly onto the board or free a slot.");
+      if (!spendForShopUnit({ source: "shop", index: shopIndex }, unit)) {
+        renderUi();
+        return;
+      }
+      state.bench[benchIndex] = makeOwnedUnit(unit);
+      log(`Bought ${unit.name} into bench slot ${benchIndex + 1}.`);
+      autoMerge();
+      renderUi();
+    }
+
+    function placeUnit(unit, row, col, source = null) {
+      if (!unit) return log("Drag a dragon from the shop or bench first.");
+      if (col >= PLACE_COLS) return log("Dragons can only be placed in the green zone.");
+      const boardCap = boardCapForLevel();
+      if (state.dragons.length >= boardCap) return log(`Keeper Level ${state.keeperLevel} board cap reached (${boardCap}). Buy XP to place more dragons.`);
+      if (maybeMergeByDroppingOnBoard(unit, source, row, col)) return true;
+      if (state.dragons.some(d => d.row === row && d.col === col)) return log("That cell already has a dragon.");
+      if (!spendForShopUnit(source, unit)) {
+        renderUi();
+        return true;
+      }
+      const ownedUnit = source?.source === "shop" ? makeOwnedUnit(unit) : unit;
+      const d = {
+        ...ownedUnit,
+        id: state.nextId++,
+        star: ownedUnit.star || 1,
+        row,
+        col,
+        x: col * CELL_W + CELL_W * 0.5,
+        y: row * CELL_H + CELL_H * 0.50,
+        cooldown: 1 / statsFor(ownedUnit).attackSpeed,
+      };
+      syncDragonHp(d, false);
+      state.dragons.push(d);
+      if (source?.source === "bench") state.bench[source.index] = null;
+      log(`Placed ${d.name}.`);
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      autoMerge();
+      renderUi();
+      return true;
+    }
+
+    function spawnEnemy(rowOverride = null, typeOverride = null) {
+      const type = typeOverride || rand(availableEnemyTypes());
+      const row = rowOverride ?? Math.floor(Math.random() * ROWS);
+      const hpScale = type.boss ? 1 : 1 + state.wave * 0.16;
+      const maxHp = Math.round(type.hp * hpScale);
+      state.enemies.push({
+        id: state.nextId++,
+        ...type,
+        row,
+        x: canvas.width + 50,
+        y: row * CELL_H + CELL_H * 0.6,
+        maxHp,
+        hp: maxHp,
+        attackCooldown: 0,
+      });
+    }
+
+    function laneTarget(dragon) {
+      return state.enemies
+        .filter(e => e.row === dragon.row && e.x > dragon.x + 18)
+        .sort((a, b) => a.x - b.x)[0];
+    }
+
+    function dragonBlockingEnemy(enemy) {
+      return state.dragons
+        .filter(d => d.row === enemy.row && d.x <= enemy.x + 16 && Math.abs(d.x - enemy.x) <= 48)
+        .sort((a, b) => b.x - a.x)[0] || null;
+    }
+
+    function enemyAttackDamage(enemy) {
+      return Math.max(8, Math.round(enemy.maxHp * 0.045 + state.wave * 2));
+    }
+
+    function shoot(dragon, target) {
+      const bonuses = traitBonuses();
+      const s = statsFor(dragon);
+      const main = dragon.elements[0];
+      const crit = Math.random() < bonuses.critChance;
+      const damage = Math.round(s.damage * bonuses.damageMult * (crit ? 1.8 : 1));
+      state.projectiles.push({
+        id: state.nextId++,
+        type: main,
+        row: dragon.row,
+        x: dragon.x + 28,
+        y: dragon.y - 10,
+        speed: main === "Energy" ? 860 : 520,
+        damage,
+        crit,
+      });
+      if (main === "Water" && waterProc(bonuses.tier.Water || 0)) {
+        const tier = bonuses.tier.Water || 0;
+        const bonusMult = tier === 8 ? .8 : tier === 6 ? .7 : tier === 4 ? .6 : .5;
+        state.projectiles.push({
+          id: state.nextId++,
+          type: "Water",
+          row: dragon.row,
+          x: dragon.x + 8,
+          y: dragon.y - 10,
+          speed: 520,
+          damage: Math.round(damage * bonusMult),
+          crit: false,
+          bonusWave: true,
+          delay: 0.12,
+        });
+      }
+    }
+
+    function waterProc(tier) {
+      return Math.random() < ({2:.15,4:.30,6:.50,8:.70}[tier] || 0);
+    }
+
+    function applyTrait(projectile, enemy) {
+      const bonuses = traitBonuses();
+      const tier = bonuses.tier[projectile.type] || 0;
+      const roll = Math.random();
+      if (projectile.type === "Fire" && roll < ({2:.20,4:.35,6:.55,8:.75}[tier] || 0)) {
+        enemy.burn = tier === 8 ? 4 : 3;
+      }
+      if (projectile.type === "Ice" && roll < ({2:.15,4:.30,6:.50,8:.70}[tier] || 0)) {
+        enemy.slow = 2;
+      }
+      if (projectile.type === "Earth" && roll < ({2:.10,4:.20,6:.35,8:.50}[tier] || 0)) {
+        enemy.stun = tier === 8 ? 0.75 : 0.5;
+      }
+      if (projectile.type === "Energy" && roll < ({2:.15,4:.30,6:.50,8:.70}[tier] || 0)) {
+        const other = state.enemies.find(e => e.row === enemy.row && e.id !== enemy.id);
+        if (other) {
+          other.hp -= projectile.damage * (tier === 8 ? .65 : .5);
+          state.effects.push({ type: "Energy", x: (enemy.x + other.x) / 2, y: enemy.y, life: .25 });
+        }
+      }
+    }
+
+    function update(dt) {
+      if (state.gameOver) return;
+      const bonuses = traitBonuses();
+      if (state.waveRunning) {
+        state.spawnTimer -= dt;
+        if (state.spawnTimer <= 0 && state.enemiesSpawned < state.enemiesToSpawn) {
+          if (state.wave >= 20) {
+            spawnEnemy(state.enemiesSpawned, finalBossType);
+          } else {
+            spawnEnemy();
+          }
+          state.enemiesSpawned += 1;
+          state.spawnTimer = Math.max(0.26, 0.78 - state.wave * 0.018);
+        }
+      }
+
+      for (const d of state.dragons) {
+        const s = statsFor(d);
+        const target = laneTarget(d);
+        if (!target) {
+          d.cooldown = Math.max(d.cooldown, 1 / s.attackSpeed);
+          continue;
+        }
+        d.cooldown -= dt * bonuses.attackSpeedMult;
+        if (d.cooldown <= 0) {
+          shoot(d, target);
+          d.cooldown = 1 / s.attackSpeed;
+        }
+      }
+
+      for (const e of state.enemies) {
+        if (e.burn) { e.hp -= e.maxHp * 0.015 * dt; e.burn -= dt; }
+        if (e.slow) e.slow -= dt;
+        if (e.stun) e.stun -= dt;
+        e.attackCooldown = Math.max(0, (e.attackCooldown || 0) - dt);
+        const blocker = dragonBlockingEnemy(e);
+        if (blocker && !(e.stun > 0)) {
+          if (e.attackCooldown <= 0) {
+            blocker.hp -= enemyAttackDamage(e);
+            e.attackCooldown = 0.85;
+            state.effects.push({ type: "hitDragon", x: blocker.x, y: blocker.y - 34, life: .22 });
+          }
+          continue;
+        }
+        const speedMod = e.stun > 0 ? 0 : e.slow > 0 ? 0.65 : 1;
+        e.x -= e.speed * speedMod * dt;
+      }
+
+      const dragonDeaths = state.dragons.filter(d => d.hp <= 0);
+      if (dragonDeaths.length) {
+        for (const d of dragonDeaths) {
+          state.effects.push({ type: "dragonDeath", x: d.x, y: d.y, life: .35 });
+        }
+        state.dragons = state.dragons.filter(d => d.hp > 0);
+        log(`${dragonDeaths[0].name} was defeated.`);
+      }
+
+      for (const p of state.projectiles) {
+        if (p.delay && p.delay > 0) {
+          p.delay -= dt;
+          continue;
+        }
+        p.x += p.speed * dt;
+        const enemy = state.enemies.find(e => {
+          const radius = e.maxHp > 300 ? 42 : 31;
+          return e.row === p.row && Math.abs(e.x - p.x) <= radius && Math.abs(e.y - p.y) <= radius;
+        });
+        if (enemy) {
+          enemy.hp -= p.damage;
+          applyTrait(p, enemy);
+          p.hit = true;
+          state.effects.push({ type: p.type, x: enemy.x, y: enemy.y, life: .28, crit: p.crit });
+        }
+      }
+      state.projectiles = state.projectiles.filter(p => !p.hit && p.x < canvas.width + 80);
+
+      const escaped = state.enemies.filter(e => e.x < 50).length;
+      if (escaped) {
+        state.hp = Math.max(0, state.hp - escaped);
+        state.enemies = state.enemies.filter(e => e.x >= 50);
+        if (state.hp <= 0) {
+          completeRun("lost");
+        }
+      }
+
+      state.enemies = state.enemies.filter(e => e.hp > 0);
+      if (!state.gameOver && state.waveRunning && state.enemiesSpawned >= state.enemiesToSpawn && !state.enemies.length) {
+        finishWave();
+      }
+
+      for (const fx of state.effects) fx.life -= dt;
+      state.effects = state.effects.filter(fx => fx.life > 0);
+    }
+
+    function drawBoard() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#172016";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#59412d";
+      ctx.fillRect(0, 0, 44, canvas.height);
+      ctx.fillStyle = "#8a6b4c";
+      for (let y = 0; y < canvas.height; y += 56) ctx.fillRect(6, y + 8, 32, 36);
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const x = c * CELL_W;
+          const y = r * CELL_H;
+          ctx.fillStyle = (r + c) % 2 ? "#2f5130" : "#3b6338";
+          ctx.fillRect(x, y, CELL_W, CELL_H);
+          ctx.strokeStyle = "rgba(255,255,255,.12)";
+          ctx.strokeRect(x, y, CELL_W, CELL_H);
+        }
+      }
+      ctx.fillStyle = "rgba(112, 214, 128, .13)";
+      ctx.fillRect(0, 0, CELL_W * PLACE_COLS, canvas.height);
+      if (state.dragging && state.hoverCell) {
+        const { row, col } = state.hoverCell;
+        ctx.save();
+        ctx.fillStyle = "rgba(255, 224, 138, .24)";
+        ctx.strokeStyle = "#f3c94f";
+        ctx.lineWidth = 5;
+        ctx.fillRect(col * CELL_W + 4, row * CELL_H + 4, CELL_W - 8, CELL_H - 8);
+        ctx.strokeRect(col * CELL_W + 5, row * CELL_H + 5, CELL_W - 10, CELL_H - 10);
+        ctx.restore();
+      }
+    }
+
+    function drawRankIcon(x, y, star = 1) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.lineWidth = 2;
+      if (star === 1) {
+        ctx.fillStyle = "#b57735";
+        ctx.strokeStyle = "#5f3517";
+        ctx.shadowColor = "rgba(0,0,0,.55)";
+        ctx.shadowBlur = 4;
+        ctx.beginPath();
+        ctx.moveTo(0, -11);
+        ctx.lineTo(12, 10);
+        ctx.lineTo(-12, 10);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else if (star === 2) {
+        ctx.fillStyle = "#dfe7f5";
+        ctx.strokeStyle = "#8290a6";
+        ctx.shadowColor = "rgba(220,230,255,.8)";
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(0, -13);
+        ctx.lineTo(13, 0);
+        ctx.lineTo(0, 13);
+        ctx.lineTo(-13, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = "#ffe65a";
+        ctx.strokeStyle = "#fff6b8";
+        ctx.shadowColor = "#ffd33f";
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const angle = -Math.PI / 2 + i * Math.PI / 5;
+          const radius = i % 2 === 0 ? 15 : 6;
+          const px = Math.cos(angle) * radius;
+          const py = Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawDragonHealthBar(d, x, y) {
+      if (!d.maxHp) syncDragonHp(d, false);
+      const width = 54;
+      const height = 8;
+      const ratio = Math.max(0, Math.min(1, d.hp / d.maxHp));
+      ctx.save();
+      ctx.fillStyle = "rgba(33, 8, 8, .88)";
+      ctx.fillRect(x, y, width, height);
+      ctx.fillStyle = ratio > .55 ? "#68d66f" : ratio > .25 ? "#f3c94f" : "#ff5a5a";
+      ctx.fillRect(x, y, width * ratio, height);
+      ctx.strokeStyle = "rgba(255,255,255,.65)";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, width, height);
+      ctx.restore();
+    }
+
+    function drawImageContained(image, boxSize) {
+      const iw = image.naturalWidth || image.width || boxSize;
+      const ih = image.naturalHeight || image.height || boxSize;
+      const scale = Math.min(boxSize / iw, boxSize / ih);
+      const drawW = iw * scale;
+      const drawH = ih * scale;
+      ctx.drawImage(image, -drawW / 2, -drawH / 2, drawW, drawH);
+      return { width: drawW, height: drawH };
+    }
+
+    function drawDragon(d) {
+      const image = img(d.star >= 2 ? d.adult : d.baby);
+      const size = d.star === 3 ? 116 : d.star === 2 ? 104 : 92;
+      let drawn = { width: size, height: size };
+      ctx.imageSmoothingEnabled = false;
+      ctx.save();
+      ctx.translate(d.x, d.y);
+      ctx.scale(-1, 1);
+      if (d.star === 3) {
+        ctx.shadowColor = "#ffe65a";
+        ctx.shadowBlur = 26;
+        drawn = drawImageContained(image, size);
+        ctx.shadowColor = "#fff4a8";
+        ctx.shadowBlur = 12;
+      }
+      drawn = drawImageContained(image, size);
+      ctx.restore();
+      const topIconY = d.y - drawn.height / 2 - 14;
+      const rankWidth = 30;
+      const hpWidth = 54;
+      const gap = 0.5;
+      const clusterX = d.x - (rankWidth + gap + hpWidth) / 2;
+      drawRankIcon(clusterX + rankWidth / 2, topIconY, d.star || 1);
+      drawDragonHealthBar(d, clusterX + rankWidth + gap, topIconY - 4);
+      const label = d.name;
+      ctx.font = "800 12px Arial";
+      const cellLeft = d.col * CELL_W;
+      const labelPad = 8;
+      const labelW = CELL_W - 18;
+      const labelX = cellLeft + 9;
+      const labelY = (d.row + 1) * CELL_H - 24;
+      ctx.fillStyle = "rgba(0,0,0,.62)";
+      ctx.fillRect(labelX, labelY, labelW, 20);
+      ctx.fillStyle = "#ffe08a";
+      ctx.textAlign = "center";
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(labelX + labelPad / 2, labelY, labelW - labelPad, 20);
+      ctx.clip();
+      ctx.fillText(label, d.x, labelY + 15);
+      ctx.restore();
+      ctx.textAlign = "left";
+
+      if (isBlinkCandidate(d)) {
+        const pulse = 0.45 + Math.sin(performance.now() / 120) * 0.25;
+        ctx.save();
+        ctx.strokeStyle = `rgba(255, 224, 80, ${pulse + 0.35})`;
+        ctx.lineWidth = 5;
+        ctx.shadowColor = "#ffe050";
+        ctx.shadowBlur = 18;
+        ctx.strokeRect(d.col * CELL_W + 8, d.row * CELL_H + 8, CELL_W - 16, CELL_H - 16);
+        ctx.restore();
+      }
+    }
+
+    function drawEnemy(e) {
+      const image = img(e.img);
+      const size = e.size || (e.boss ? 138 : e.maxHp > 700 ? 110 : e.maxHp > 300 ? 96 : 82);
+      ctx.imageSmoothingEnabled = false;
+      ctx.save();
+      ctx.translate(e.x, e.y);
+      ctx.scale(-1, 1);
+      ctx.drawImage(image, -size / 2, -size / 2, size, size);
+      ctx.restore();
+      ctx.fillStyle = "#260c0c";
+      const barW = e.boss ? 96 : 72;
+      const barY = e.y - size * 0.58;
+      ctx.fillRect(e.x - barW / 2, barY, barW, 8);
+      ctx.fillStyle = e.stun > 0 ? "#ffe08a" : e.slow > 0 ? "#8ce7ff" : "#e85d4d";
+      ctx.fillRect(e.x - barW / 2, barY, barW * Math.max(0, e.hp / e.maxHp), 8);
+    }
+
+    function drawProjectile(p) {
+      if (p.delay && p.delay > 0) return;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.fillStyle = elements[p.type].color;
+      ctx.strokeStyle = elements[p.type].color;
+      ctx.lineWidth = 4;
+      if (p.type === "Fire") {
+        const g = ctx.createRadialGradient(0, 0, 2, 0, 0, 20);
+        g.addColorStop(0, "#fff4a2"); g.addColorStop(.45, "#ff8a28"); g.addColorStop(1, "rgba(255,68,0,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.fill();
+      } else if (p.type === "Water") {
+        if (p.bonusWave) {
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(0, 0, 12, -1.1, 1.1);
+          ctx.stroke();
+        } else {
+          ctx.beginPath(); ctx.arc(0, 0, 18, -1.1, 1.1); ctx.stroke();
+        }
+      } else if (p.type === "Ice") {
+        ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(18, 0); ctx.stroke();
+      } else if (p.type === "Wind") {
+        ctx.beginPath(); ctx.arc(0, 0, 16, .4, 5.2); ctx.stroke();
+      } else if (p.type === "Plant") {
+        ctx.beginPath(); ctx.ellipse(0, 0, 15, 7, -.4, 0, Math.PI * 2); ctx.fill();
+      } else if (p.type === "Earth") {
+        ctx.beginPath(); ctx.moveTo(-12,-8); ctx.lineTo(10,-12); ctx.lineTo(16,8); ctx.lineTo(-8,13); ctx.closePath(); ctx.fill();
+      } else if (p.type === "Energy") {
+        ctx.beginPath(); ctx.moveTo(-16,-8); ctx.lineTo(-2,-2); ctx.lineTo(-9,12); ctx.lineTo(16,-6); ctx.stroke();
+      } else {
+        ctx.fillRect(-14, -8, 28, 16);
+      }
+      ctx.restore();
+    }
+
+    function drawEffects() {
+      for (const fx of state.effects) {
+        ctx.globalAlpha = Math.min(1, Math.max(0, fx.life / .35));
+        ctx.strokeStyle = fx.type === "hitDragon" ? "#ff5a5a" : fx.type === "dragonDeath" ? "#ffe65a" : elements[fx.type]?.color || "#fff";
+        ctx.lineWidth = fx.crit ? 5 : 3;
+        ctx.beginPath();
+        ctx.arc(fx.x, fx.y, (fx.type === "dragonDeath" ? 48 : 34) * (1 - fx.life), 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function drawGameOver() {
+      if (!state.gameOver) return;
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 0, 0, .72)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = state.gameResult === "won" ? "#65e66f" : "#ff5a5a";
+      ctx.font = "900 92px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(state.gameResult === "won" ? "You Won" : "You Lost", canvas.width / 2, canvas.height / 2);
+      ctx.restore();
+    }
+
+    function draw() {
+      drawBoard();
+      for (const d of state.dragons) drawDragon(d);
+      for (const e of state.enemies) drawEnemy(e);
+      for (const p of state.projectiles) drawProjectile(p);
+      drawEffects();
+      drawGameOver();
+    }
+
+    function loop(ts) {
+      const dt = Math.min(0.05, (ts - state.lastTs) / 1000 || 0);
+      state.lastTs = ts;
+      update(dt * state.gameSpeed);
+      draw();
+      document.getElementById("hpText").textContent = state.hp;
+      document.getElementById("waveText").textContent = state.wave;
+      document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
+      requestAnimationFrame(loop);
+    }
+
+    canvas.addEventListener("click", ev => {
+      if (state.gameOver) return;
+      if (state.pendingMerge) {
+        const rect = canvas.getBoundingClientRect();
+        const x = (ev.clientX - rect.left) / rect.width * canvas.width;
+        const y = (ev.clientY - rect.top) / rect.height * canvas.height;
+        const row = Math.floor(y / CELL_H);
+        const col = Math.floor(x / CELL_W);
+        const dragon = dragonAtCell(row, col);
+        if (!completeBoardMerge(dragon)) {
+          log("Click one of the blinking dragons on the board to choose the upgraded copy.");
+        }
+        return;
+      }
+      log("Drag a dragon from the shop or bench onto the board to place it.");
+    });
+
+    canvas.addEventListener("dragover", ev => {
+      if (state.gameOver) return;
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = state.dragging?.source === "bench" || state.dragging?.source === "shovel" ? "move" : "copy";
+      const rect = canvas.getBoundingClientRect();
+      const x = (ev.clientX - rect.left) / rect.width * canvas.width;
+      const y = (ev.clientY - rect.top) / rect.height * canvas.height;
+      const row = Math.max(0, Math.min(ROWS - 1, Math.floor(y / CELL_H)));
+      const col = Math.max(0, Math.min(COLS - 1, Math.floor(x / CELL_W)));
+      state.hoverCell = { row, col };
+    });
+
+    canvas.addEventListener("dragleave", () => {
+      state.hoverCell = null;
+    });
+
+    canvas.addEventListener("drop", ev => {
+      if (state.gameOver) return;
+      ev.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = (ev.clientX - rect.left) / rect.width * canvas.width;
+      const y = (ev.clientY - rect.top) / rect.height * canvas.height;
+      const drag = draggedUnitFromEvent(ev);
+      const row = Math.floor(y / CELL_H);
+      const col = Math.floor(x / CELL_W);
+      if (drag?.source === "shovel") {
+        const dragon = dragonAtDropPoint(x, y);
+        if (dragon) {
+          sellUnit(dragon, { source: "board" });
+        } else {
+          log("Drop the shovel onto a cell that contains a dragon to sell it.");
+        }
+        state.dragging = null;
+        clearDragGhost();
+        state.hoverCell = null;
+        return;
+      }
+      placeUnit(drag?.unit, row, col, drag);
+      state.hoverCell = null;
+    });
+
+    canvas.addEventListener("contextmenu", ev => {
+      ev.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = (ev.clientX - rect.left) / rect.width * canvas.width;
+      const y = (ev.clientY - rect.top) / rect.height * canvas.height;
+      const dragon = dragonAtPoint(x, y);
+      if (dragon) {
+        showStats(dragon, ev.clientX, ev.clientY, `Board ${dragon.star}-star`);
+      } else {
+        log("Right-click directly on a dragon to inspect its base stats.");
+      }
+    });
+
+    document.addEventListener("click", () => {
+      document.getElementById("statPopover").style.display = "none";
+    });
+    document.getElementById("statPopover").addEventListener("click", ev => ev.stopPropagation());
+    document.getElementById("statPopover").addEventListener("wheel", ev => ev.stopPropagation(), { passive: true });
+
+    window.addEventListener("resize", () => requestAnimationFrame(fitCanvasToScreen));
+
+    rollShop(true);
+    renderUi();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
