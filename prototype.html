@@ -743,6 +743,7 @@
       7: 15,
     };
     const STARTING_GOLD = 10;
+    const CHEAT_MODE = true;
     const REROLL_COST = 2;
     const BUY_XP_COST = 4;
     const BUY_XP_AMOUNT = 4;
@@ -912,8 +913,8 @@
       projectiles: [],
       effects: [],
       hp: 5,
-      gold: STARTING_GOLD,
-      keeperLevel: 1,
+      gold: CHEAT_MODE ? Infinity : STARTING_GOLD,
+      keeperLevel: CHEAT_MODE ? MAX_KEEPER_LEVEL : 1,
       keeperXp: 0,
       wave: 1,
       nextId: 1,
@@ -1076,6 +1077,7 @@
     }
 
     function spendGold(amount, failMessage = "Not enough Gold.") {
+      if (CHEAT_MODE) return true;
       if (state.gold < amount) {
         log(failMessage);
         return false;
@@ -1169,8 +1171,8 @@
       state.projectiles = [];
       state.effects = [];
       state.hp = 5;
-      state.gold = STARTING_GOLD;
-      state.keeperLevel = 1;
+      state.gold = CHEAT_MODE ? Infinity : STARTING_GOLD;
+      state.keeperLevel = CHEAT_MODE ? MAX_KEEPER_LEVEL : 1;
       state.keeperXp = 0;
       state.wave = 1;
       state.nextId = 1;
@@ -1435,7 +1437,7 @@
     function renderUi() {
       document.getElementById("waveText").textContent = state.wave;
       document.getElementById("hpText").textContent = state.hp;
-      document.getElementById("goldText").textContent = state.gold;
+      document.getElementById("goldText").textContent = CHEAT_MODE ? "∞" : state.gold;
       const xpNeed = xpNeededForCurrentLevel();
       document.getElementById("levelText").textContent = state.keeperLevel >= MAX_KEEPER_LEVEL
         ? `Lv. ${state.keeperLevel} MAX`
@@ -1484,7 +1486,7 @@
         if (!d) {
           return `<div class="card empty" data-shop-empty="${i}"></div>`;
         }
-        const unaffordable = state.gold < d.cost;
+        const unaffordable = !CHEAT_MODE && state.gold < d.cost;
         return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""}" data-shop="${i}" draggable="true">
           <div class="card-title">${d.name}</div>
           <div class="elements">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
@@ -1509,7 +1511,7 @@
           const index = Number(card.dataset.shop);
           const unit = state.shop[index];
           if (!unit) return;
-          if (state.gold < unit.cost) {
+          if (!CHEAT_MODE && state.gold < unit.cost) {
             ev.preventDefault();
             log(`Need ${unit.cost} Gold to buy ${unit.name}.`);
             renderUi();
@@ -1535,7 +1537,7 @@
       });
       const rerollBtn = document.getElementById("rerollBtn");
       rerollBtn.innerHTML = `Reroll ${goldCostHtml(REROLL_COST)}`;
-      rerollBtn.disabled = state.gameOver || state.gold < REROLL_COST;
+      rerollBtn.disabled = state.gameOver || (!CHEAT_MODE && state.gold < REROLL_COST);
       rerollBtn.onclick = () => rollShop();
       const lockShopBtn = document.getElementById("lockShopBtn");
       lockShopBtn.disabled = state.gameOver;
@@ -1548,7 +1550,7 @@
       };
       const buyXpBtn = document.getElementById("buyXpBtn");
       buyXpBtn.innerHTML = state.keeperLevel >= MAX_KEEPER_LEVEL ? "XP MAX" : `Buy XP ${goldCostHtml(BUY_XP_COST)}`;
-      buyXpBtn.disabled = state.gameOver || state.keeperLevel >= MAX_KEEPER_LEVEL || state.gold < BUY_XP_COST;
+      buyXpBtn.disabled = state.gameOver || state.keeperLevel >= MAX_KEEPER_LEVEL || (!CHEAT_MODE && state.gold < BUY_XP_COST);
       buyXpBtn.onclick = buyKeeperXp;
       const shovelBtn = document.getElementById("shovelBtn");
       shovelBtn.disabled = state.gameOver;
