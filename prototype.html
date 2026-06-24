@@ -2670,6 +2670,7 @@
       const towerBreachX = cellLeft(1);
       const escaped = state.enemies.filter(e => e.x < towerBreachX).length;
       if (escaped) {
+        addTowerDamageNumbers(escaped);
         state.hp = Math.max(0, state.hp - escaped);
         state.enemies = state.enemies.filter(e => e.x >= towerBreachX);
         if (state.hp <= 0) {
@@ -2684,8 +2685,14 @@
         finishWave();
       }
 
-      for (const fx of state.effects) fx.life -= dt;
-      state.effects = state.effects.filter(fx => fx.life > 0);
+      for (const fx of state.effects) {
+        if (fx.delay > 0) {
+          fx.delay -= dt;
+        } else {
+          fx.life -= dt;
+        }
+      }
+      state.effects = state.effects.filter(fx => fx.life > 0 || fx.delay > 0);
     }
 
     function drawCastle() {
@@ -2932,6 +2939,31 @@
         w: targetW,
         h: targetH,
       };
+    }
+
+    function towerEggPoint(layout) {
+      return {
+        x: layout.x + layout.w * 0.48,
+        y: layout.y + layout.h * 0.34,
+      };
+    }
+
+    function addTowerDamageNumbers(count) {
+      const tower = getCutoutImage(icon.tower);
+      if (!tower) return;
+      const origin = towerEggPoint(towerLayout(tower));
+      for (let i = 0; i < count; i++) {
+        const spread = (i - (count - 1) / 2) * 14;
+        state.effects.push({
+          type: "towerDamageText",
+          text: "-1",
+          x: origin.x + spread,
+          y: origin.y + Math.abs(spread) * 0.12,
+          delay: i * 0.13,
+          life: 1.05,
+          maxLife: 1.05,
+        });
+      }
     }
 
     function drawCastleHealthBar(layout) {
@@ -3478,6 +3510,28 @@
 
     function drawEffects() {
       for (const fx of state.effects) {
+        if (fx.delay > 0) continue;
+        if (fx.type === "towerDamageText") {
+          const maxLife = fx.maxLife || 1.05;
+          const progress = 1 - Math.max(0, fx.life) / maxLife;
+          const alpha = fx.life < .32 ? Math.max(0, fx.life / .32) : 1;
+          const y = fx.y - progress * 58;
+          const x = fx.x + Math.sin(progress * Math.PI) * 5;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.font = "900 30px Arial";
+          ctx.lineWidth = 5;
+          ctx.strokeStyle = "rgba(70, 8, 8, .82)";
+          ctx.fillStyle = "#ff5a5a";
+          ctx.shadowColor = "rgba(255, 40, 40, .75)";
+          ctx.shadowBlur = 12;
+          ctx.strokeText(fx.text || "-1", x, y);
+          ctx.fillText(fx.text || "-1", x, y);
+          ctx.restore();
+          continue;
+        }
         const alpha = Math.min(1, Math.max(0, fx.life / .38));
         const progress = 1 - alpha;
         const specialColor = {
