@@ -1264,9 +1264,10 @@
       const base = baseStats[unit.cost];
       const starHp = unit.star === 3 ? 3.2 : unit.star === 2 ? 1.8 : 1;
       const starDamage = unit.star === 3 ? 3.0 : unit.star === 2 ? 1.7 : 1;
+      const starAttackSpeed = unit.star === 3 ? 1.5 : unit.star === 2 ? 1.25 : 1;
       return {
         damage: Math.round(base.damage * starDamage),
-        attackSpeed: base.attackSpeed,
+        attackSpeed: +(base.attackSpeed * starAttackSpeed).toFixed(2),
         hp: Math.round(base.hp * starHp),
       };
     }
@@ -1730,7 +1731,7 @@
 
     function showStats(unit, x, y, label = "Dragon") {
       const popover = document.getElementById("statPopover");
-      const s = baseStats[unit.cost];
+      const s = statsFor(unit);
       const nextAttack = 1 / s.attackSpeed;
       popover.innerHTML = `
         <h3>${unit.name} <span style="color:#b8caa7">(${label})</span></h3>
