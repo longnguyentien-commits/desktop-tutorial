@@ -1949,15 +1949,84 @@
       renderUi();
     }
 
+    function setDragonCell(unit, row, col) {
+      unit.row = row;
+      unit.col = col;
+      unit.x = col * CELL_W + CELL_W * 0.5;
+      unit.y = row * CELL_H + CELL_H * 0.50;
+    }
+
+    function moveBoardDragon(unit, row, col) {
+      if (!unit) return false;
+      if (state.waveRunning) {
+        log("Board is locked while a wave is running.");
+        state.dragging = null;
+        state.hoverCell = null;
+        clearDragGhost();
+        renderUi();
+        return true;
+      }
+      if (col >= PLACE_COLS) {
+        log("Board dragons can only be moved inside the green zone before a wave.");
+        state.dragging = null;
+        state.hoverCell = null;
+        clearDragGhost();
+        renderUi();
+        return true;
+      }
+      const target = dragonAtCell(row, col);
+      const oldRow = unit.row;
+      const oldCol = unit.col;
+      if (target && target.id === unit.id) {
+        log(`${unit.name} stayed in place.`);
+      } else if (target) {
+        setDragonCell(unit, row, col);
+        setDragonCell(target, oldRow, oldCol);
+        log(`Swapped ${unit.name} with ${target.name}.`);
+      } else {
+        setDragonCell(unit, row, col);
+        log(`Moved ${unit.name}.`);
+      }
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      renderUi();
+      return true;
+    }
+
     function placeUnit(unit, row, col, source = null) {
       if (!unit) return log("Drag a dragon from the shop or bench first.");
-      if (source?.source === "board") return log("Board dragons can only be dropped into Sell Dragon.");
+      if (source?.source === "board") return moveBoardDragon(unit, row, col);
+      if (state.waveRunning) return log("Board is locked while a wave is running.");
       if (col >= PLACE_COLS) return log("Dragons can only be placed in the green zone.");
       if (maybeMergeByDroppingOnBoard(unit, source, row, col)) return true;
       if (tryAutoMergeIncoming(unit, source, dragonAtCell(row, col))) return true;
+      const target = dragonAtCell(row, col);
+      if (target && source?.source === "bench") {
+        const incoming = {
+          ...unit,
+          id: unit.id || state.nextId++,
+          star: unit.star || 1,
+          row,
+          col,
+          x: col * CELL_W + CELL_W * 0.5,
+          y: row * CELL_H + CELL_H * 0.50,
+          cooldown: unit.cooldown || 1 / statsFor(unit).attackSpeed,
+        };
+        syncDragonHp(incoming, false);
+        state.dragons = state.dragons.filter(d => d.id !== target.id);
+        state.dragons.push(incoming);
+        state.bench[source.index] = target;
+        log(`Swapped ${incoming.name} with ${target.name}.`);
+        state.dragging = null;
+        state.hoverCell = null;
+        clearDragGhost();
+        renderUi();
+        return true;
+      }
       const boardCap = boardCapForLevel();
       if (state.dragons.length >= boardCap) return log(`Keeper Level ${state.keeperLevel} board cap reached (${boardCap}). Buy XP to place more dragons.`);
-      if (state.dragons.some(d => d.row === row && d.col === col)) return log("That cell already has a dragon.");
+      if (target) return log("That cell already has a dragon.");
       if (!spendForShopUnit(source, unit)) {
         renderUi();
         return true;
@@ -2473,6 +2542,11 @@
       const y = (ev.clientY - rect.top) / rect.height * canvas.height;
       const dragon = dragonAtPoint(x, y);
       if (!dragon) return;
+      if (state.waveRunning) {
+        state.suppressCanvasClick = true;
+        log("Board is locked while a wave is running.");
+        return;
+      }
       ev.preventDefault();
       state.dragging = { source: "board", id: dragon.id, unit: dragon };
       state.suppressCanvasClick = true;
@@ -2494,8 +2568,24 @@
       const drag = state.dragging;
       if (isPointerOverSellZone(ev.clientX, ev.clientY)) {
         sellUnit(drag.unit, drag);
+      } else if (!state.waveRunning) {
+        const rect = canvas.getBoundingClientRect();
+        const isOverCanvas = ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
+        if (isOverCanvas) {
+          const x = (ev.clientX - rect.left) / rect.width * canvas.width;
+          const y = (ev.clientY - rect.top) / rect.height * canvas.height;
+          const row = Math.max(0, Math.min(ROWS - 1, Math.floor(y / CELL_H)));
+          const col = Math.max(0, Math.min(COLS - 1, Math.floor(x / CELL_W)));
+          moveBoardDragon(drag.unit, row, col);
+        } else {
+          log(`${drag.unit.name} returned to the board.`);
+          state.dragging = null;
+          state.hoverCell = null;
+          clearDragGhost();
+          renderUi();
+        }
       } else {
-        log(`${drag.unit.name} returned to the board. Board dragons can only be dropped into Sell Dragon.`);
+        log(`${drag.unit.name} returned to the board. Board is locked while a wave is running.`);
         state.dragging = null;
         state.hoverCell = null;
         clearDragGhost();
@@ -2505,6 +2595,12 @@
 
     canvas.addEventListener("dragover", ev => {
       if (state.gameOver) return;
+      if (state.waveRunning) {
+        ev.preventDefault();
+        state.hoverCell = null;
+        ev.dataTransfer.dropEffect = "none";
+        return;
+      }
       ev.preventDefault();
       ev.dataTransfer.dropEffect = state.dragging?.source === "bench" ? "move" : "copy";
       const rect = canvas.getBoundingClientRect();
@@ -2522,6 +2618,11 @@
     canvas.addEventListener("drop", ev => {
       if (state.gameOver) return;
       ev.preventDefault();
+      if (state.waveRunning) {
+        log("Board is locked while a wave is running.");
+        state.hoverCell = null;
+        return;
+      }
       const rect = canvas.getBoundingClientRect();
       const x = (ev.clientX - rect.left) / rect.width * canvas.width;
       const y = (ev.clientY - rect.top) / rect.height * canvas.height;
