@@ -550,7 +550,7 @@
       background: rgba(80, 180, 92, .18);
       box-shadow: inset 0 0 14px rgba(101,230,111,.32);
     }
-    body.board-sell-drag .sell-zone {
+    body.sell-drag .sell-zone {
       animation: sellZonePulse .58s ease-in-out infinite alternate;
       border-color: #65e66f;
       background: rgba(80, 180, 92, .18);
@@ -1062,7 +1062,7 @@
         dragGhost = null;
       }
       document.querySelectorAll(".card.dragging").forEach(card => card.classList.remove("dragging"));
-      document.body.classList.remove("board-sell-drag");
+      document.body.classList.remove("sell-drag");
       setSellZoneHover(false);
     }
 
@@ -1698,6 +1698,7 @@
           const unit = state.bench[index];
           if (!unit) return;
           state.dragging = { source: "bench", index, unit };
+          document.body.classList.add("sell-drag");
           ev.dataTransfer.setData("text/plain", JSON.stringify({ source: "bench", index }));
           ev.dataTransfer.effectAllowed = "move";
           ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
@@ -2476,7 +2477,7 @@
       state.dragging = { source: "board", id: dragon.id, unit: dragon };
       state.suppressCanvasClick = true;
       state.hoverCell = null;
-      document.body.classList.add("board-sell-drag");
+      document.body.classList.add("sell-drag");
       makeBoardDragGhost(dragon, ev.clientX, ev.clientY);
       document.getElementById("selectedText").textContent = dragon.name;
       log(`Drag ${dragon.name} into Sell Dragon to sell it.`);
