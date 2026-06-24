@@ -57,6 +57,15 @@
       font-size: 13px;
     }
     .pill strong { display: block; font-size: 16px; }
+    .wave-pill .wave-timer {
+      margin-left: auto;
+      color: #ffe08a;
+      min-width: 38px;
+      text-align: right;
+    }
+    .wave-pill .wave-timer:empty {
+      display: none;
+    }
     .icon { width: 22px; height: 22px; image-rendering: pixelated; object-fit: contain; }
     .main {
       display: grid;
@@ -729,7 +738,7 @@
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="pill"><span>Wave</span><strong id="waveText">1</strong></div>
+      <div class="pill wave-pill"><span>Wave</span><strong id="waveText">1</strong><strong id="waveTimerText" class="wave-timer"></strong></div>
       <div class="pill"><img class="icon" src="Resource Asset/Health_Icon.png" alt="" /><span>Castle HP</span><strong id="hpText">5</strong></div>
       <div class="pill"><img class="icon" src="Resource Asset/Gold_Icon.png" alt="" /><span>Gold</span><strong id="goldText">10</strong></div>
       <div class="pill"><span>Keeper</span><strong id="levelText">Lv. 1 0/4</strong></div>
@@ -992,7 +1001,7 @@
       enemiesSpawned: 0,
       enemiesToSpawn: 0,
       waveReward: 0,
-      planningTimer: PLANNING_TIME,
+      planningTimer: 0,
       gameSpeed: 1,
       waveRunning: false,
       gameOver: false,
@@ -1145,11 +1154,12 @@
       renderUi();
     }
 
-    function waveDisplayText() {
-      if (!state.waveRunning && !state.gameOver && state.planningTimer > 0) {
-        return `${state.wave} · ${Math.ceil(state.planningTimer)}s`;
-      }
-      return `${state.wave}`;
+    function planningTimerActive() {
+      return state.wave > 1 && !state.waveRunning && !state.gameOver && state.planningTimer > 0;
+    }
+
+    function waveTimerText() {
+      return planningTimerActive() ? `${Math.ceil(state.planningTimer)}s` : "";
     }
 
     function rollShopDragon() {
@@ -1213,7 +1223,7 @@
       }
       state.wave += 1;
       state.waveRunning = false;
-      state.planningTimer = PLANNING_TIME;
+      state.planningTimer = state.wave > 1 ? PLANNING_TIME : 0;
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = 0;
       state.waveReward = 0;
@@ -1267,7 +1277,7 @@
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = 0;
       state.waveReward = 0;
-      state.planningTimer = PLANNING_TIME;
+      state.planningTimer = 0;
       state.gameSpeed = 1;
       state.waveRunning = false;
       state.gameOver = false;
@@ -1548,7 +1558,8 @@
     }
 
     function renderUi() {
-      document.getElementById("waveText").textContent = waveDisplayText();
+      document.getElementById("waveText").textContent = state.wave;
+      document.getElementById("waveTimerText").textContent = waveTimerText();
       document.getElementById("hpText").textContent = state.hp;
       document.getElementById("goldText").textContent = CHEAT_MODE ? "∞" : state.gold;
       const xpNeed = xpNeededForCurrentLevel();
@@ -2163,7 +2174,7 @@
     function update(dt, realDt = dt) {
       if (state.gameOver) return;
       const bonuses = traitBonuses();
-      if (!state.waveRunning && state.planningTimer > 0) {
+      if (planningTimerActive()) {
         state.planningTimer = Math.max(0, state.planningTimer - realDt);
         if (state.planningTimer <= 0) {
           startWave(true);
@@ -2514,7 +2525,7 @@
     }
 
     function drawPlanningCountdown() {
-      if (state.gameOver || state.waveRunning || state.planningTimer <= 0 || state.planningTimer > 10) return;
+      if (!planningTimerActive() || state.planningTimer > 10) return;
       const seconds = Math.ceil(state.planningTimer);
       ctx.save();
       ctx.fillStyle = "rgba(0, 0, 0, .34)";
@@ -2552,7 +2563,8 @@
       update(dt * state.gameSpeed, dt);
       draw();
       document.getElementById("hpText").textContent = state.hp;
-      document.getElementById("waveText").textContent = waveDisplayText();
+      document.getElementById("waveText").textContent = state.wave;
+      document.getElementById("waveTimerText").textContent = waveTimerText();
       document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
       requestAnimationFrame(loop);
     }
