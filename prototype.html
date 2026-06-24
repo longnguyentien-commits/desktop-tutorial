@@ -817,6 +817,7 @@
     const BUY_XP_AMOUNT = 4;
     const FREE_WAVE_XP = 2;
     const MAX_KEEPER_LEVEL = 7;
+    const PLANNING_TIME = 30;
     const xpToNextLevel = {
       1: 4,
       2: 6,
@@ -991,6 +992,7 @@
       enemiesSpawned: 0,
       enemiesToSpawn: 0,
       waveReward: 0,
+      planningTimer: PLANNING_TIME,
       gameSpeed: 1,
       waveRunning: false,
       gameOver: false,
@@ -1143,6 +1145,13 @@
       renderUi();
     }
 
+    function waveDisplayText() {
+      if (!state.waveRunning && !state.gameOver && state.planningTimer > 0) {
+        return `${state.wave} · ${Math.ceil(state.planningTimer)}s`;
+      }
+      return `${state.wave}`;
+    }
+
     function rollShopDragon() {
       const available = shopPool();
       const targetCost = rollCostForLevel();
@@ -1184,6 +1193,7 @@
 
     function completeRun(result) {
       state.waveRunning = false;
+      state.planningTimer = 0;
       state.gameOver = true;
       state.gameResult = result;
       state.dragging = null;
@@ -1203,6 +1213,7 @@
       }
       state.wave += 1;
       state.waveRunning = false;
+      state.planningTimer = PLANNING_TIME;
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = 0;
       state.waveReward = 0;
@@ -1215,20 +1226,21 @@
       }
     }
 
-    function startWave() {
+    function startWave(auto = false) {
       if (state.gameOver) return;
       if (state.waveRunning) {
         log("This wave is already running.");
         return;
       }
       state.waveRunning = true;
+      state.planningTimer = 0;
       state.spawnTimer = 0;
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = waveEnemyCount();
       state.waveReward = waveClearReward();
       log(state.wave >= 20
         ? "Final wave started. Five bosses are attacking every lane."
-        : `Wave ${state.wave} started: ${state.enemiesToSpawn} monsters incoming.`);
+        : `${auto ? "Planning time ended. " : ""}Wave ${state.wave} started: ${state.enemiesToSpawn} monsters incoming.`);
       renderUi();
     }
 
@@ -1255,6 +1267,7 @@
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = 0;
       state.waveReward = 0;
+      state.planningTimer = PLANNING_TIME;
       state.gameSpeed = 1;
       state.waveRunning = false;
       state.gameOver = false;
@@ -1535,7 +1548,7 @@
     }
 
     function renderUi() {
-      document.getElementById("waveText").textContent = state.wave;
+      document.getElementById("waveText").textContent = waveDisplayText();
       document.getElementById("hpText").textContent = state.hp;
       document.getElementById("goldText").textContent = CHEAT_MODE ? "∞" : state.gold;
       const xpNeed = xpNeededForCurrentLevel();
@@ -1660,7 +1673,7 @@
       const spawnBtn = document.getElementById("spawnBtn");
       spawnBtn.textContent = state.waveRunning ? "Wave Running" : state.wave >= 20 ? "Start Boss" : "Start Wave";
       spawnBtn.disabled = state.gameOver || state.waveRunning;
-      spawnBtn.onclick = startWave;
+      spawnBtn.onclick = () => startWave(false);
       const speedBtn = document.getElementById("speedBtn");
       speedBtn.disabled = state.gameOver;
       speedBtn.innerHTML = `<img src="${icon.doubleArrow}" alt="" /> ${state.gameSpeed > 1 ? "Speed 2x" : "Speed Up"}`;
@@ -2147,9 +2160,16 @@
       }
     }
 
-    function update(dt) {
+    function update(dt, realDt = dt) {
       if (state.gameOver) return;
       const bonuses = traitBonuses();
+      if (!state.waveRunning && state.planningTimer > 0) {
+        state.planningTimer = Math.max(0, state.planningTimer - realDt);
+        if (state.planningTimer <= 0) {
+          startWave(true);
+          return;
+        }
+      }
       if (state.waveRunning) {
         state.spawnTimer -= dt;
         if (state.spawnTimer <= 0 && state.enemiesSpawned < state.enemiesToSpawn) {
@@ -2493,22 +2513,46 @@
       ctx.restore();
     }
 
+    function drawPlanningCountdown() {
+      if (state.gameOver || state.waveRunning || state.planningTimer <= 0 || state.planningTimer > 10) return;
+      const seconds = Math.ceil(state.planningTimer);
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 0, 0, .34)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "900 112px Arial";
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = "rgba(45, 12, 12, .85)";
+      ctx.fillStyle = seconds <= 3 ? "#ff3b30" : "#ffe08a";
+      ctx.shadowColor = seconds <= 3 ? "#ff1f1f" : "#f3c94f";
+      ctx.shadowBlur = 24;
+      ctx.strokeText(seconds, canvas.width / 2, canvas.height / 2 - 20);
+      ctx.fillText(seconds, canvas.width / 2, canvas.height / 2 - 20);
+      ctx.font = "900 24px Arial";
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = "#fff4c4";
+      ctx.fillText("Next wave starts soon", canvas.width / 2, canvas.height / 2 + 62);
+      ctx.restore();
+    }
+
     function draw() {
       drawBoard();
       for (const d of state.dragons) drawDragon(d);
       for (const e of state.enemies) drawEnemy(e);
       for (const p of state.projectiles) drawProjectile(p);
       drawEffects();
+      drawPlanningCountdown();
       drawGameOver();
     }
 
     function loop(ts) {
       const dt = Math.min(0.05, (ts - state.lastTs) / 1000 || 0);
       state.lastTs = ts;
-      update(dt * state.gameSpeed);
+      update(dt * state.gameSpeed, dt);
       draw();
       document.getElementById("hpText").textContent = state.hp;
-      document.getElementById("waveText").textContent = state.wave;
+      document.getElementById("waveText").textContent = waveDisplayText();
       document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
       requestAnimationFrame(loop);
     }
