@@ -368,6 +368,16 @@
       justify-content: center;
       gap: 7px;
     }
+    #lockShopBtn {
+      display: grid;
+      grid-template-columns: 24px 56px;
+      justify-content: center;
+      align-items: center;
+      column-gap: 7px;
+    }
+    #lockShopBtn span {
+      text-align: left;
+    }
     .tool-button img { width: 24px; height: 24px; object-fit: contain; image-rendering: pixelated; }
     .tool-button { cursor: grab; }
     .tool-button:active { cursor: grabbing; }
@@ -1489,7 +1499,7 @@
       rerollBtn.onclick = () => rollShop();
       const lockShopBtn = document.getElementById("lockShopBtn");
       lockShopBtn.disabled = state.gameOver;
-      lockShopBtn.innerHTML = `<img src="${state.shopLocked ? icon.lock : icon.unlock}" alt="" /> ${state.shopLocked ? "Lock" : "Unlock"}`;
+      lockShopBtn.innerHTML = `<img src="${state.shopLocked ? icon.lock : icon.unlock}" alt="" /><span>${state.shopLocked ? "Lock" : "Unlock"}</span>`;
       lockShopBtn.onclick = () => {
         if (state.gameOver) return;
         state.shopLocked = !state.shopLocked;
