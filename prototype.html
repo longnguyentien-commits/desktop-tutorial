@@ -354,7 +354,7 @@
     .side-actions {
       display: grid;
       gap: 8px;
-      grid-template-rows: 52px minmax(86px, 1fr) 52px 52px 52px 52px;
+      grid-template-rows: 52px minmax(68px, 1fr) 52px 52px 52px 52px 52px;
       min-height: 0;
     }
     .side-actions button {
@@ -457,7 +457,7 @@
       filter: drop-shadow(0 0 6px #fff1a8) drop-shadow(0 0 10px #ffd33f);
     }
     .sell-zone {
-      min-height: 86px;
+      min-height: 68px;
       margin-top: 0;
       border-radius: 8px;
       border: 2px dashed #d95b5b;
@@ -640,7 +640,7 @@
       .topbar { grid-template-columns: repeat(2, 1fr); }
       .main { grid-template-columns: 1fr; }
       .shop-row { grid-template-columns: repeat(2, 1fr); }
-      .side-actions { grid-template-columns: repeat(5, 1fr); grid-template-rows: 42px; }
+      .side-actions { grid-template-columns: repeat(7, 1fr); grid-template-rows: 42px; }
       .bench { grid-template-columns: repeat(5, 1fr); }
     }
   </style>
@@ -688,6 +688,9 @@
           </div>
           <button id="buyXpBtn" class="secondary">Buy XP</button>
           <button id="rerollBtn">Reroll</button>
+          <button id="lockShopBtn" class="secondary tool-button">
+            <img src="Resource Asset/Unlock_Icon.png" alt="" /> Unlock
+          </button>
           <button id="spawnBtn" class="secondary">Start Wave</button>
           <button id="speedBtn" class="secondary tool-button">
             <img src="Resource Asset/Double_Arrow.svg" alt="" /> Speed Up
@@ -760,6 +763,8 @@
       attackSpeed: "Resource Asset/Attack_Speed_Icon.png",
       shovel: "Resource Asset/Shovel.png",
       doubleArrow: "Resource Asset/Double_Arrow.svg",
+      lock: "Resource Asset/Lock_Icon.png",
+      unlock: "Resource Asset/Unlock_Icon.png",
     };
 
     const elements = {
@@ -886,6 +891,7 @@
     let dragGhost = null;
     const state = {
       shop: [],
+      shopLocked: false,
       selected: null,
       dragging: null,
       hoverCell: null,
@@ -1114,8 +1120,13 @@
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = 0;
       state.waveReward = 0;
-      rollShop(true);
-      log(`Wave ${state.wave - 1} cleared: +${reward} Gold, +${FREE_WAVE_XP} XP${levelsGained ? `, Keeper Lv.${state.keeperLevel}` : ""}. Shop refreshed for free.`);
+      if (!state.shopLocked) {
+        rollShop(true);
+        log(`Wave ${state.wave - 1} cleared: +${reward} Gold, +${FREE_WAVE_XP} XP${levelsGained ? `, Keeper Lv.${state.keeperLevel}` : ""}. Shop refreshed for free.`);
+      } else {
+        renderUi();
+        log(`Wave ${state.wave - 1} cleared: +${reward} Gold, +${FREE_WAVE_XP} XP${levelsGained ? `, Keeper Lv.${state.keeperLevel}` : ""}. Shop stayed locked.`);
+      }
     }
 
     function startWave() {
@@ -1137,6 +1148,7 @@
 
     function resetGame() {
       state.shop = [];
+      state.shopLocked = false;
       state.selected = null;
       state.dragging = null;
       state.hoverCell = null;
@@ -1475,6 +1487,15 @@
       rerollBtn.innerHTML = `Reroll ${goldCostHtml(REROLL_COST)}`;
       rerollBtn.disabled = state.gameOver || state.gold < REROLL_COST;
       rerollBtn.onclick = () => rollShop();
+      const lockShopBtn = document.getElementById("lockShopBtn");
+      lockShopBtn.disabled = state.gameOver;
+      lockShopBtn.innerHTML = `<img src="${state.shopLocked ? icon.lock : icon.unlock}" alt="" /> ${state.shopLocked ? "Lock" : "Unlock"}`;
+      lockShopBtn.onclick = () => {
+        if (state.gameOver) return;
+        state.shopLocked = !state.shopLocked;
+        log(state.shopLocked ? "Shop locked. It will not refresh after the next wave." : "Shop unlocked. It will refresh after each wave.");
+        renderUi();
+      };
       const buyXpBtn = document.getElementById("buyXpBtn");
       buyXpBtn.innerHTML = state.keeperLevel >= MAX_KEEPER_LEVEL ? "XP MAX" : `Buy XP ${goldCostHtml(BUY_XP_COST)}`;
       buyXpBtn.disabled = state.gameOver || state.keeperLevel >= MAX_KEEPER_LEVEL || state.gold < BUY_XP_COST;
