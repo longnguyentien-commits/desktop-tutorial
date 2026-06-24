@@ -246,6 +246,20 @@
     .card.selected { outline: 3px solid #f3c94f; }
     .card:active { cursor: grabbing; }
     .card.dragging .dragon-img { opacity: 0; }
+    .card.merge-ready {
+      animation: shopMergePulse .8s ease-in-out infinite alternate;
+      box-shadow: 0 0 0 2px rgba(243,201,79,.9), 0 0 18px rgba(243,201,79,.75);
+    }
+    @keyframes shopMergePulse {
+      from {
+        border-color: #f3c94f;
+        box-shadow: 0 0 0 2px rgba(243,201,79,.65), 0 0 10px rgba(243,201,79,.45);
+      }
+      to {
+        border-color: #ffe050;
+        box-shadow: 0 0 0 3px rgba(255,224,80,1), 0 0 22px rgba(255,224,80,.95);
+      }
+    }
     .card.empty {
       cursor: default;
       background: #18221b;
@@ -326,6 +340,28 @@
       z-index: 1;
     }
     .cost .icon { width: 18px; height: 18px; flex: 0 0 auto; }
+    .merge-star-hint {
+      grid-column: 1;
+      grid-row: 3;
+      align-self: center;
+      justify-self: start;
+      margin-left: 68px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      height: 24px;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 0 5px rgba(220,230,255,.8));
+    }
+    .merge-star-hint span {
+      display: block;
+      width: 14px;
+      height: 14px;
+      background: linear-gradient(135deg, #ffffff, #9aa7bb);
+      clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
+      box-shadow: 0 0 8px rgba(220,230,255,.75);
+    }
     .element-tag {
       display: flex;
       align-items: center;
@@ -1264,6 +1300,10 @@
       return ownedSlots().filter(slot => slot.unit.name === unit.name && (slot.unit.star || 1) === (unit.star || 1));
     }
 
+    function isShopMergeReady(unit) {
+      return matchingOwnedMergeSlots(unit).length >= 2;
+    }
+
     function isPendingCandidate(unit) {
       return !!state.pendingMerge?.candidateIds.includes(unit.id);
     }
@@ -1487,11 +1527,13 @@
           return `<div class="card empty" data-shop-empty="${i}"></div>`;
         }
         const unaffordable = !CHEAT_MODE && state.gold < d.cost;
-        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""}" data-shop="${i}" draggable="true">
+        const mergeReady = isShopMergeReady(d);
+        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""}" data-shop="${i}" draggable="true">
           <div class="card-title">${d.name}</div>
           <div class="elements">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
           <img class="dragon-img" src="${d.baby}" alt="" />
           <div class="cost"><img class="icon" src="${icon.gold}" alt="" /> ${d.cost}</div>
+          ${mergeReady ? `<div class="merge-star-hint" title="Third copy: merge ready"><span></span><span></span></div>` : ""}
         </div>`;
       }).join("");
 
