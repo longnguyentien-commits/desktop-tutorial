@@ -1257,6 +1257,11 @@
       return state.dragons.filter(d => d.name === unit.name && (d.star || 1) === (unit.star || 1));
     }
 
+    function matchingOwnedMergeSlots(unit) {
+      if (!unit || (unit.star || 1) >= 3) return [];
+      return ownedSlots().filter(slot => slot.unit.name === unit.name && (slot.unit.star || 1) === (unit.star || 1));
+    }
+
     function isPendingCandidate(unit) {
       return !!state.pendingMerge?.candidateIds.includes(unit.id);
     }
@@ -1322,6 +1327,41 @@
       state.hoverCell = null;
       clearDragGhost();
       log(`${target.name} merged to ${target.star}-star.`);
+      removeMaxedDragonsFromShop();
+      renderUi();
+      return true;
+    }
+
+    function tryAutoMergeIncoming(unit, source, targetDragon = null) {
+      const slots = matchingOwnedMergeSlots(unit);
+      const sourceAlreadyOwned = source?.source === "bench" || source?.source === "board";
+      if (slots.length < (sourceAlreadyOwned ? 3 : 2)) return false;
+
+      const boardSlots = slots.filter(slot => slot.place === "board");
+      if (!targetDragon && boardSlots.length >= 2) return false;
+
+      let keep = null;
+      if (targetDragon) {
+        keep = slots.find(slot => slot.place === "board" && slot.unit.id === targetDragon.id);
+      }
+      keep = keep ||
+        (boardSlots.length === 1 ? boardSlots[0] : null) ||
+        slots.filter(slot => slot.place === "bench").sort((a, b) => a.index - b.index)[0] ||
+        boardSlots[0];
+
+      if (!keep) return false;
+      if (!spendForShopUnit(source, unit)) {
+        renderUi();
+        return true;
+      }
+
+      const consumed = slots.filter(slot => slot !== keep).slice(0, 2);
+      for (const slot of consumed) removeOwnedSlot(slot);
+      const promoted = promoteSlot(keep);
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      log(`${promoted.name} merged to ${promoted.star}-star.`);
       removeMaxedDragonsFromShop();
       renderUi();
       return true;
@@ -1773,6 +1813,7 @@
       const drag = state.dragging;
       if (!drag?.unit) return log("Drag a dragon from the shop or bench first.");
       if (drag.source === "shop" && startBoardMergeChoice(drag.unit, drag)) return;
+      if (tryAutoMergeIncoming(drag.unit, drag)) return;
       if (drag.source === "bench" && drag.index === index) {
         state.dragging = null;
         clearDragGhost();
@@ -1809,6 +1850,7 @@
       const unit = state.shop[shopIndex];
       if (!unit) return;
       if (startBoardMergeChoice(unit, { source: "shop", index: shopIndex })) return;
+      if (tryAutoMergeIncoming(unit, { source: "shop", index: shopIndex })) return;
       const benchIndex = state.bench.findIndex(slot => !slot);
       if (benchIndex === -1) return log("Bench is full. Drag directly onto the board or free a slot.");
       if (!spendForShopUnit({ source: "shop", index: shopIndex }, unit)) {
@@ -1824,9 +1866,10 @@
     function placeUnit(unit, row, col, source = null) {
       if (!unit) return log("Drag a dragon from the shop or bench first.");
       if (col >= PLACE_COLS) return log("Dragons can only be placed in the green zone.");
+      if (maybeMergeByDroppingOnBoard(unit, source, row, col)) return true;
+      if (tryAutoMergeIncoming(unit, source, dragonAtCell(row, col))) return true;
       const boardCap = boardCapForLevel();
       if (state.dragons.length >= boardCap) return log(`Keeper Level ${state.keeperLevel} board cap reached (${boardCap}). Buy XP to place more dragons.`);
-      if (maybeMergeByDroppingOnBoard(unit, source, row, col)) return true;
       if (state.dragons.some(d => d.row === row && d.col === col)) return log("That cell already has a dragon.");
       if (!spendForShopUnit(source, unit)) {
         renderUi();
