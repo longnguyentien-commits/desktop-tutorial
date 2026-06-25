@@ -1,133 +1,153 @@
 # 03. Monsters And Waves
 
-The attacking side continues to use monster assets from Basic Demon, Basic Monster, Basic Undead, Toxic Sludge, Yeti, and Humanoid folders. Dragon assets are handled separately in the Dragon Roster document.
+The attacking side uses animated monster assets from multiple folders. The current prototype favors GIF enemies for visible movement.
 
-## Monster Families
+## Current Enemy Asset Sources
 
-| Enemy Family | Fantasy | Gameplay Role |
-| --- | --- | --- |
-| Basic Monster | Forest and swamp beasts | Normal enemies and bruisers with balanced stats |
-| Basic Demon | Burst threats with high damage | Fast attackers, casters, lane assassins |
-| Basic Undead | Durable, control-resistant enemies | Slow swarms, revive units, armor/magic resistance |
-| Basic Humanoid | Armed raiders and intelligent enemies | Ranged attackers, lane pressure, mixed formations |
-| Yeti | Large frozen brutes | Elite tanks, bosses, mini bosses |
-| Toxic Sludge | Pollution and contamination | Hazards that leave puddles and weaken dragon positions |
+| Source Folder | Current Use |
+| --- | --- |
+| Basic Demon Animations | Crimson Imp, Floating Eye, Pit Balor/final boss. |
+| Basic Monster Animations | Red Cap, Ocular Watcher, Bloodshot Eye, Crushing Cyclops. |
+| Basic Undead Animations | Decrepit Bones, Bound Cadaver. |
+| Basic Humanoid Animations | Goblin Fighter, Lizardfolk Spearman. |
+| Toxic Sludge Animations | Toxic Sludge, Volatile Sludge. |
+| Yeti Animations | Yeti. |
+| Basic Vermin Animations | Tunnel Mole, Swooping Bat, Famished Tick. |
 
-## Proposed Monster Roster
+## Current Enemy Roster
 
-| Enemy Design | Group | Type | Behavior |
-| --- | --- | --- | --- |
-| Red Cap | Monster | Normal | Basic enemy used to teach lane defense. |
-| Swamp Troll | Monster | Bruiser | High HP, slow movement. |
-| Stone Troll | Monster | Armored | Reduces physical/projectile damage. |
-| Shrieker Mushroom | Monster | Support | Screams to briefly speed up monsters in the same lane. |
-| Bloodshot Eye | Monster | Ranged | Stops to shoot dragons when in range. |
-| Ocular Watcher | Monster | Detector | Reveals or disables stealth-style dragon buffs if such mechanics exist. |
-| Ochre Jelly | Monster | Splitter | Splits into 2 small slimes on death. |
-| Death Slime | Monster | Hazard | Leaves a poison zone for 3 seconds on death. |
-| Brawny Ogre | Monster | Elite | Hits tanks hard; slow but dangerous. |
-| Crushing Cyclops | Monster | Elite | Periodically stomps and stuns the nearest dragon. |
-| Humongous Ettin | Monster | Boss | Two-headed boss that attacks 2 targets and has high HP. |
-| Murky Slaad | Monster | Agile | Fast movement, slight slow resistance. |
-| Crimson Slaad | Monster | Elite | Jumps over the first blocker unless stunned. |
-| Fungal Myconid | Monster | Summoner | Spawns small mushrooms behind itself. |
-| Blinded Grimlock | Monster | Normal | Zigzags into an adjacent lane at checkpoints. |
+| Enemy | Asset | Base HP | Speed | Unlock Wave | Notes |
+| --- | --- | ---: | ---: | ---: | --- |
+| Crimson Imp | `Basic Demon Animations/crimson imp/CrimsonImp.gif` | 80 | 34 | 1 | Fast early demon. |
+| Red Cap | `Basic Monster Animations/Red Cap/RedCap.gif` | 110 | 24 | 1 | Basic monster. |
+| Decrepit Bones | `Basic Undead Animations/Decrepit Bones/DecrepitBones.gif` | 140 | 19 | 2 | Slow undead. |
+| Goblin Fighter | `Basic Humanoid Animations/goblin fighter/GoblinFighter.gif` | 125 | 26 | 3 | Basic humanoid. |
+| Toxic Sludge | `Toxic Sludge Animations/3/3 Animation.gif` | 170 | 18 | 4 | Toxic bruiser. |
+| Floating Eye | `Basic Demon Animations/floating eye/FloatingEye.gif` | 120 | 31 | 5 | Flying special enemy. |
+| Tunnel Mole | `Basic Vermin Animations/Tunneling Mole/TunnelingMole.gif` | 155 | 24 | 5 | Burrow special enemy. |
+| Bound Cadaver | `Basic Undead Animations/Bound Cadaver/BoundCadaver.gif` | 220 | 15 | 6 | Durable undead. |
+| Ocular Watcher | `Basic Monster Animations/Ocular Watcher/OcularWatcher.gif` | 210 | 17 | 7 | Durable monster. |
+| Hex Eye | `Basic Monster Animations/Bloodshot Eye/BloodshotEye.gif` | 190 | 14 | 5 | Ranged debuff special. |
+| Lizardfolk Spearman | `Basic Humanoid Animations/lizardfolk spearman/LizardfolkSpearman.gif` | 210 | 23 | 8 | Durable humanoid. |
+| Volatile Sludge | `Toxic Sludge Animations/6/6 Animation.gif` | 260 | 16 | 5 | Splitter special. |
+| Swooping Bat | `Basic Vermin Animations/Swooping Bat/SwoopingBat.gif` | 96 | 39 | 5 | Flying special. |
+| Famished Tick | `Basic Vermin Animations/Famished Tick/FamishedTick.gif` | 78 | 55 | 5 | Very fast special. |
+| Yeti | `Yeti Animations/1/1.gif` | 380 | 13 | 10 | Heavy enemy. |
+| Pit Balor | `Basic Demon Animations/pit balor/PitBalor.gif` | 430 | 12 | 12 | Heavy demon. |
+| Crushing Cyclops | `Basic Monster Animations/Crushing Cyclops/CrushingCyclops.gif` | 500 | 11 | 14 | Heavy late-game monster. |
 
-## Demon Roster
+## Final Boss
 
-| Enemy Design | Type | Behavior |
-| --- | --- | --- |
-| crimson imp | Fast | Runs quickly, low HP. |
-| fledgling demon | Normal | Deals more damage than Red Cap. |
-| floating eye | Flying | Ignores ground blockers and is prioritized by ranged dragons. |
-| warp skull | Caster | Warps forward 1 cell every 8 seconds. |
-| tainted scoundrel | Raider | Gains speed if it slips past a dragon. |
-| skewering stalker | Piercer | Attacks through a tank and hits the dragon behind it. |
-| clawed abomination | Bruiser | High HP and high damage. |
-| Depraved Blackguard | Elite | Starts the wave with a shield. |
-| pit balor | Boss | Demon boss with an aura that increases nearby monster damage. |
+| Boss | Asset | Base HP | Speed | Notes |
+| --- | --- | ---: | ---: | --- |
+| Ancient Siege Boss | `Basic Demon Animations/pit balor/PitBalor.gif` | 3200 | 8 | Wave 20 boss encounter. Current start text says five bosses attack every lane. |
 
-## Undead Roster
+Wave 20 currently spawns one boss entry per lane. The visual goal remains a giant final boss that feels large enough to threaten all 5 lanes.
 
-| Enemy Design | Type | Behavior |
-| --- | --- | --- |
-| Decrepit Bones | Normal | Slow, cheap, appears in large numbers. |
-| Bound Cadaver | Bruiser | High HP, slow movement. |
-| Mutilated Stumbler | Normal | Briefly speeds up at low HP. |
-| Brittle Archer | Ranged | Shoots the first dragon in its lane from range. |
-| Royal Scarab | Armored | Resists small hits. |
-| Giant Royal Scarab | Elite | Armored tank and secondary boss candidate. |
-| Sand Ghoul | Ambusher | Spawns closer to the middle of the board. |
-| Vampire Bat | Flying | Heals when attacking dragons. |
-| Ghastly Eye | Caster | Reduces dragon attack speed in its lane. |
-| Grave Revenant | Elite | Revives once with 30% HP. |
-| Toxic Hound | Fast | Leaves a short poison trail. |
-| Skittering Hand | Swarm | Very fast, very low HP. |
+## Enemy Scaling
 
-## Humanoid Roster
+- Normal enemies use `hpScale = 1 + wave * 0.16`.
+- Boss enemies do not use normal wave HP scaling.
+- Enemy spawn interval during waves:
+  - `max(0.26, 0.78 - wave * 0.018)` seconds.
+- Monsters face left.
+- Monsters can attack dragons.
+- Some monsters fire enemy projectiles or apply range debuffs.
+- Flying enemies bob visually and show a shadow.
+- Burrowing enemies squash underground temporarily.
 
-| Enemy Design | Type | Behavior |
-| --- | --- | --- |
-| goblin fighter | Normal | Basic armed raider. |
-| goblin archer | Ranged | Stops to fire at the closest dragon in its lane. |
-| goblin fanatic | Fast | Rushes forward with low HP and high speed. |
-| goblin occultist | Caster | Briefly shields nearby monsters. |
-| goblin wolf rider | Raider | Moves quickly and tries to punish weak lanes. |
-| halfling slinger | Ranged | Low-damage ranged pressure unit. |
-| halfling rogue | Ambusher | Spawns slightly closer to the middle columns. |
-| halfling ranger | Ranged Elite | Long-range attacker with higher HP. |
-| lizardfolk spearman | Normal | Durable frontline humanoid. |
-| lizardfolk gladiator | Elite | Heavy melee unit that pressures one lane. |
+## Wave Enemy Count
 
-## Yeti And Toxic Sludge
+| Wave Rule | Enemy Count |
+| --- | ---: |
+| Wave 1 | `occupied dragon rows x 3` |
+| Waves 2-19 | `min(50, 11 + floor(wave x 2.15))` |
+| Wave 20 | 5 boss spawns |
 
-| Enemy Design | Role | Behavior |
-| --- | --- | --- |
-| Yeti 1-10 | Mini boss/Boss variant | Used as 10 progression tiers of frozen bosses; each tier increases HP and adds mechanics. |
-| Toxic Sludge 1-10 | Hazard/Elite variant | Toxic sludge monsters leave puddles on death; higher tiers leave longer-lasting puddles. |
+Wave 1 special rule:
+
+- The player must place at least one dragon before starting wave 1.
+- Wave 1 only spawns monsters in rows that currently contain dragons.
+- If the player places dragons in fewer than 5 rows, unused rows do not spawn wave 1 enemies.
+
+## Special Enemy Cadence
+
+From wave 5 onward, special enemies can appear if unlocked.
+
+Special cadence:
+
+- `max(3, 6 - floor((wave - 5) / 2))`
+- This means special enemies appear more often as waves progress.
+
+Special enemies include:
+
+- Tunnel Mole
+- Hex Eye
+- Volatile Sludge
+- Swooping Bat
+- Famished Tick
+- Floating Eye
+
+## Mini Boss Waves
+
+The design target is mini boss pressure on waves **5, 10, and 15**.
+
+Current implementation:
+
+- The enemy pool unlocks stronger/special enemies over time.
+- Heavy units such as Yeti, Pit Balor, and Crushing Cyclops enter later waves.
+- Wave 5 difficulty has been reduced compared to earlier tests so it is less punishing.
+
+Next implementation pass should explicitly inject 5 mini bosses across 5 lanes on waves 5/10/15 while preserving normal wave enemies.
 
 ## 20-Wave Arc
 
-| Wave | Theme | Content |
-| ---: | --- | --- |
-| 1 | Tutorial | A few Red Caps across 2 lanes. |
-| 2 | Basic pressure | Red Cap + Swamp Troll across 3 lanes. |
-| 3 | Speed check | crimson imp, goblin fanatic. |
-| 4 | First armor | Stone Troll + lizardfolk spearman. |
-| 5 | Mini boss | lizardfolk gladiator or Yeti 1. |
-| 6 | Flying intro | floating eye + goblin archer. |
-| 7 | Poison intro | Acid Ant + Death Slime. |
-| 8 | Split pressure | Ochre Jelly + goblin fighter. |
-| 9 | Ranged threat | Bloodshot Eye + Brittle Archer. |
-| 10 | Boss 1 | Humongous Ettin. |
-| 11 | Lane disruption | Blinded Grimlock + halfling rogue. |
-| 12 | Undead sustain | Grave Revenant + Bound Cadaver. |
-| 13 | Demon burst | warp skull + skewering stalker. |
-| 14 | Toxic field | Toxic Sludge 4-5 + Plague Bat. |
-| 15 | Mini boss | Crushing Cyclops + swarm enemies. |
-| 16 | Anti-slow | Murky Slaad + Crimson Slaad. |
-| 17 | Heavy armor | Giant Royal Scarab + Stone Troll. |
-| 18 | Mixed elites | Brawny Ogre + Depraved Blackguard. |
-| 19 | Final rush | Many lanes, humanoid raiders + fast demons. |
-| 20 | Final boss | pit balor or Yeti 10 + Toxic Sludge support. |
+| Wave | Current Intent |
+| ---: | --- |
+| 1 | Tutorial wave. Spawns only in lanes with dragons. |
+| 2 | More lanes and enough XP to reach Keeper Level 2. |
+| 3 | Basic mixed pressure. |
+| 4 | Toxic Sludge unlocks. |
+| 5 | Special enemies begin. Mini boss pressure target. |
+| 6 | Bound Cadaver unlocks. |
+| 7 | Ocular Watcher unlocks. |
+| 8 | Lizardfolk Spearman unlocks. |
+| 9 | Heavier mixed wave. |
+| 10 | Yeti unlocks. Mini boss pressure target. |
+| 11 | Larger mixed wave. |
+| 12 | Pit Balor unlocks. |
+| 13 | More special cadence pressure. |
+| 14 | Crushing Cyclops unlocks. |
+| 15 | Mini boss pressure target. |
+| 16 | High-density mixed wave. |
+| 17 | Late-game durability check. |
+| 18 | Final preparation pressure. |
+| 19 | Final rush before boss. |
+| 20 | Final boss encounter. |
 
-## Monster Scaling
+## Wave Rewards
 
-- Each wave increases total effective HP by 8-12%.
-- After wave 10, spawn speed increases by an additional 5-8%.
-- Elites should appear sparingly, but should force the player to invest in tanks or control.
-- Flying enemies should only represent 10-20% of a wave so melee/tank compositions are not invalidated.
-
-## Castle Wall Damage
-
-The player has 5 Castle HP. Every enemy that crosses the far-left edge of the dragon side reaches the castle wall, disappears, and removes exactly 1 HP.
-
-| Monster Type | Castle HP Damage |
+| Wave | Clear Reward |
 | --- | ---: |
-| Small swarm | 1 |
-| Normal | 1 |
-| Bruiser/Fast | 1 |
-| Elite | 1 |
-| Boss | 1 |
+| 1-19 | `5 + floor(wave x 1.5)` Gold |
+| 20 | 40 Gold, then win |
 
-The player loses when Castle HP reaches 0, meaning 5 total enemies have crossed the castle wall.
+Wave clear also grants **+2 XP** and a free shop reroll if the shop is not locked.
+
+## Castle/Tower Damage
+
+- Player starts with 5 Tower HP.
+- Every escaped enemy removes 1 HP.
+- Escaped enemies disappear.
+- Damage numbers appear near the tower.
+- Below 50% HP, smoke rises from the tower.
+- Below 20% HP, fire appears on the tower but is clipped to the asset area.
+- At 0 HP, the game stops and displays **You Lost**.
+
+## Portal Behavior
+
+- The old `Enemy Portal.mp4` asset is not used.
+- Portal visuals are generated in canvas.
+- Portal is lane-specific.
+- A portal appears only in the lane where an enemy has just spawned.
+- Portal fades out after the spawn.

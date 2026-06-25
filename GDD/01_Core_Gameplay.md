@@ -2,32 +2,39 @@
 
 ## Board
 
-- Default grid: **5 lanes x 9 columns**.
-- The dragon side is on the left. Monsters attack from right to left.
-- Columns 1-7: dragon placement zone. This expands the old green placement area by **2 columns to the right**.
-- Columns 8-9: monster approach zone, unavailable for dragon placement.
+- Battlefield grid: **5 lanes x 9 columns**.
+- Dragons defend from left to right.
+- Monsters spawn from the right and move left.
+- A tower/objective sits on the far-left side.
+- The first playable column is reserved for the tower/breach zone and cannot hold dragons.
+- Dragons can be placed into empty valid board cells up to the current Keeper board cap.
 - Each cell can contain only 1 dragon.
-- A castle wall sits at the far-left end of the dragon side.
-- Monsters that pass the left edge hit the castle wall and escape.
-- The player has **5 HP**. Each enemy that passes the castle wall removes **1 HP**.
-- The player loses when 5 enemies have passed the castle wall and HP reaches 0.
+- The tower has **5 HP**.
+- Every enemy that crosses the tower breach line removes **1 HP** and disappears.
+- At 0 HP, the game immediately ends with **You Lost**.
 
 ## Match Flow
 
-- The vertical slice contains **20 waves**.
-- Each wave has 2 phases:
-  - **Preparation:** Buy dragons from the shop, buy XP, merge units, and place dragons on the board.
-  - **Combat:** Monsters spawn according to the wave schedule, while dragons attack automatically.
-- Waves 5, 10, 15, and 20 feature a mini boss or boss.
+- The prototype contains **20 waves**.
+- Wave 1 does not auto-count down. The player starts it manually after placing at least one dragon.
+- From wave 2 onward, the preparation phase has a **30-second planning timer**.
+- A 10-second center-screen warning appears near the end of planning time.
+- The player can press **Start Wave** to begin early.
+- Once a wave starts, it cannot be stopped.
+- When a wave ends:
+  - Player receives wave clear Gold.
+  - Player receives **+2 Keeper XP**.
+  - Shop rerolls for free unless it is locked.
+  - Planning timer starts for the next wave.
 
 ## Resources
 
-- **Gold:** Used to buy dragons from the shop, reroll the shop, and buy XP.
-- **Castle HP:** Player health, fixed at 5.
-- **Bench Slot:** TFT-style reserve slots for holding unplaced dragons, default 10.
-- **Keeper XP:** Progress toward the next Keeper Level.
-
-Gold is earned primarily by killing monsters during waves.
+| Resource | Current Use |
+| --- | --- |
+| Gold | Buy dragons, reroll shop, buy XP. |
+| Tower HP | Player life, fixed at 5 segments. |
+| Bench Slots | 10 reserve slots for unplaced dragons. |
+| Keeper XP | Levels up Keeper and increases board cap/shop odds. |
 
 Resource UI uses shared icons from `Resource Asset`:
 
@@ -38,115 +45,211 @@ Resource UI uses shared icons from `Resource Asset`:
 | HP | `Resource Asset/Health_Icon.png` |
 | Attack Speed | `Resource Asset/Attack_Speed_Icon.png` |
 
-## Shop And Bench
+## Shop
 
-- The shop behaves like Teamfight Tactics.
-- The shop shows 5 random dragons.
-- Each dragon has a cost from 1 Gold to 5 Gold.
-- The player can buy dragons from the shop into the bench or directly onto the board if space allows.
-- Reroll refreshes the 5 shop slots and costs 2 Gold.
-- Lock Shop keeps the current shop for the next preparation phase.
-- The bench has 10 slots.
-- Selling a dragon refunds Gold based on its cost and star level.
+- Shop has **5 slots**.
+- Each slot can contain 1 dragon.
+- Shop cards are colored by tier:
+  - 1 Gold: gray
+  - 2 Gold: green
+  - 3 Gold: blue
+  - 4 Gold: purple
+  - 5 Gold: yellow
+- Dragon price is shown with Gold icon.
+- Shop shows element icons and names vertically.
+- A dragon can be bought in 2 ways:
+  - Click a shop card to buy into the first available bench slot.
+  - Drag from shop directly to bench or board.
+- Buying a shop dragon empties that shop slot.
+- If the player cannot afford a dragon, its shop slot is grayed out.
+- Reroll costs **2 Gold**.
+- Lock Shop is free.
+- Lock Shop can only be used while at least one shop card remains. If the shop is empty, Lock is disabled/gray.
+- At wave clear, the shop refreshes for free unless locked.
+- Dragons that already exist as 3-star copies stop appearing in the shop.
+
+## Bench
+
+- Bench has **10 slots**.
+- Bench dragons can be rearranged by drag/drop.
+- Bench dragons can be moved onto the board if board cap and placement rules allow.
+- Bench dragons show:
+  - Dragon image.
+  - Name label.
+  - Tier-colored border.
+  - Star icon.
+- Bench dragons can be dragged into **Sell Dragon** to sell.
+
+## Sell Dragon
+
+- The Sell Dragon area sits below the bench/right-side control layout.
+- Dragons from the bench can be dragged into Sell Dragon.
+- Before a wave starts, dragons on the board can also be moved to the bench or rearranged.
+- During a wave, board dragons cannot be moved or sold.
+- Selling refunds Gold based on unit cost and star level.
 
 ## Keeper Level
 
-Keeper Level controls both board cap and shop odds.
+Keeper Level controls board cap and shop odds.
 
 | Keeper Level | Board Cap | Cost 1 | Cost 2 | Cost 3 | Cost 4 | Cost 5 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| 1 | 5 | 100% | 0% | 0% | 0% | 0% |
-| 2 | 7 | 80% | 20% | 0% | 0% | 0% |
-| 3 | 9 | 60% | 30% | 10% | 0% | 0% |
-| 4 | 10 | 40% | 35% | 20% | 5% | 0% |
-| 5 | 12 | 25% | 35% | 25% | 12% | 3% |
-| 6 | 14 | 15% | 25% | 30% | 22% | 8% |
-| 7 | 15 | 5% | 15% | 30% | 30% | 20% |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 3 | 100% | 0% | 0% | 0% | 0% |
+| 2 | 5 | 80% | 20% | 0% | 0% | 0% |
+| 3 | 7 | 60% | 30% | 10% | 0% | 0% |
+| 4 | 9 | 40% | 35% | 20% | 5% | 0% |
+| 5 | 10 | 25% | 35% | 25% | 13% | 2% |
+| 6 | 12 | 15% | 25% | 35% | 20% | 5% |
+| 7 | 14 | 8% | 18% | 32% | 30% | 12% |
+| 8 | 15 | 5% | 12% | 25% | 35% | 23% |
 
-The maximum board cap is 15 dragons.
+Maximum board cap is **15 dragons**.
+
+## Keeper XP
+
+| Keeper Level | XP Needed To Next Level |
+| ---: | ---: |
+| 1 -> 2 | 2 |
+| 2 -> 3 | 6 |
+| 3 -> 4 | 10 |
+| 4 -> 5 | 16 |
+| 5 -> 6 | 22 |
+| 6 -> 7 | 30 |
+| 7 -> 8 | 38 |
+
+XP rules:
+
+- Buy XP costs **4 Gold** and grants **4 XP**.
+- Clearing a wave grants **2 free XP**.
+- Wave 2 is intended to reach Keeper Level 2 naturally because wave 1 grants 2 XP.
+
+## Drag And Drop Rules
+
+- Shop -> Bench: buy and place into selected bench slot.
+- Shop -> Board: buy and place directly if the cell is valid and cap allows.
+- Bench -> Board: place if cap allows.
+- Bench -> Bench: swap or move.
+- Board -> Board before wave: reposition or swap.
+- Board -> Bench before wave: allowed.
+- Board movement during wave: locked.
+- During wave, the player may still add new dragons to empty board cells if board cap allows.
+- During wave, the player may merge dragons, but cannot replace an occupied board dragon.
+- Grid highlight only appears while dragging.
 
 ## Merge / Star Up
 
-- 3 dragons with the same name and same star level merge into 1 higher-star dragon.
-- Maximum star level: 3 stars.
-- 3 copies at 1 star -> 1 copy at 2 stars.
-- 3 copies at 2 stars -> 1 copy at 3 stars.
-- Merge priority:
-  1. Dragon currently on the board.
-  2. Dragon closest to the lowest row/column position.
-  3. Bench dragon if no copy is currently on the board.
+- 3 dragons with the same **name** and same star level merge into 1 higher-star copy.
+- Maximum star level: 3.
+- 3 copies at 1-star -> 1 copy at 2-star.
+- 3 copies at 2-star -> 1 copy at 3-star.
+- If buying or dragging a third copy completes a merge, the merge happens immediately when the target can be resolved.
+- If 2 copies are on the board and the third copy is bought/dragged, both existing board copies blink; the player chooses which board position receives the upgraded dragon.
+- If a player has 2 copies on bench and buys/drags the third, it merges automatically.
+- Merge is allowed even when the board is already at cap, because merging reduces or preserves total unit count.
+- Star visuals:
+  - 1-star: bronze star with number 1.
+  - 2-star: silver star with number 2.
+  - 3-star: gold star with number 3 and a glow around the dragon asset.
 
-## Star Stat Formula
+## Stats
 
-Base dragon stats include Damage, Attack Speed, HP, and Range. Higher-cost dragons have stronger base stats before star scaling.
+Base stats are defined by unit cost, then scaled by star level and modified by traits.
 
-- 1-star: 100% stats.
-- 2-star: 180% HP, 170% Damage.
-- 3-star: 320% HP, 300% Damage.
+| Cost | Damage | Attack Speed | HP | Element Count |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 14 | 0.90/s | 120 | 1 |
+| 2 | 20 | 0.90/s | 180 | 2 |
+| 3 | 30 | 0.85/s | 260 | 2 |
+| 4 | 44 | 0.80/s | 380 | 3 |
+| 5 | 65 | 0.75/s | 560 | 3 |
 
-| Cost | Damage | Attack Speed | HP | Stat Identity |
-| ---: | ---: | ---: | ---: | --- |
-| 1 | 14 | 0.90/s | 120 | Weak opener |
-| 2 | 20 | 0.90/s | 180 | Better early unit |
-| 3 | 30 | 0.85/s | 260 | Solid mid-game unit |
-| 4 | 44 | 0.80/s | 380 | Strong carry or utility unit |
-| 5 | 65 | 0.75/s | 560 | Highest base stat capstone |
+Star scaling:
 
-Element traits modify final combat output after base cost stats and star scaling are applied.
+| Star | HP Multiplier | Damage Multiplier |
+| ---: | ---: | ---: |
+| 1 | 100% | 100% |
+| 2 | 180% | 170% |
+| 3 | 320% | 300% |
+
+Attack Speed means time/frequency for the next attack, not projectile travel speed.
 
 ## Combat
 
-- Dragons prioritize the monster closest to the castle wall in their lane.
-- Ranged dragons can attack within their own lane. Multi-element dragons can combine projectile visuals with trait procs.
-- Monsters prefer moving straight forward.
-- If a monster reaches the far-left castle wall, the player loses 1 HP and that monster disappears.
-- When Castle HP reaches 0, the player loses.
+- Dragons face right and fire right.
+- Dragons only target monsters in front of them, not behind their back.
+- Dragons prioritize the nearest valid monster in their lane.
+- Dragon projectiles disappear on hit.
+- Projectiles that travel off-screen disappear.
+- Monsters face left and move toward the tower.
+- Monsters can damage and kill dragons.
+- Dead dragons are removed from the board.
+- When a monster crosses the breach line, tower HP decreases by 1.
+- Game stops all actions on win or loss.
 
 ## Element Synergies
 
-Element synergies activate based on total element stacks on the board. Bench dragons do not count. Each dragon contributes 1 stack regardless of cost. Starred-up dragons still count as 1 stack unless future balance requires otherwise.
+Only dragons currently on the board count for traits. Bench dragons do not count.
+
+Important stack rule:
+
+- Trait stacks count **unique dragon names**, not total copies.
+- Two copies of the same dragon at different star levels still count as only 1 trait stack.
 
 | Element | 2 stacks | 4 stacks | 6 stacks | 8 stacks |
 | --- | --- | --- | --- | --- |
-| Fire | 20% chance to apply burn for 1.5% monster max HP per second for 3 seconds | Burn chance increases to 35% | Burn chance increases to 55% | Burn chance increases to 75%, burn lasts 4 seconds |
-| Water | 15% chance to create a Wave bonus hit for 50% damage | Wave chance increases to 30%, bonus hit deals 60% damage | Wave chance increases to 50%, bonus hit deals 70% damage | Wave chance increases to 70%, bonus hit deals 80% damage |
-| Ice | 15% chance to apply 25% slow for 2 seconds | Slow chance increases to 30% | Slow chance increases to 50% | Slow chance increases to 70%, slow becomes 35% |
-| Wind | +12% attack speed for all dragons | +25% attack speed for all dragons | +45% attack speed for all dragons | +65% attack speed for all dragons |
-| Plant | +10% total dragon damage | +25% total dragon damage | +45% total dragon damage | +70% total dragon damage |
-| Earth | 10% chance to stun for 0.5 seconds | Stun chance increases to 20% | Stun chance increases to 35% | Stun chance increases to 50%, stun lasts 0.75 seconds |
-| Energy | 15% chance for attacks to chain lightning to another monster in the same row for 50% damage | Chain chance increases to 30% | Chain chance increases to 50% | Chain chance increases to 70%, chain damage becomes 65% |
-| Metal | +10% critical chance for all dragons | +22% critical chance for all dragons | +38% critical chance for all dragons | +55% critical chance for all dragons |
+| Fire | 20% burn chance | 35% burn chance | 55% burn chance | 75% burn chance, burn lasts 4s |
+| Water | 15% second shot chance, 50% damage | 30% second shot chance, 60% damage | 50% second shot chance, 70% damage | 70% second shot chance, 80% damage |
+| Ice | 15% slow chance | 30% slow chance | 50% slow chance | 70% slow chance and stronger slow |
+| Wind | +12% attack speed | +25% attack speed | +45% attack speed | +65% attack speed |
+| Plant | +10% total damage | +25% total damage | +45% total damage | +70% total damage |
+| Earth | 12% knockback chance | 24% knockback chance | 38% knockback chance | 55% knockback chance |
+| Energy | 15% chain chance | 30% chain chance | 50% chain chance | 70% chain chance, 65% chain damage |
+| Metal | +10% crit chance | +22% crit chance | +38% crit chance | +55% crit chance |
+
+Earth knockback distance:
+
+| Earth Tier | Push Distance |
+| ---: | ---: |
+| 2 | 32px |
+| 4 | 48px |
+| 6 | 64px |
+| 8 | 80px |
 
 ## Projectile Styles
 
-Projectile visuals should make element identity readable before damage numbers are needed.
-
 | Element | Projectile Visual |
 | --- | --- |
-| Fire | Fireball projectile. |
-| Water | Curved wave projectile; Water procs add a smaller secondary wave. |
-| Ice | Ice beam projectile. |
-| Wind | Wind stream projectile. |
-| Plant | Leaf projectile. |
+| Fire | Fireball. |
+| Water | Water bubble/wave; Water proc fires a second shot immediately after the first. |
+| Ice | Ice beam/shard. |
+| Wind | Wind stream. |
+| Plant | Leaf/poison-green projectile. |
 | Earth | Rock projectile. |
-| Energy | Lightning bolt projectile. |
-| Metal | Metal ingot projectile. |
+| Energy | Lightning bolt. |
+| Metal | Metal ingot/projectile. |
 
-## Input
+## Trait Panel And Popup
 
-- Click/tap a dragon in the shop to buy it.
-- Drag a dragon from the shop or bench onto the grid.
-- Drag a dragon on the grid to reposition it.
-- Right-click/long press to sell or view tooltip details.
-- Buttons: `Reroll`, `Lock`, `Buy XP`, `Start Wave`.
+- Trait panel only displays elements with at least 1 unique on-board stack.
+- If an element has 1 stack, it appears but no tier row is highlighted.
+- If an element reaches 2/4/6/8, the active tier row is highlighted.
+- The panel no longer shows static `2/4/6/8` text beside the title.
+- Right-clicking a trait opens a popup at the cursor, centered vertically.
+- Trait popup shows:
+  - Element icon/name.
+  - Text description and tier rows.
+  - Active tier row highlight.
+  - Dragons that belong to that element.
+  - Dragons currently on board are bright.
+  - Dragons not on board are gray.
 
 ## Required UI
 
-- Top bar: Wave, Castle HP, Gold, Keeper Level, XP, Board Cap.
-- Board: 5 lanes, 9 columns, with the left 7 columns highlighted as the dragon placement zone.
-- Castle Wall: visible at the far-left edge of the dragon side.
-- Left Trait Panel: always visible on the left side of the combat UI, showing each active element as `2/4/6/8` progress.
-- Shop: 5 slots with dragon name, elements, cost, star status, owned-copy count, Baby asset preview, and Gold icon for price.
-- Bench: 10 reserve slots, with a warning when nearly full.
-- Buy XP Button: clearly shows Gold cost and XP gained.
-- Tooltip: stats with Resource Asset icons, elements, cost, star scaling, asset stage, projectile style, and trait contribution.
+- Top bar: Wave, planning timer, Tower HP, Gold, Keeper Level/XP, Board Cap.
+- Left layout: active Trait panel and Drop Rate panel.
+- Board: 5 lanes x 9 columns, map background, tower on left, lane portals on spawn.
+- Bench: 10 visible slots.
+- Shop: 5 visible slots with tier colors, dragon image, elements, and Gold price.
+- Right/control layout: Reroll, Lock, Start Wave, Speed Up, Buy XP, Sell Dragon.
+- Game Over overlay: **You Lost** and **Play Again**.
+- Win overlay: **You Won**.

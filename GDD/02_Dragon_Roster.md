@@ -1,138 +1,158 @@
 # 02. Dragon Roster
 
-The game will **temporarily not use the existing asset pack** for dragon identity. Dragon names, classes, silhouettes, and final visuals are placeholder design targets for now. Art can be produced later once the roster and gameplay are stable.
+The current prototype uses only the **Asset DML** dragon roster. Basic Dragon, Supporter Dragon, and Premium Dragon folders are not used for the dragon roster.
 
-The roster follows a TFT-like structure:
+## Roster Rules
 
-- 8 dragon elements.
-- Each element has 5 dragons.
-- Each element contains one dragon at each cost from 1 Gold to 5 Gold.
-- Each dragon has its own class.
-- The shop sells individual dragon units.
-- 3 copies of the same dragon and same star level merge into the next star level.
+- 8 elements: Fire, Water, Ice, Wind, Plant, Earth, Energy, Metal.
+- 40 dragons total.
+- Each primary element has 5 dragons from 1 Gold to 5 Gold.
+- There are no separate classes in the current build.
+- Higher-cost dragons have more elements:
+  - 1 Gold: 1 element.
+  - 2 Gold: 2 elements.
+  - 3 Gold: 2 elements.
+  - 4 Gold: 3 elements.
+  - 5 Gold: 3 elements.
+- Shop-bought dragons use Baby assets at 1-star.
+- 2-star dragons use Adult assets.
+- 3-star dragons use Adult assets with a glow.
 
 ## Element Effects
 
-| Element | Team/Attack Effect |
+| Element | Current Effect |
 | --- | --- |
-| Fire | Attacks can apply burn damage over time. More stacks increase burn chance. |
-| Water | Attacks can create a Wave bonus hit for 50-70% damage. More stacks increase Wave chance and bonus-hit value. |
-| Ice | Attacks can slow monsters. More stacks increase slow chance. |
-| Wind | Increases team attack speed by a percentage. |
-| Nature | Increases total team damage by a percentage. |
-| Earth | Increases team dragon HP by a percentage. |
-| Lightning | Attacks can chain lightning to another monster in the same row. More stacks increase chain chance. |
-| Metal | Increases team critical chance by a percentage. |
+| Fire | Attacks can apply burn damage over time. |
+| Water | Attacks can fire a second shot immediately after the first shot. |
+| Ice | Attacks can slow monsters. |
+| Wind | Increases attack speed for all dragons. |
+| Plant | Increases total damage for all dragons. |
+| Earth | Attacks can knockback monsters. |
+| Energy | Attacks can chain lightning to another monster in the same row. |
+| Metal | Increases critical chance for all dragons. |
 
-## Class List
+## Trait Tiers
 
-Classes are secondary identities that make dragons of the same element feel different from each other.
+| Element | 2 | 4 | 6 | 8 |
+| --- | --- | --- | --- | --- |
+| Fire | 20% burn chance | 35% | 55% | 75%, burn lasts 4s |
+| Water | 15% second shot, 50% damage | 30%, 60% damage | 50%, 70% damage | 70%, 80% damage |
+| Ice | 15% slow chance | 30% | 50% | 70%, stronger slow |
+| Wind | +12% attack speed | +25% | +45% | +65% |
+| Plant | +10% total damage | +25% | +45% | +70% |
+| Earth | 12% knockback chance | 24% | 38% | 55% |
+| Energy | 15% chain chance | 30% | 50% | 70%, 65% chain damage |
+| Metal | +10% crit chance | +22% | +38% | +55% |
 
-| Class | Gameplay Identity |
-| --- | --- |
-| Whelp | Cheap early unit, simple single-target attack. |
-| Striker | Reliable damage dealer. |
-| Guardian | Higher HP, better at holding a lane. |
-| Arcanist | Stronger element proc or special scaling. |
-| Ranger | Longer range, good backline unit. |
-| Bulwark | Defensive specialist. |
-| Mystic | Utility-focused dragon. |
-| Berserker | Faster attacks, lower durability. |
-| Sovereign | Expensive late-game capstone unit. |
-| Colossus | Slow but powerful high-cost unit. |
+Trait stacks count unique dragon names currently on the board. Duplicate copies or different-star copies of the same dragon do not add extra stacks.
 
-## Fire Dragons
+## Base Stats
 
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Fire Dragon | Whelp | Cheap burn enabler. |
-| 2 | Emberwing Dragon | Striker | Better base damage, still simple. |
-| 3 | Ashscale Dragon | Arcanist | Higher burn chance. |
-| 4 | Inferno Dragon | Berserker | Fast attacks to trigger burn more often. |
-| 5 | Great Fire Dragon | Sovereign | Late-game burn carry. |
-
-## Water Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Water Dragon | Whelp | Cheap Wave trigger unit. |
-| 2 | Tidefin Dragon | Ranger | Safer backline Water attacker. |
-| 3 | Wavecrest Dragon | Mystic | Improves Wave consistency. |
-| 4 | Maelstrom Dragon | Striker | Strong bonus-hit damage. |
-| 5 | Great Water Dragon | Sovereign | Late-game Wave carry. |
-
-## Ice Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Ice Dragon | Whelp | Cheap slow chance. |
-| 2 | Frostbite Dragon | Ranger | Slows from long range. |
-| 3 | Glacial Dragon | Mystic | Better crowd-control uptime. |
-| 4 | Blizzard Dragon | Arcanist | Stronger slow application. |
-| 5 | Great Ice Dragon | Sovereign | Late-game lane control. |
-
-## Wind Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Wind Dragon | Whelp | Cheap Wind stack. |
-| 2 | Gale Dragon | Berserker | Fast early attacker. |
-| 3 | Skyblade Dragon | Ranger | Long-range tempo unit. |
-| 4 | Stormrunner Dragon | Striker | High attack speed scaling. |
-| 5 | Great Wind Dragon | Sovereign | Late-game team tempo engine. |
-
-## Nature Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Nature Dragon | Whelp | Cheap Nature stack. |
-| 2 | Thorn Dragon | Guardian | Durable early lane holder. |
-| 3 | Bloom Dragon | Mystic | Team damage scaling support. |
-| 4 | Wildroot Dragon | Arcanist | Stronger Nature payoff. |
-| 5 | Great Nature Dragon | Sovereign | Late-game total damage amplifier. |
-
-## Earth Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Earth Dragon | Whelp | Cheap HP stack. |
-| 2 | Clayhide Dragon | Guardian | Early defensive body. |
-| 3 | Basalt Dragon | Bulwark | Strong lane holder. |
-| 4 | Obsidian Dragon | Colossus | Very high HP, slow attack speed. |
-| 5 | Great Earth Dragon | Sovereign | Late-game board durability anchor. |
-
-## Lightning Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Lightning Dragon | Whelp | Cheap chain chance. |
-| 2 | Spark Dragon | Berserker | More attacks to trigger chain. |
-| 3 | Volt Dragon | Ranger | Good same-row pressure. |
-| 4 | Thunder Dragon | Arcanist | Stronger chain damage. |
-| 5 | Great Lightning Dragon | Sovereign | Late-game row-clearing carry. |
-
-## Metal Dragons
-
-| Cost | Dragon | Class | Design Note |
-| ---: | --- | --- | --- |
-| 1 | Baby Metal Dragon | Whelp | Cheap critical chance stack. |
-| 2 | Ironscale Dragon | Guardian | Durable critical enabler. |
-| 3 | Steelclaw Dragon | Striker | Reliable crit damage. |
-| 4 | Mithril Dragon | Bulwark | Defensive crit-scaling unit. |
-| 5 | Great Metal Dragon | Sovereign | Late-game critical chance capstone. |
+| Cost | Damage | Attack Speed | HP | Element Count |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 14 | 0.90/s | 120 | 1 |
+| 2 | 20 | 0.90/s | 180 | 2 |
+| 3 | 30 | 0.85/s | 260 | 2 |
+| 4 | 44 | 0.80/s | 380 | 3 |
+| 5 | 65 | 0.75/s | 560 | 3 |
 
 ## Star Scaling
 
-| Star Level | Merge Rule | Stat Multiplier |
-| --- | --- | ---: |
-| 1-star | Bought from shop | 100% |
-| 2-star | 3 copies of the same 1-star dragon | 180% HP, 170% Damage |
-| 3-star | 3 copies of the same 2-star dragon | 320% HP, 300% Damage |
+| Star Level | Visual | Stat Scaling |
+| ---: | --- | --- |
+| 1 | Baby asset, bronze star icon with number 1 | 100% HP, 100% Damage |
+| 2 | Adult asset, silver star icon with number 2 | 180% HP, 170% Damage |
+| 3 | Adult asset with glow, gold star icon with number 3 | 320% HP, 300% Damage |
 
-Star level does not change the dragon's element or class. It only increases stats and visual intensity.
+## Fire Primary Dragons
 
-## Temporary Art Direction
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Heavenly Dragon | Fire | `Asset DML/Fire Element/Heavenly_Dragon_Baby.png` | `Asset DML/Fire Element/Heavenly_Dragon.png` |
+| 2 | Fire Dragon | Fire, Wind | `Asset DML/Fire Element/Fire_Dragon_Baby.png` | `Asset DML/Fire Element/Fire_Dragon.png` |
+| 3 | Lava Dragon | Fire, Ice | `Asset DML/Fire Element/Lava_Dragon_Baby.png` | `Asset DML/Fire Element/Lava_Dragon.png` |
+| 4 | Boiling Dragon | Fire, Water, Energy | `Asset DML/Fire Element/Boiling_Dragon_Baby.png` | `Asset DML/Fire Element/Boiling_Dragon.png` |
+| 5 | Bludgeon Dragon | Fire, Earth, Metal | `Asset DML/Fire Element/Bludgeon_Dragon_Baby.png` | `Asset DML/Fire Element/Bludgeon_Dragon.png` |
 
-- Existing asset pack dragons are not used for this roster phase.
-- Use temporary colored silhouettes, generated placeholder sprites, or simple readable shapes during prototyping.
-- Final art should preserve clear element readability: Fire red, Water blue, Ice pale cyan, Wind white, Nature green, Earth brown/black, Lightning yellow, Metal gray/silver.
+## Water Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Vibrant Dragon | Water | `Asset DML/Water Element/Vibrant_Dragon_Baby.png` | `Asset DML/Water Element/Vibrant_Dragon_Adult.png` |
+| 2 | Rain Dragon | Water, Ice | `Asset DML/Water Element/Rain_Dragon_Baby.png` | `Asset DML/Water Element/Rain_Dragon.png` |
+| 3 | Razor Dragon | Water, Plant | `Asset DML/Water Element/Razor_Dragon_Baby.png` | `Asset DML/Water Element/Razor_Dragon.png` |
+| 4 | Seahorse Dragon | Water, Ice, Plant | `Asset DML/Water Element/Seahorse_Dragon_Baby.png` | `Asset DML/Water Element/Seahorse_Dragon.png` |
+| 5 | Duskwing Dragon | Water, Energy, Wind | `Asset DML/Water Element/Duskwing_Dragon_Baby.png` | `Asset DML/Water Element/Duskwing_Dragon.png` |
+
+## Ice Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Flutterby Dragon | Ice | `Asset DML/Ice Element/Flutterby_Dragon_Baby.png` | `Asset DML/Ice Element/Flutterby_Dragon.png` |
+| 2 | Iceberg Dragon | Ice, Plant | `Asset DML/Ice Element/Iceberg_Dragon_Baby.png` | `Asset DML/Ice Element/Iceberg_Dragon.png` |
+| 3 | Ice Dragon | Ice, Water | `Asset DML/Ice Element/Ice_Dragon_Baby.png` | `Asset DML/Ice Element/Ice_Dragon.png` |
+| 4 | Manta Ray Dragon | Ice, Water, Wind | `Asset DML/Ice Element/Manta_Ray_Dragon_Baby.png` | `Asset DML/Ice Element/Manta_Ray_Dragon.png` |
+| 5 | Glacial Dragon | Ice, Earth, Energy | `Asset DML/Ice Element/Glacial_Dragon_Baby.png` | `Asset DML/Ice Element/Glacial_Dragon.png` |
+
+## Wind Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Luck Dragon | Wind | `Asset DML/Wind Element/Luck_Dragon_Baby.png` | `Asset DML/Wind Element/Luck_Dragon.png` |
+| 2 | Tundra Dragon | Wind, Ice | `Asset DML/Wind Element/Tundra_Dragon_Baby.png` | `Asset DML/Wind Element/Tundra_Dragon.png` |
+| 3 | Icefeather Dragon | Wind, Ice | `Asset DML/Wind Element/Icefeather_Dragon_Baby.png` | `Asset DML/Wind Element/Icefeather_Dragon.png` |
+| 4 | Porcelain Dragon | Wind, Metal, Water | `Asset DML/Wind Element/Porcelain_Dragon_Baby.png` | `Asset DML/Wind Element/Porcelain_Dragon.png` |
+| 5 | Centurion Dragon | Wind, Metal, Energy | `Asset DML/Wind Element/Centurion_Dragon_Baby.png` | `Asset DML/Wind Element/Centurion_Dragon.png` |
+
+## Earth Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Mud Dragon | Earth | `Asset DML/Earth Element/Mud_Dragon_Baby.png` | `Asset DML/Earth Element/Mud_Dragon.png` |
+| 2 | Armadillo Dragon | Earth, Ice | `Asset DML/Earth Element/Armadillo_Dragon_Baby.png` | `Asset DML/Earth Element/Armadillo_Dragon.png` |
+| 3 | Elephant Dragon | Earth, Plant | `Asset DML/Earth Element/Elephant_Dragon_Baby.png` | `Asset DML/Earth Element/Elephant_Dragon.png` |
+| 4 | Sylvan Dragon | Earth, Plant, Water | `Asset DML/Earth Element/Sylvan_Dragon_Baby.png` | `Asset DML/Earth Element/Sylvan_Dragon.png` |
+| 5 | Quake Dragon | Earth, Metal, Fire | `Asset DML/Earth Element/Quake_Dragon_Baby.png` | `Asset DML/Earth Element/Quake_Dragon.png` |
+
+## Plant Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Melon Dragon | Plant | `Asset DML/Plant Element/Melon_Dragon_Baby.png` | `Asset DML/Plant Element/Melon_Dragon.png` |
+| 2 | Sunflower Dragon | Plant, Fire | `Asset DML/Plant Element/Sunflower_Dragon_Baby.png` | `Asset DML/Plant Element/Sunflower_Dragon_Adult.png` |
+| 3 | Poison Dragon | Plant, Water | `Asset DML/Plant Element/Poison_Dragon_Baby.png` | `Asset DML/Plant Element/Poison_Dragon.png` |
+| 4 | Bamboo Dragon | Plant, Earth, Wind | `Asset DML/Plant Element/Bamboo_Dragon_Baby.png` | `Asset DML/Plant Element/Bamboo_Dragon.png` |
+| 5 | Warden Dragon | Plant, Earth, Metal | `Asset DML/Plant Element/Warden_Dragon_Baby.png` | `Asset DML/Plant Element/Warden_Dragon.png` |
+
+## Energy Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Shooting Star Dragon | Energy | `Asset DML/Energy Element/Shooting_Star_Dragon_Baby.png` | `Asset DML/Energy Element/Shooting_Star_Dragon.png` |
+| 2 | Amber Dragon | Energy, Fire | `Asset DML/Energy Element/Amber_Dragon_Baby.png` | `Asset DML/Energy Element/Amber_Dragon.png` |
+| 3 | Steampunk Dragon | Energy, Wind | `Asset DML/Energy Element/Steampunk_Dragon_Baby.png` | `Asset DML/Energy Element/Steampunk_Dragon.png` |
+| 4 | Citrine Dragon | Energy, Fire, Metal | `Asset DML/Energy Element/Citrine_Dragon_Baby.png` | `Asset DML/Energy Element/Citrine_Dragon.png` |
+| 5 | Sulfur Dragon | Energy, Fire, Earth | `Asset DML/Energy Element/Sulfur_Dragon_Baby.png` | `Asset DML/Energy Element/Sulfur_Dragon.png` |
+
+## Metal Primary Dragons
+
+| Cost | Dragon | Elements | Baby Asset | Adult Asset |
+| ---: | --- | --- | --- | --- |
+| 1 | Metal Dragon | Metal | `Asset DML/Metal Element/Metal_Dragon_Baby.png` | `Asset DML/Metal Element/Metal_Dragon.png` |
+| 2 | Armored Dragon | Metal, Wind | `Asset DML/Metal Element/Armored_Dragon_Baby.png` | `Asset DML/Metal Element/Armored_Dragon.png` |
+| 3 | Steel Dragon | Metal, Plant | `Asset DML/Metal Element/Steel_Dragon_Baby.png` | `Asset DML/Metal Element/Steel_Dragon.png` |
+| 4 | Runestone Dragon | Metal, Earth, Energy | `Asset DML/Metal Element/Runestone_Dragon_Baby.png` | `Asset DML/Metal Element/Runestone_Dragon.png` |
+| 5 | Armory Dragon | Metal, Fire, Energy | `Asset DML/Metal Element/Armory_Dragon_Baby.png` | `Asset DML/Metal Element/Armory_Dragon.png` |
+
+## Projectile Identity
+
+| Element | Current Projectile |
+| --- | --- |
+| Fire | Fireball with flame burst hit effect. |
+| Water | Bubble/wave projectile; second shot proc uses wave-style projectile. |
+| Ice | Ice projectile with freeze burst hit effect. |
+| Wind | Wind stream/gust projectile. |
+| Plant | Green leaf/poison projectile. |
+| Earth | Rock projectile with stone crack hit effect and knockback. |
+| Energy | Lightning projectile with snap effect and same-row chain. |
+| Metal | Metal projectile with spark hit effect. |

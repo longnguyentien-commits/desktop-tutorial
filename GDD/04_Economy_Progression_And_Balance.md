@@ -1,185 +1,176 @@
 # 04. Economy, Progression And Balance
 
-## In-Match Economy
+## Current Economy
 
-Gold is earned primarily by killing monsters during each wave. There is no automatic large income at the start of a round in the first balance pass. This makes combat performance directly feed the player's shop power.
+Gold is the shared currency for the prototype. It is used for:
 
-Gold is the shared currency for the whole game and must use `Resource Asset/Gold_Icon.png` in the top bar, shop prices, reroll cost, Buy XP cost, rewards, and tooltips.
+- Buying dragons.
+- Rerolling shop.
+- Buying Keeper XP.
 
-| Gold Source | Proposed Value |
+Gold must use `Resource Asset/Gold_Icon.png` in UI.
+
+## Starting Values
+
+| Value | Current Build |
 | --- | ---: |
-| Small monster kill | +1 Gold |
-| Normal monster kill | +1 Gold |
-| Bruiser/Fast monster kill | +2 Gold |
-| Elite kill | +4 Gold |
-| Boss kill | +8 Gold or artifact choice |
-| Perfect wave bonus, no Castle HP lost | +2 Gold |
-| Interest per 10 held Gold | +1 Gold, max +3 |
-| Selling a dragon | Refund based on cost and star level |
+| Starting Gold | 10 |
+| Starting Keeper Level | 1 |
+| Starting Board Cap | 3 |
+| Tower HP | 5 |
+| Bench Slots | 10 |
+| Shop Slots | 5 |
+| Max Keeper Level | 8 |
+| Max Board Cap | 15 |
+| Planning Time | 30s from wave 2 onward |
+
+Cheat mode is currently off in the public build.
 
 ## Shop Economy
 
-- Shop has 5 slots.
-- Reroll costs 2 Gold.
-- Lock Shop is free.
-- Dragons cost 1-5 Gold based on their unit cost.
-- The shop pool contains 40 dragons: 8 elements x 5 costs.
-- Higher Keeper Level unlocks better odds for higher-cost dragons.
+| Action | Cost |
+| --- | ---: |
+| Buy 1-cost dragon | 1 Gold |
+| Buy 2-cost dragon | 2 Gold |
+| Buy 3-cost dragon | 3 Gold |
+| Buy 4-cost dragon | 4 Gold |
+| Buy 5-cost dragon | 5 Gold |
+| Reroll | 2 Gold |
+| Lock Shop | Free |
+| Buy XP | 4 Gold for 4 XP |
+
+Additional rules:
+
+- If the player has no Gold for a shop dragon, that shop slot is grayed out.
+- If a shop slot is bought, it becomes empty.
+- If all shop slots are empty, Lock Shop is disabled and grayed out.
+- When a dragon reaches 3-star, that dragon is removed from future shop rolls.
+- At wave clear, shop rerolls for free unless locked.
+
+## Wave Rewards
+
+| Wave | Reward |
+| --- | ---: |
+| Waves 1-19 | `5 + floor(wave x 1.5)` Gold |
+| Wave 20 | 40 Gold, then win |
+
+Every completed wave also grants:
+
+- +2 Keeper XP.
+- Free shop reroll unless locked.
 
 ## Keeper Level And XP
 
-| Next Keeper Level | XP Required | Gold Cost If Bought Directly |
+| Keeper Level | XP To Next | Board Cap |
 | ---: | ---: | ---: |
-| 2 | 2 | 4 |
-| 3 | 6 | 8 |
-| 4 | 10 | 12 |
-| 5 | 18 | 20 |
-| 6 | 28 | 32 |
-| 7 | 42 | 48 |
+| 1 | 2 | 3 |
+| 2 | 6 | 5 |
+| 3 | 10 | 7 |
+| 4 | 16 | 9 |
+| 5 | 22 | 10 |
+| 6 | 30 | 12 |
+| 7 | 38 | 14 |
+| 8 | MAX | 15 |
 
-Each wave can grant a small amount of XP if needed, but the primary progression lever is the **Buy XP** button.
+Design note:
 
-## Board Capacity By Keeper Level
-
-| Keeper Level | Board Cap | Shop Identity |
-| ---: | ---: | --- |
-| 1 | 5 | Cheap openers only |
-| 2 | 7 | First stable formation |
-| 3 | 9 | Start seeing 3-cost dragons |
-| 4 | 10 | Mid-game board |
-| 5 | 12 | 4-cost dragons appear |
-| 6 | 14 | Late-game transition |
-| 7 | 15 | Full board, 5-cost dragons are realistic |
+- Wave 1 completion grants +2 XP, so the player reaches Level 2 by wave 2 and can place 5 dragons.
 
 ## Shop Odds
 
 | Keeper Level | Cost 1 | Cost 2 | Cost 3 | Cost 4 | Cost 5 |
-| --- | ---: | ---: | ---: | ---: | ---: |
+| ---: | ---: | ---: | ---: | ---: | ---: |
 | 1 | 100% | 0% | 0% | 0% | 0% |
 | 2 | 80% | 20% | 0% | 0% | 0% |
 | 3 | 60% | 30% | 10% | 0% | 0% |
 | 4 | 40% | 35% | 20% | 5% | 0% |
-| 5 | 25% | 35% | 25% | 12% | 3% |
-| 6 | 15% | 25% | 30% | 22% | 8% |
-| 7 | 5% | 15% | 30% | 30% | 20% |
+| 5 | 25% | 35% | 25% | 13% | 2% |
+| 6 | 15% | 25% | 35% | 20% | 5% |
+| 7 | 8% | 18% | 32% | 30% | 12% |
+| 8 | 5% | 12% | 25% | 35% | 23% |
+
+## Board Capacity
+
+| Keeper Level | Board Cap | Formation Intent |
+| ---: | ---: | --- |
+| 1 | 3 | Limited opener, choose lanes carefully. |
+| 2 | 5 | One dragon per lane becomes possible. |
+| 3 | 7 | Early layered defense. |
+| 4 | 9 | Standard mid-game formation. |
+| 5 | 10 | Two dragons per lane average. |
+| 6 | 12 | Late-game scaling. |
+| 7 | 14 | Near full board. |
+| 8 | 15 | Full board, 3 dragons per lane average. |
 
 ## Selling And Merge Value
+
+Current design target:
 
 | Unit State | Refund Rule |
 | --- | --- |
 | 1-star | 100% of unit cost |
-| 2-star | 80% of total combined cost |
-| 3-star | 70% of total combined cost |
+| 2-star | Refund based on merged value, reduced from full combined cost |
+| 3-star | Refund based on merged value, reduced from full combined cost |
 
-Merge cost is based on copies:
+Prototype should keep selling readable first. Exact refund tuning can be adjusted after economy testing.
 
-- 3 matching 1-star dragons -> 1 matching 2-star dragon.
-- 3 matching 2-star dragons -> 1 matching 3-star dragon.
+## Dragon Base Stats
 
-## Castle HP And Failure Pressure
+| Cost | Damage | Attack Speed | HP | Notes |
+| ---: | ---: | ---: | ---: | --- |
+| 1 | 14 | 0.90/s | 120 | Weak opener, 1 element. |
+| 2 | 20 | 0.90/s | 180 | Better early unit, 2 elements. |
+| 3 | 30 | 0.85/s | 260 | Mid-game unit, 2 elements. |
+| 4 | 44 | 0.80/s | 380 | Strong unit, 3 elements. |
+| 5 | 65 | 0.75/s | 560 | Highest base stat, 3 elements. |
 
-- Player starts with 5 Castle HP.
-- Each enemy that crosses the far-left castle wall removes 1 HP.
-- When 5 total enemies have crossed, Castle HP reaches 0 and the player loses.
-- No enemy should deal more than 1 Castle HP damage in the first prototype. This keeps the fail state readable.
+Star scaling:
 
-## Proposed Artifacts
+| Star | HP | Damage |
+| ---: | ---: | ---: |
+| 1 | 100% | 100% |
+| 2 | 180% | 170% |
+| 3 | 320% | 300% |
 
-Artifacts drop from bosses/elites or appear in post-wave reward choices, then can be equipped onto dragons.
+## Element Balance
 
-| Artifact | Effect | Best Fit |
+| Element | Balance Role |
+| --- | --- |
+| Fire | Damage over time against high HP enemies. |
+| Water | Burst through second shots. |
+| Ice | Lane control through slows. |
+| Wind | Team attack speed, increases all on-hit value. |
+| Plant | Team damage multiplier. |
+| Earth | Control through knockback, not stun. |
+| Energy | Same-row chain damage against clustered enemies. |
+| Metal | Team critical chance. |
+
+## Current Trait Values
+
+| Element | 2 | 4 | 6 | 8 |
+| --- | --- | --- | --- | --- |
+| Fire | 20% burn | 35% burn | 55% burn | 75% burn, longer duration |
+| Water | 15% second shot, 50% damage | 30%, 60% | 50%, 70% | 70%, 80% |
+| Ice | 15% slow | 30% | 50% | 70%, stronger slow |
+| Wind | +12% AS | +25% | +45% | +65% |
+| Plant | +10% damage | +25% | +45% | +70% |
+| Earth | 12% knockback, 32px | 24%, 48px | 38%, 64px | 55%, 80px |
+| Energy | 15% chain | 30% | 50% | 70%, 65% chain damage |
+| Metal | +10% crit | +22% | +38% | +55% |
+
+## Wave Count And Rewards
+
+| Wave Range | Enemy Count Formula | Reward |
 | --- | --- | --- |
-| Ember Core | Burn chance +8% | Fire |
-| Tide Pearl | Wave chance +8% | Water |
-| Ice Scale | Slow chance +8% | Ice |
-| Gale Feather | Attack speed bonus +8% | Wind |
-| Wildroot Charm | Total damage bonus +8% | Plant |
-| Quake Core | Stun chance +6% | Earth |
-| Storm Lens | Chain lightning chance +8% | Energy |
-| Iron Fang | Critical chance +8% | Metal |
+| Wave 1 | `occupied dragon rows x 3` | 6 Gold |
+| Waves 2-19 | `min(50, 11 + floor(wave x 2.15))` | `5 + floor(wave x 1.5)` Gold |
+| Wave 20 | 5 boss spawns | 40 Gold and win |
 
-## Sample Compositions
+## Current Testing Questions
 
-### Fire Burn
-
-- Core: Fire units across multiple costs.
-- Playstyle: use frequent hits and burn chance to kill high-HP monsters over time.
-- Weakness: enemies that rush through before burn has time to tick.
-
-### Water Wave
-
-- Core: Water units plus high-damage multi-element dragons.
-- Playstyle: Wave bonus hits multiply strong base attacks.
-- Weakness: lower value if base attack damage is too low.
-
-### Ice Control
-
-- Core: Ice units plus damage backline.
-- Playstyle: slow monsters so the castle wall is protected.
-- Weakness: control-resistant bosses.
-
-### Wind Tempo
-
-- Core: Wind units plus on-hit elements.
-- Playstyle: attack faster to trigger more element effects.
-- Weakness: needs enough damage scaling to avoid long fights.
-
-### Plant Damage
-
-- Core: Plant units plus any carry element.
-- Playstyle: increase total team damage.
-- Weakness: does not directly protect Castle HP.
-
-### Earth Stun
-
-- Core: Earth units in lanes with dangerous single targets or fast enemies.
-- Playstyle: stun monsters to interrupt movement and buy time for backline damage.
-- Weakness: stun chance can feel inconsistent without enough Earth stacks or attack speed.
-
-### Energy Row Clear
-
-- Core: Energy units in lanes with dense monster traffic.
-- Playstyle: same-row chain damage against clustered waves.
-- Weakness: weaker against isolated targets.
-
-### Metal Crit
-
-- Core: Metal units plus Wind or Water.
-- Playstyle: increase critical chance and multiply many hits.
-- Weakness: inconsistent if critical chance is too low.
-
-## Starting Prototype Stats
-
-Dragon base stat displays use:
-
-- Damage: `Resource Asset/Damage_Icon.png`
-- HP: `Resource Asset/Health_Icon.png`
-- Attack Speed: `Resource Asset/Attack_Speed_Icon.png`
-
-| Cost | Damage | AS | HP | Range | Notes |
-| ---: | ---: | ---: | ---: | ---: | --- |
-| 1 | 14 | 0.9/s | 120 | 4 cells | Weak opener, 1 element |
-| 2 | 20 | 0.9/s | 180 | 4 cells | Better early unit, 2 elements |
-| 3 | 30 | 0.85/s | 260 | 4 cells | Solid mid-game unit, 2 elements |
-| 4 | 44 | 0.8/s | 380 | 5 cells | Strong carry or utility, 3 elements |
-| 5 | 65 | 0.75/s | 560 | 5 cells | Highest base stat capstone, 3 elements |
-
-Element traits apply after base cost stats and star multipliers. For example, Plant increases final damage, Wind increases final attack speed, Metal increases critical chance, and Earth adds stun chance instead of HP.
-
-| Monster Type | HP | Damage | Speed | Gold On Kill |
-| --- | ---: | ---: | ---: | ---: |
-| Swarm | 45 | 1 | 1.4 | 1 |
-| Normal | 100 | 1 | 1.0 | 1 |
-| Bruiser | 250 | 1 | 0.7 | 2 |
-| Ranged | 120 | 1 | 0.8 | 1 |
-| Fast | 75 | 1 | 1.8 | 2 |
-| Elite | 700 | 1 | 0.6 | 4 |
-| Boss | 3000 | 1 | 0.45 | 8 |
-
-## Early Balance Questions To Test
-
-- Does kill-based Gold create a comeback problem if the player is already behind?
-- Are shop odds generous enough to find pairs and 2-star units?
-- Is 5 Castle HP too punishing for new players?
-- Are 7 placement columns too much defensive space for 20 waves?
-- Does earning Gold during combat make the shop phase feel rewarding enough?
+- Does Level 1 board cap of 3 feel too tight before wave 1?
+- Does free +2 XP per wave make Keeper progression too fast or just right?
+- Does kill/wave reward economy give enough Gold to recover after a weak wave?
+- Are Water second shots and Metal crit too swingy together?
+- Does Earth knockback feel visible enough without being oppressive?
+- Does the final boss need one shared hitbox across all lanes, or are five boss lane bodies clearer for implementation?
