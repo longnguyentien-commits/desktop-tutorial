@@ -22,7 +22,7 @@ The game combines:
    The 8 elements have distinct combat effects and projectile visuals: Fire, Water, Ice, Wind, Plant, Earth, Energy, and Metal.
 
 4. **High-Pressure Base Defense**
-   The tower has only 5 HP. Every enemy that reaches the tower breach line removes 1 HP. At 0 HP, the game stops and displays **You Lost**.
+   The tower has 10 HP. Every enemy that reaches the tower breach line removes 1 HP. At 0 HP, the game stops and displays **You Lost**.
 
 5. **Short Tactical Runs**
    The current run structure is 20 waves with increasing enemy density and dedicated boss waves on wave 10 and wave 20.
@@ -39,7 +39,7 @@ The game combines:
 - 5 horizontal lanes, 9 columns.
 - Field uses `Resource Asset/Map đấu.png`.
 - Tower objective uses `Resource Asset/Tower.webp`.
-- Tower damage state is visible through a 5-segment HP bar, smoke below 50% HP, and fire below 20% HP.
+- Tower damage state is visible through a 10-segment HP bar, smoke below 50% HP, and fire below 20% HP.
 - Dragons use Asset DML sprites:
   - 1-star uses Baby asset.
   - 2-star uses Adult asset.
@@ -59,6 +59,8 @@ The game combines:
 8. Monsters attack dragons if blocked or in range.
 9. Defeated waves grant Gold, 2 free XP, and a free shop reroll unless the shop is locked.
 10. Survive through wave 20 and defeat the final Big Bad Boss to win.
+
+Current control note: **Reroll** keeps the yellow button style, **Buy XP** uses the purple tier-4 style, and **Speed Up** cycles through Speed Up, Speed 2x, and Speed 3x.
 
 ## Win And Lose
 

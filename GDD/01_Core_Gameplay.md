@@ -9,8 +9,8 @@
 - The first playable column is reserved for the tower/breach zone and cannot hold dragons.
 - Dragons can be placed into empty valid board cells up to the current Keeper board cap.
 - Each cell can contain only 1 dragon.
-- The tower has **5 HP**.
-- Every enemy that crosses the tower breach line removes **1 HP** and disappears.
+- The tower has **10 HP**.
+- Every enemy that crosses the tower breach line walks into the tower objective, removes **1 HP**, then is removed.
 - At 0 HP, the game immediately ends with **You Lost**.
 
 ## Match Flow
@@ -32,7 +32,7 @@
 | Resource | Current Use |
 | --- | --- |
 | Gold | Buy dragons, reroll shop, buy XP. |
-| Tower HP | Player life, fixed at 5 segments. |
+| Tower HP | Player life, fixed at 10 segments. |
 | Bench Slots | 10 reserve slots for unplaced dragons. |
 | Keeper XP | Levels up Keeper and increases board cap/shop odds. |
 
@@ -79,6 +79,7 @@ Resource UI uses shared icons from `Resource Asset`:
   - Tier-colored border.
   - Star icon.
 - Board dragons show a tier-colored nameplate border for rarity readability.
+- Right-clicking a dragon shows its current stats and **Sell for** refund value with Gold icon.
 - Bench dragons can be dragged into **Sell Dragon** to sell.
 
 ## Sell Dragon
@@ -184,7 +185,7 @@ Attack Speed means time/frequency for the next attack, not projectile travel spe
 - Monsters face left and move toward the tower.
 - Monsters can damage and kill dragons.
 - Dead dragons are removed from the board.
-- When a monster crosses the breach line, tower HP decreases by 1.
+- When a monster crosses the breach line, it walks into the tower objective and tower HP decreases by 1.
 - Game stops all actions on win or loss.
 - Boss waves occur on wave 10 and wave 20.
 - Bosses use one large shared body/hitbox, so dragons in all 5 lanes can target and damage them.
@@ -258,5 +259,7 @@ Projectile travel speed is intentionally different by element. Energy is the fas
 - Bench: 10 visible slots.
 - Shop: 5 visible slots with tier colors, dragon image, elements, and Gold price.
 - Right/control layout: Reroll, Lock, Start Wave, Speed Up, Buy XP, Sell Dragon.
+- Buy XP uses a purple 4-cost-tier style, while Reroll keeps the yellow default button style.
+- Speed Up cycles through **Speed Up -> Speed 2x -> Speed 3x -> Speed Up**.
 - Game Over overlay: **You Lost** and **Play Again**.
 - Win overlay: **You Won**.

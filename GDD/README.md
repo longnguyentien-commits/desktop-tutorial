@@ -22,15 +22,15 @@ Tagline: **Buy dragons, merge stars, and protect the tower.**
 
 - HTML5 canvas prototype in `prototype.html`.
 - 5 lanes x 9 battlefield columns.
-- Left side has a tower objective and a 5-segment HP bar.
+- Left side has a tower objective and a 10-segment HP bar.
 - Column 1 is reserved for the tower/breach zone; dragons are placed from column 2 onward.
 - Monsters spawn from the right, move left, and damage the tower if they pass the defense line.
-- Player starts with 5 HP and loses immediately at 0 HP.
+- Player starts with 10 HP and loses immediately at 0 HP.
 - 8 dragon elements: Fire, Water, Ice, Wind, Plant, Earth, Energy, Metal.
 - 40 dragons total: 8 elements x 5 costs.
 - Dragons use Asset DML baby/adult sprites.
 - Monsters use GIF assets from Basic Demon, Basic Monster, Basic Undead, Basic Humanoid, Toxic Sludge, Yeti, and Basic Vermin folders.
-- 5-slot shop, reroll, shop lock/unlock, 10-slot bench, Buy XP, Start Wave, Speed Up, and Sell Dragon zone.
+- 5-slot shop, reroll, shop lock/unlock, 10-slot bench, Buy XP, Start Wave, Speed Up / Speed 2x / Speed 3x, and Sell Dragon zone.
 - Board cap scales from Keeper Level 1 to 8, ending at 15 dragons.
 - 3 matching dragons merge into higher-star dragons.
 - 20 waves, with Big Bad Boss encounters on waves 10 and 20.

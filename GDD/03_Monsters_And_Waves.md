@@ -41,8 +41,8 @@ The attacking side uses animated monster assets from multiple folders. The curre
 
 | Boss | Asset | Base HP | Speed | Notes |
 | --- | --- | ---: | ---: | --- |
-| Big Bad Boss | `Resource Asset/Boss 1.png` | 13000 | 7.5 | Wave 10 boss. Appears after the wave 10 normal monster group is cleared. |
-| Big Bad Boss | `Resource Asset/Boss 2.png` | 26000 | 6.5 | Wave 20 final boss. Appears after the wave 20 normal monster group is cleared. |
+| Big Bad Boss | `Resource Asset/Boss 1.png` | 20800 | 7.5 | Wave 10 boss. Appears after the wave 10 normal monster group is cleared. |
+| Big Bad Boss | `Resource Asset/Boss 2.png` | 41600 | 6.5 | Wave 20 final boss. Appears after the wave 20 normal monster group is cleared. |
 
 Bosses use one shared large body and hitbox instead of five separate lane bodies. Dragons from all 5 lanes can target and damage the boss. Bosses face left, spawn from one giant portal, and are immune to elemental trait effects such as burn, slow, knockback, and chain splash. They still receive direct projectile damage.
 
@@ -143,9 +143,9 @@ Wave clear also grants **+2 XP** and a free shop reroll if the shop is not locke
 
 ## Castle/Tower Damage
 
-- Player starts with 5 Tower HP.
-- Every escaped enemy removes 1 HP.
-- Escaped enemies disappear.
+- Player starts with 10 Tower HP.
+- Every escaped enemy walks into the tower objective and removes 1 HP.
+- Enemies are removed after entering the tower.
 - Damage numbers appear near the tower.
 - Below 50% HP, smoke rises from the tower.
 - Below 20% HP, fire appears on the tower but is clipped to the asset area.

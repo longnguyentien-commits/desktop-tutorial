@@ -17,7 +17,7 @@ Gold must use `Resource Asset/Gold_Icon.png` in UI.
 | Starting Gold | 10 |
 | Starting Keeper Level | 1 |
 | Starting Board Cap | 3 |
-| Tower HP | 5 |
+| Tower HP | 10 |
 | Bench Slots | 10 |
 | Shop Slots | 5 |
 | Max Keeper Level | 8 |
@@ -154,9 +154,11 @@ Star scaling:
 | Ice | 15% slow | 30% | 50% | 70%, stronger slow |
 | Wind | +12% AS | +25% | +45% | +65% |
 | Plant | +10% damage | +25% | +45% | +70% |
-| Earth | 12% knockback, 32px | 24%, 48px | 38%, 64px | 55%, 80px |
+| Earth | 12% knockback | 24% | 38% | 55% |
 | Energy | 15% chain | 30% | 50% | 70%, 65% chain damage |
 | Metal | +10% crit | +22% | +38% | +55% |
+
+Earth knockback distance remains tuned in combat as 32px / 48px / 64px / 80px for 2/4/6/8 stacks, but the player-facing trait text only shows the chance.
 
 ## Wave Count And Rewards
 
