@@ -1,10 +1,10 @@
-# Dragon vs Monsters Prototype
+# Dragons vs Monsters
 
-HTML5 prototype for a dragon defense auto-battler inspired by Plants vs. Zombies and Teamfight Tactics.
+HTML5 dragon defense auto-battler inspired by Plants vs. Zombies and Teamfight Tactics.
 
 ## Play locally
 
-Open `prototype.html` in a browser, or run the LAN server:
+Open `Dragons vs Monsters.html` in a browser, or run the LAN server:
 
 ```bat
 server.bat
@@ -13,7 +13,7 @@ server.bat
 The server prints a LAN link like:
 
 ```text
-http://YOUR_IPV4:8001/prototype.html
+http://YOUR_IPV4:8001/Dragons%20vs%20Monsters.html
 ```
 
 Share that link with computers on the same network.
@@ -25,12 +25,12 @@ This project is a static HTML5 prototype with no build step. GitHub Pages can se
 Public URL format:
 
 ```text
-https://longnguyentien-commits.github.io/desktop-tutorial/
+https://qa-vibejam.github.io/Dragons-vs-Monsters/
 ```
 
 ## Main files
 
-- `prototype.html` - playable single-file prototype.
+- `Dragons vs Monsters.html` - playable game file.
 - `server.bat` - starts the LAN server for local network testing.
 - `lan-server.ps1` - small static file server used by `server.bat`.
 - `GDD/` - game design document.

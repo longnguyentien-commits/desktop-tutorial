@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dragon vs Monsters Prototype</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#172016" />
+  <title>Dragons vs Monsters</title>
   <style>
     :root { --ui-scale: 1; }
     * { box-sizing: border-box; }
@@ -29,6 +30,11 @@
       cursor: pointer;
     }
     button:disabled { opacity: .45; cursor: not-allowed; }
+    button, .card, .bench-slot, canvas { -webkit-tap-highlight-color: transparent; }
+    .card, .bench-slot.filled {
+      -webkit-user-select: none;
+      user-select: none;
+    }
     button.secondary { background: #314634; color: #f3f4df; border: 1px solid #58745b; }
     button.xp-button {
       background: linear-gradient(135deg, #49306b, #2c1d42);
@@ -218,6 +224,7 @@
     .drop-tier-4 { color: #b783ff; }
     .drop-tier-5 { color: #f3c94f; }
     .board-wrap {
+      position: relative;
       border-radius: 8px;
       background: #101912;
       border: 1px solid #405940;
@@ -241,6 +248,7 @@
       border-radius: 6px;
       background: #1c2a1e;
       cursor: default;
+      touch-action: manipulation;
     }
     .shop-row {
       display: grid;
@@ -272,6 +280,7 @@
       grid-template-rows: 20px 78px 24px;
       gap: 3px;
       overflow: hidden;
+      touch-action: pan-x;
     }
     .card.selected { outline: 3px solid #f3c94f; }
     .card:active { cursor: grabbing; }
@@ -474,8 +483,13 @@
       gap: 5px;
     }
     .bench-heal-hint {
-      display: none;
-      margin: 3px 0 5px;
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      z-index: 8;
+      display: block;
+      width: min(420px, calc(100% - 24px));
+      margin: 0;
       padding: 5px 8px;
       border-radius: 6px;
       border: 1px solid rgba(142, 228, 131, .6);
@@ -485,12 +499,20 @@
       font-weight: 900;
       text-align: center;
       text-shadow: 0 1px 2px rgba(0,0,0,.55);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translate(-50%, -6px);
+      transition: opacity .16s ease, transform .16s ease;
     }
     .bench-heal-hint.visible {
-      display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
     }
     .bench-slot {
       min-width: 0;
+      height: 78px;
       min-height: 78px;
       border-radius: 6px;
       background: #18241c;
@@ -505,6 +527,7 @@
       overflow: hidden;
     }
     .bench-slot.filled { cursor: grab; border-style: solid; border-width: 3px; background: #203026; }
+    .bench-slot.filled { touch-action: none; }
     .bench-slot.filled.tier-1 { border-color: #858b91; }
     .bench-slot.filled.tier-2 { border-color: #4ec06a; }
     .bench-slot.filled.tier-3 { border-color: #4aa3ff; }
@@ -514,13 +537,17 @@
       opacity: 0;
     }
     .bench-slot.drag-over { outline: 3px solid #f3c94f; }
+    .bench-slot.selected {
+      outline: 3px solid #ffe050;
+      box-shadow: 0 0 16px rgba(255, 224, 80, .78);
+    }
     .bench-slot.merge-ready {
       animation: shopMergePulse .58s ease-in-out infinite alternate;
       box-shadow: 0 0 0 2px rgba(243,201,79,.85), 0 0 16px rgba(243,201,79,.7);
     }
     .bench-slot img {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       object-fit: contain;
       image-rendering: pixelated;
       transform: scaleX(-1);
@@ -618,6 +645,10 @@
       background: rgba(80, 180, 92, .18);
       box-shadow: inset 0 0 14px rgba(101,230,111,.32);
     }
+    .sell-zone.tap-ready {
+      border-color: #f3c94f;
+      box-shadow: inset 0 0 12px rgba(243, 201, 79, .25);
+    }
     .log {
       display: none;
     }
@@ -646,6 +677,31 @@
       border: 2px solid #ffe08a;
       box-shadow: 0 8px 22px rgba(0,0,0,.38);
       font-size: 18px;
+    }
+    .mobile-toolbar { display: none; }
+    .mobile-toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(14px, env(safe-area-inset-bottom));
+      z-index: 100;
+      width: min(420px, calc(100vw - 24px));
+      padding: 11px 14px;
+      border-radius: 8px;
+      background: rgba(18, 28, 20, .96);
+      border: 1px solid #ffe08a;
+      color: #fff7d1;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .45);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .mobile-toast.visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
     }
     .stat-popover h3 {
       margin: 0 0 8px;
@@ -803,12 +859,131 @@
       object-fit: contain;
       image-rendering: pixelated;
     }
-    @media (max-width: 1000px) {
-      .topbar { grid-template-columns: repeat(2, 1fr); }
-      .main { grid-template-columns: 1fr; }
-      .shop-row { grid-template-columns: repeat(2, 1fr); }
-      .side-actions { grid-template-columns: repeat(6, 1fr); grid-template-rows: 42px; }
+    @media (max-width: 800px), (max-width: 1180px) and (pointer: coarse) {
+      html, body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior-y: contain;
+      }
+      body { min-height: 100dvh; }
+      .app {
+        width: 100%;
+        height: auto;
+        min-height: 100dvh;
+        padding: max(5px, env(safe-area-inset-top)) max(5px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(5px, env(safe-area-inset-left));
+      }
+      .topbar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .mobile-toolbar button {
+        min-height: 44px;
+        padding: 8px 12px;
+        background: #314634;
+        color: #f3f4df;
+        border: 1px solid #6f916f;
+      }
+      .pill {
+        min-width: 0;
+        min-height: 44px;
+        padding: 5px 7px;
+        font-size: 11px;
+      }
+      .pill strong { font-size: 14px; }
+      .main {
+        grid-template-columns: minmax(0, 1fr);
+        overflow: visible;
+      }
+      .main > section, .main > aside { overflow: visible; }
+      .main > section { order: 1; }
+      .control-panel { order: 2; }
+      .left-panel { order: 3; }
+      .board-wrap {
+        height: auto;
+        overflow: visible;
+      }
+      canvas {
+        width: 100% !important;
+        height: auto !important;
+      }
+      .shop-row {
+        grid-template-columns: repeat(5, minmax(170px, 1fr));
+        overflow-x: auto;
+        padding: 2px 1px 7px;
+        scroll-snap-type: x proximity;
+        scrollbar-width: thin;
+      }
+      .card { scroll-snap-align: start; }
+      .side-actions {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(2, minmax(48px, auto));
+      }
+      .side-actions button, .sell-zone { min-height: 48px; }
       .bench { grid-template-columns: repeat(5, 1fr); }
+      .bench-slot { height: 72px; min-height: 72px; }
+      .bench-slot img { width: 46px; height: 46px; }
+      .stat-popover {
+        max-width: calc(100vw - 16px);
+        max-height: calc(100dvh - 16px);
+        overflow-y: auto;
+      }
+      .play-again {
+        right: max(10px, env(safe-area-inset-right));
+        bottom: max(10px, env(safe-area-inset-bottom));
+      }
+    }
+    @media (max-width: 1180px) and (pointer: coarse) {
+      .mobile-toolbar {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+    @media (min-width: 801px) and (max-width: 1180px) and (pointer: fine) {
+      .app { padding: 6px; gap: 6px; }
+      .topbar {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 5px;
+      }
+      .pill {
+        min-width: 0;
+        padding: 5px 7px;
+        font-size: 11px;
+      }
+      .pill strong { font-size: 14px; }
+      .main {
+        grid-template-columns: 220px minmax(0, 1fr) 126px;
+        gap: 6px;
+      }
+      .panel { padding: 6px; }
+      .panel h2 { font-size: 16px; }
+      .shop-row {
+        grid-template-columns: repeat(5, minmax(168px, 1fr));
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: thin;
+      }
+      .side-actions button { padding: 8px 5px; font-size: 12px; }
+    }
+    @media (max-width: 800px) and (orientation: landscape), (max-width: 1180px) and (pointer: coarse) and (orientation: landscape) {
+      .topbar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      .app { gap: 5px; }
+      .topbar { gap: 4px; }
+      .pill { gap: 4px; }
+      .pill .icon { width: 18px; height: 18px; }
+      .board-wrap { padding: 4px; }
+      .bench { gap: 3px; }
+      .bench-slot {
+        height: 64px;
+        min-height: 64px;
+        padding: 2px;
+      }
+      .bench-slot img { width: 38px; height: 38px; }
+      .bench-name { font-size: 9px; padding: 0 2px; }
+      .side-actions { gap: 5px; }
+      .side-actions button { padding: 8px 4px; font-size: 12px; }
+      #lockShopBtn { grid-template-columns: 20px auto; column-gap: 4px; }
+      .tool-button img { width: 20px; height: 20px; }
     }
   </style>
 </head>
@@ -821,6 +996,9 @@
       <div class="pill"><span>Keeper</span><strong id="levelText">Lv. 1 0/2 XP</strong></div>
       <div class="pill"><span>Dragon Limit</span><strong id="capText">0 / 3</strong></div>
       <div class="pill"><span>Drag</span><strong id="selectedText">Shop to board</strong></div>
+    </div>
+    <div class="mobile-toolbar">
+      <button id="orientationBtn" type="button">Landscape Mode</button>
     </div>
 
     <div class="main">
@@ -865,11 +1043,15 @@
     </div>
   </div>
   <div class="stat-popover" id="statPopover"></div>
+  <div class="mobile-toast" id="mobileToast" role="status" aria-live="polite"></div>
   <button id="playAgainBtn" class="play-again">Play Again</button>
 
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
+    let canvasLayoutCache = null;
+    const coarsePointer = window.matchMedia("(pointer: coarse)");
+    const isTouchUi = () => coarsePointer.matches;
     const ROWS = 5;
     const COLS = 9;
     const PLACE_COLS = COLS;
@@ -900,11 +1082,72 @@
       if (!wrap) return;
       const style = getComputedStyle(wrap);
       const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
       const availableW = Math.max(320, wrap.clientWidth - padX);
-      const drawW = Math.floor(availableW);
+      const stackedLayout = window.matchMedia("(max-width: 800px), (max-width: 1180px) and (pointer: coarse)").matches;
+      const layoutKey = `${window.innerWidth}x${window.innerHeight}:${Math.round(wrap.clientWidth)}:${stackedLayout}`;
+      if (canvasLayoutCache?.key === layoutKey) {
+        canvas.style.width = `${canvasLayoutCache.width}px`;
+        canvas.style.height = `${canvasLayoutCache.height}px`;
+        return;
+      }
+      let drawW = availableW;
+      if (!stackedLayout) {
+        const siblings = Array.from(wrap.children).filter(child => {
+          if (child === canvas) return false;
+          const childStyle = getComputedStyle(child);
+          return childStyle.display !== "none" && childStyle.position !== "absolute" && childStyle.position !== "fixed";
+        });
+        const rowGap = parseFloat(style.rowGap) || 0;
+        const fixedHeight = siblings.reduce((sum, child) => sum + child.offsetHeight, 0)
+          + rowGap * Math.max(0, wrap.children.length - 1);
+        const availableH = Math.max(180, wrap.clientHeight - padY - fixedHeight);
+        drawW = Math.min(availableW, availableH * 16 / 9);
+      }
       const drawH = Math.floor(drawW * 9 / 16);
-      canvas.style.width = `${Math.floor(drawW)}px`;
-      canvas.style.height = `${Math.floor(drawH)}px`;
+      canvasLayoutCache = { key: layoutKey, width: Math.floor(drawW), height: drawH };
+      canvas.style.width = `${canvasLayoutCache.width}px`;
+      canvas.style.height = `${canvasLayoutCache.height}px`;
+    }
+
+    async function requestLandscapeMode() {
+      const root = document.documentElement;
+      let fullscreenStarted = !!document.fullscreenElement;
+      try {
+        if (!fullscreenStarted) {
+          const requestFullscreen = root.requestFullscreen || root.webkitRequestFullscreen;
+          if (requestFullscreen) {
+            await requestFullscreen.call(root);
+            fullscreenStarted = true;
+          }
+        }
+      } catch {}
+
+      let orientationLocked = false;
+      try {
+        if (screen.orientation?.lock) {
+          await screen.orientation.lock("landscape");
+          orientationLocked = true;
+        }
+      } catch {}
+
+      if (orientationLocked) {
+        log("Landscape mode enabled.");
+        showMobileToast("Landscape mode enabled.");
+      } else {
+        const message = "Rotate the phone sideways. If it does not rotate, turn off portrait orientation lock.";
+        log(message);
+        showMobileToast(message, 4500);
+      }
+      requestAnimationFrame(fitCanvasToScreen);
+    }
+
+    function showMobileToast(message, duration = 2400) {
+      const toast = document.getElementById("mobileToast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      clearTimeout(showMobileToast.timer);
+      showMobileToast.timer = setTimeout(() => toast.classList.remove("visible"), duration);
     }
     const MAX_BOARD = 15;
     const keeperBoardCaps = {
@@ -957,7 +1200,7 @@
       lock: "Resource Asset/Lock_Icon.png",
       unlock: "Resource Asset/Unlock_Icon.png",
       battleMap: "Resource Asset/Map đấu.png",
-      tower: "Resource Asset/Tower.webp",
+      tower: "Resource Asset/Tower-cutout.png",
     };
 
     const elements = {
@@ -1206,7 +1449,10 @@
 
     const images = new Map();
     const cutoutImages = new Map();
+    const renderWarnings = new Set();
     let dragGhost = null;
+    let touchPointerDrag = null;
+    let suppressTouchClickUntil = 0;
     const state = {
       shop: [],
       shopLocked: false,
@@ -1241,7 +1487,48 @@
       gameResult: null,
     };
 
+    function selectedDrag() {
+      const selection = state.selected;
+      if (!selection) return null;
+      if (selection.source === "shop") {
+        const unit = state.shop[selection.index];
+        return unit ? { ...selection, unit } : null;
+      }
+      if (selection.source === "bench") {
+        const unit = state.bench[selection.index];
+        return unit ? { ...selection, unit } : null;
+      }
+      if (selection.source === "board") {
+        const unit = state.dragons.find(dragon => dragon.id === selection.id);
+        return unit ? { ...selection, unit } : null;
+      }
+      return null;
+    }
+
+    function selectForTouch(source) {
+      const unit = source?.unit;
+      if (!unit) return;
+      state.selected = source.source === "board"
+        ? { source: "board", id: unit.id }
+        : { source: source.source, index: source.index };
+      state.dragging = null;
+      state.hoverCell = null;
+      log(`${displayDragonName(unit)} selected. Tap a board cell, bench slot, or Sell Dragon.`);
+      renderUi();
+    }
+
+    function clearTouchSelection() {
+      state.selected = null;
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+    }
+
     const tierClass = cost => `tier-${cost}`;
+    const displayDragonName = unitOrName => {
+      const name = typeof unitOrName === "string" ? unitOrName : unitOrName?.name || "";
+      return name.replace(/\s+Dragon$/i, "");
+    };
     const rankIconHtml = (star = 1) => `<span class="rank-icon rank-${Math.min(3, Math.max(1, star))}"></span>`;
     const goldCostHtml = amount => `<span class="gold-cost"><img src="${icon.gold}" alt="" />${amount}</span>`;
     const tierColor = cost => ({
@@ -1303,9 +1590,92 @@
     }
 
     function moveBoardDragGhost(x, y) {
-      if (!dragGhost || state.dragging?.source !== "board") return;
+      if (!dragGhost || !state.dragging) return;
       dragGhost.style.left = `${x - 64}px`;
       dragGhost.style.top = `${y - 64}px`;
+    }
+
+    function canvasCellFromClientPoint(x, y) {
+      const rect = canvas.getBoundingClientRect();
+      const isOverCanvas = x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      if (!isOverCanvas) return null;
+      return canvasPointToCell(
+        (x - rect.left) / rect.width * canvas.width,
+        (y - rect.top) / rect.height * canvas.height,
+        false
+      );
+    }
+
+    function updateTouchDropTargets(x, y) {
+      const cell = canvasCellFromClientPoint(x, y);
+      state.hoverCell = cell && !isTowerBlockedCell(cell.row, cell.col) ? cell : null;
+      setSellZoneHover(isPointerOverSellZone(x, y));
+      setBenchHover(benchIndexFromPoint(x, y));
+      if (y < 72) window.scrollBy(0, -24);
+      if (y > window.innerHeight - 72) window.scrollBy(0, 24);
+    }
+
+    function startTouchPointerDrag(ev, source) {
+      if (!isTouchUi() || state.gameOver || ev.pointerType === "mouse" || !source?.unit) return;
+      if (source.source === "shop" && !UNLIMITED_GOLD && state.gold < source.unit.cost) {
+        log(`Need ${source.unit.cost} Gold to buy ${displayDragonName(source.unit)}.`);
+        renderUi();
+        return;
+      }
+      touchPointerDrag = {
+        pointerId: ev.pointerId,
+        startX: ev.clientX,
+        startY: ev.clientY,
+        source,
+        element: ev.currentTarget,
+        active: false,
+      };
+      ev.currentTarget.setPointerCapture?.(ev.pointerId);
+    }
+
+    function moveTouchPointerDrag(ev) {
+      const drag = touchPointerDrag;
+      if (!drag || drag.pointerId !== ev.pointerId) return;
+      if (!drag.active && Math.hypot(ev.clientX - drag.startX, ev.clientY - drag.startY) < 10) return;
+      if (!drag.active) {
+        drag.active = true;
+        state.selected = null;
+        state.dragging = drag.source;
+        drag.element.classList.add("dragging");
+        makeBoardDragGhost(drag.source.unit, ev.clientX, ev.clientY);
+        document.getElementById("selectedText").textContent = displayDragonName(drag.source.unit);
+      }
+      ev.preventDefault();
+      moveBoardDragGhost(ev.clientX, ev.clientY);
+      updateTouchDropTargets(ev.clientX, ev.clientY);
+    }
+
+    function finishTouchPointerDrag(ev, cancelled = false) {
+      const drag = touchPointerDrag;
+      if (!drag || drag.pointerId !== ev.pointerId) return;
+      touchPointerDrag = null;
+      if (!drag.active) return;
+      ev.preventDefault();
+      suppressTouchClickUntil = performance.now() + 450;
+      const source = drag.source;
+      state.dragging = source;
+      if (!cancelled && isPointerOverSellZone(ev.clientX, ev.clientY) && ["bench", "board"].includes(source.source)) {
+        sellUnit(source.unit, source);
+      } else if (!cancelled && benchIndexFromPoint(ev.clientX, ev.clientY) >= 0) {
+        dropToBench(benchIndexFromPoint(ev.clientX, ev.clientY));
+      } else if (!cancelled) {
+        const cell = canvasCellFromClientPoint(ev.clientX, ev.clientY);
+        if (cell) placeUnit(source.unit, cell.row, cell.col, source);
+        else log(`${displayDragonName(source.unit)} was not dropped on a valid target.`);
+      }
+      state.dragging = null;
+      state.hoverCell = null;
+      clearDragGhost();
+      renderUi();
+    }
+
+    function enableTouchPointerDrag(element, sourceFactory) {
+      element.addEventListener("pointerdown", ev => startTouchPointerDrag(ev, sourceFactory()));
     }
 
     function isPointerOverSellZone(x, y) {
@@ -1350,10 +1720,18 @@
     function img(path) {
       if (!images.has(path)) {
         const image = new Image();
+        image.__loadFailed = false;
+        image.addEventListener("error", () => { image.__loadFailed = true; }, { once: true });
         image.src = path;
         images.set(path, image);
       }
       return images.get(path);
+    }
+
+    function canDrawImage(image) {
+      if (!image) return false;
+      if (image instanceof HTMLCanvasElement) return image.width > 0 && image.height > 0;
+      return !image.__loadFailed && image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
     }
 
     function isNeutralBackgroundPixel(r, g, b, a) {
@@ -1368,15 +1746,22 @@
     function getCutoutImage(path) {
       if (cutoutImages.has(path)) return cutoutImages.get(path);
       const source = img(path);
-      if (!source.complete || !(source.naturalWidth || source.width)) return null;
+      if (!canDrawImage(source)) return null;
       const w = source.naturalWidth || source.width;
       const h = source.naturalHeight || source.height;
       const off = document.createElement("canvas");
       off.width = w;
       off.height = h;
       const offCtx = off.getContext("2d", { willReadFrequently: true });
-      offCtx.drawImage(source, 0, 0, w, h);
-      const imageData = offCtx.getImageData(0, 0, w, h);
+      let imageData;
+      try {
+        offCtx.drawImage(source, 0, 0, w, h);
+        imageData = offCtx.getImageData(0, 0, w, h);
+      } catch {
+        // file:// pages cannot read image pixels; the transparent source remains safe to draw.
+        cutoutImages.set(path, source);
+        return source;
+      }
       const data = imageData.data;
       const visited = new Uint8Array(w * h);
       const queue = [];
@@ -1517,7 +1902,7 @@
 
     function spendForShopUnit(source, unit) {
       if (source?.source !== "shop") return true;
-      if (!spendGold(unit.cost, `Need ${unit.cost} Gold to buy ${unit.name}.`)) return false;
+      if (!spendGold(unit.cost, `Need ${unit.cost} Gold to buy ${displayDragonName(unit)}.`)) return false;
       state.shop[source.index] = null;
       return true;
     }
@@ -1662,11 +2047,13 @@
     }
 
     function makeOwnedUnit(template) {
-      return {
+      const ownedUnit = {
         ...template,
         star: template.star || 1,
         ownedId: state.nextId++,
       };
+      img(attackSheetForUnit(ownedUnit));
+      return ownedUnit;
     }
 
     function rollShop(free = false) {
@@ -1797,7 +2184,7 @@
       const plan = shopChainThreeStarPlan(unit, shopIndex);
       if (!plan) return false;
       const totalCost = unit.cost * plan.shopIndexes.length;
-      if (!spendGold(totalCost, `Need ${totalCost} Gold to buy copies for ${unit.name}.`)) {
+      if (!spendGold(totalCost, `Need ${totalCost} Gold to buy copies for ${displayDragonName(unit)}.`)) {
         renderUi();
         return true;
       }
@@ -1809,7 +2196,7 @@
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
-      log(`${plan.keep.unit.name} merged directly to 3-star.`);
+      log(`${displayDragonName(plan.keep.unit)} merged directly to 3-star.`);
       removeMaxedDragonsFromShop();
       renderUi();
       return true;
@@ -1850,7 +2237,7 @@
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
-      log(`${keepDragon.name} merged to ${keepDragon.star}-star.`);
+      log(`${displayDragonName(keepDragon)} merged to ${keepDragon.star}-star.`);
       removeMaxedDragonsFromShop();
       renderUi();
       return true;
@@ -1869,7 +2256,7 @@
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
-      log(`Choose a blinking ${ownedUnit.name} on the board to merge to the next star.`);
+      log(`Choose a blinking ${displayDragonName(ownedUnit)} on the board to merge to the next star.`);
       renderUi();
       return true;
     }
@@ -1879,7 +2266,7 @@
       if (candidates.length < 2) return false;
       const target = dragonAtCell(row, col);
       if (!target || !candidates.some(d => d.id === target.id)) {
-        log(`Drop ${unit.name} onto one of the blinking board copies to choose the upgraded dragon.`);
+        log(`Drop ${displayDragonName(unit)} onto one of the blinking board copies to choose the upgraded dragon.`);
         return true;
       }
       if (!spendForShopUnit(source, unit)) return true;
@@ -1891,7 +2278,7 @@
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
-      log(`${target.name} merged to ${target.star}-star.`);
+      log(`${displayDragonName(target)} merged to ${target.star}-star.`);
       removeMaxedDragonsFromShop();
       renderUi();
       return true;
@@ -1926,7 +2313,7 @@
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
-      log(`${promoted.name} merged to ${promoted.star}-star.`);
+      log(`${displayDragonName(promoted)} merged to ${promoted.star}-star.`);
       removeMaxedDragonsFromShop();
       renderUi();
       return true;
@@ -1956,7 +2343,7 @@
           const consumed = slots.filter(slot => slot !== keep).slice(0, 2);
           for (const slot of consumed) removeOwnedSlot(slot);
           const promoted = promoteSlot(keep);
-          messages.push(`${promoted.name} merged to ${promoted.star}-star.`);
+          messages.push(`${displayDragonName(promoted)} merged to ${promoted.star}-star.`);
           merged = true;
           break;
         }
@@ -2002,6 +2389,7 @@
 
     function renderUi() {
       if (state.shopLocked && !shopHasCards()) state.shopLocked = false;
+      if (state.selected && !selectedDrag()) state.selected = null;
       document.getElementById("waveText").textContent = state.wave;
       document.getElementById("waveTimerText").textContent = waveTimerText();
       document.getElementById("hpText").textContent = state.hp;
@@ -2012,7 +2400,11 @@
         ? `Lv. ${state.keeperLevel} MAX`
         : `Lv. ${state.keeperLevel} ${state.keeperXp}/${xpNeed} XP`;
       document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
-      document.getElementById("selectedText").textContent = state.pendingMerge ? "Choose merge" : state.dragging?.unit ? state.dragging.unit.name : "Shop to board";
+      const activeSelection = selectedDrag();
+      const selectedUnit = state.dragging?.unit || activeSelection?.unit;
+      document.getElementById("selectedText").textContent = state.pendingMerge
+        ? "Choose merge"
+        : selectedUnit ? displayDragonName(selectedUnit) : (isTouchUi() ? "Tap a dragon" : "Shop to board");
       document.getElementById("benchHealHint").classList.toggle("visible", !state.waveRunning && !state.gameOver && hasInjuredBoardDragon());
 
       const stacks = traitStacks();
@@ -2061,8 +2453,9 @@
         const mergeReady = !!mergeInfo;
         const mergeStars = mergeReady ? Array.from({ length: mergeInfo.finalStar }, () => "<span></span>").join("") : "";
         const mergeClass = mergeInfo?.finalStar === 3 ? "gold" : "silver";
-        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""}" data-shop="${i}" draggable="true">
-          <div class="card-title">${d.name}</div>
+        const selected = state.selected?.source === "shop" && state.selected.index === i;
+        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""} ${selected ? "selected" : ""}" data-shop="${i}" draggable="${isTouchUi() ? "false" : "true"}">
+          <div class="card-title">${displayDragonName(d)}</div>
           ${state.shopLocked ? `<img class="shop-lock-badge" src="${icon.lock}" alt="Locked" title="Shop locked" />` : ""}
           <div class="elements">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
           <img class="dragon-img" src="${d.baby}" alt="" />
@@ -2072,11 +2465,25 @@
       }).join("");
 
       document.querySelectorAll("[data-shop]").forEach(card => {
-        card.addEventListener("click", () => {
+        enableTouchPointerDrag(card, () => {
+          const index = Number(card.dataset.shop);
+          return { source: "shop", index, unit: state.shop[index] };
+        });
+        card.addEventListener("click", ev => {
           if (state.gameOver) return;
           const index = Number(card.dataset.shop);
           const unit = state.shop[index];
           if (!unit) return;
+          if (isTouchUi()) {
+            ev.stopPropagation();
+            if (state.selected?.source === "shop" && state.selected.index === index) {
+              state.selected = null;
+              buyToBench(index);
+            } else {
+              selectForTouch({ source: "shop", index, unit });
+            }
+            return;
+          }
           buyToBench(index);
         });
         card.addEventListener("dragstart", ev => {
@@ -2089,7 +2496,7 @@
           if (!unit) return;
           if (!UNLIMITED_GOLD && state.gold < unit.cost) {
             ev.preventDefault();
-            log(`Need ${unit.cost} Gold to buy ${unit.name}.`);
+            log(`Need ${unit.cost} Gold to buy ${displayDragonName(unit)}.`);
             renderUi();
             return;
           }
@@ -2098,7 +2505,7 @@
           ev.dataTransfer.effectAllowed = "copy";
           ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
           card.classList.add("dragging");
-          document.getElementById("selectedText").textContent = unit.name;
+          document.getElementById("selectedText").textContent = displayDragonName(unit);
         });
         card.addEventListener("dragend", () => {
           state.dragging = null;
@@ -2142,18 +2549,46 @@
         state.gameSpeed = state.gameSpeed === 1 ? 2 : state.gameSpeed === 2 ? 3 : 1;
         renderUi();
       };
+      document.getElementById("orientationBtn").onclick = requestLandscapeMode;
       const playAgainBtn = document.getElementById("playAgainBtn");
       playAgainBtn.style.display = state.gameOver ? "block" : "none";
       playAgainBtn.onclick = resetGame;
 
       const bench = document.getElementById("bench");
       bench.innerHTML = state.bench.map((d, i) => {
-        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""}" data-bench="${i}" ${d ? 'draggable="true"' : ""}>
-          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${d.name}" /><div class="bench-name" title="${d.name}">${rankIconHtml(d.star)}<span>${d.name}</span></div>` : ""}
+        const selected = state.selected?.source === "bench" && state.selected.index === i;
+        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""} ${selected ? "selected" : ""}" data-bench="${i}" ${d ? `draggable="${isTouchUi() ? "false" : "true"}"` : ""}>
+          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${displayDragonName(d)}" /><div class="bench-name" title="${displayDragonName(d)}">${rankIconHtml(d.star)}<span>${displayDragonName(d)}</span></div>` : ""}
         </div>`;
       }).join("");
 
       document.querySelectorAll("[data-bench]").forEach(slot => {
+        enableTouchPointerDrag(slot, () => {
+          const index = Number(slot.dataset.bench);
+          return { source: "bench", index, unit: state.bench[index] };
+        });
+        slot.addEventListener("click", ev => {
+          if (!isTouchUi() || state.gameOver) return;
+          ev.stopPropagation();
+          const index = Number(slot.dataset.bench);
+          const unit = state.bench[index];
+          const selection = selectedDrag();
+          if (!selection) {
+            if (unit) selectForTouch({ source: "bench", index, unit });
+            return;
+          }
+          if (selection.source === "bench" && selection.index === index) {
+            clearTouchSelection();
+            showStats(unit, ev.clientX, ev.clientY);
+            renderUi();
+            return;
+          }
+          state.selected = null;
+          state.dragging = selection;
+          dropToBench(index);
+          clearTouchSelection();
+          renderUi();
+        });
         slot.addEventListener("dragover", ev => {
           ev.preventDefault();
           slot.classList.add("drag-over");
@@ -2175,7 +2610,7 @@
           ev.dataTransfer.effectAllowed = "move";
           ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
           slot.classList.add("dragging");
-          document.getElementById("selectedText").textContent = unit.name;
+          document.getElementById("selectedText").textContent = displayDragonName(unit);
         });
         slot.addEventListener("dragend", () => {
           state.dragging = null;
@@ -2192,6 +2627,18 @@
       });
 
       const sellZone = document.getElementById("sellZone");
+      sellZone.classList.toggle("tap-ready", isTouchUi() && ["bench", "board"].includes(selectedDrag()?.source));
+      sellZone.onclick = ev => {
+        if (!isTouchUi() || state.gameOver) return;
+        ev.stopPropagation();
+        const selection = selectedDrag();
+        if (!selection || !["bench", "board"].includes(selection.source)) {
+          log("Select a bench or board dragon first.");
+          return;
+        }
+        state.selected = null;
+        sellUnit(selection.unit, selection);
+      };
       sellZone.ondragover = ev => {
         if (!state.dragging || (state.dragging.source !== "bench" && state.dragging.source !== "board")) return;
         ev.preventDefault();
@@ -2218,7 +2665,7 @@
       const costClass = `drop-tier-${unit.cost}`;
       const refund = refundFor(unit);
       popover.innerHTML = `
-        <h3>${unit.name}<span class="stat-title-meta">${rankIconHtml(unit.star)}<span class="${costClass}">${goldCostHtml(unit.cost)}</span></span></h3>
+        <h3>${displayDragonName(unit)}<span class="stat-title-meta">${rankIconHtml(unit.star)}<span class="${costClass}">${goldCostHtml(unit.cost)}</span></span></h3>
         <div class="stat-line"><img src="${icon.damage}" alt="" /> Damage <strong>${s.damage}</strong></div>
         <div class="stat-line"><img src="${icon.attackSpeed}" alt="" /> Next Attack <strong>${nextAttack.toFixed(2)}s</strong></div>
         <div class="stat-line"><img src="${icon.hp}" alt="" /> HP <strong>${s.hp}</strong></div>
@@ -2252,7 +2699,7 @@
         <div class="trait-roster-list">
           ${roster.map(unit => `<div class="trait-dragon-row ${boardNames.has(unit.name) ? "" : "inactive"}">
             <img src="${unit.baby}" alt="" />
-            <span class="trait-dragon-name">${goldCostHtml(unit.cost)}<span class="name-text">${unit.name}</span></span>
+            <span class="trait-dragon-name">${goldCostHtml(unit.cost)}<span class="name-text">${displayDragonName(unit)}</span></span>
             <span class="trait-dragon-elements">${unit.elements.map(e => `<img src="${elements[e].icon}" alt="${e}" title="${e}" />`).join("")}</span>
           </div>`).join("")}
         </div>
@@ -2356,7 +2803,7 @@
       if (source?.source === "bench") state.bench[source.index] = null;
       if (source?.source === "board") state.dragons = state.dragons.filter(d => d.id !== unit.id);
       state.gold += refund;
-      log(`Sold ${unit.name} for ${refund} Gold.`);
+      log(`Sold ${displayDragonName(unit)} for ${refund} Gold.`);
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
@@ -2401,7 +2848,7 @@
         const targetUnit = state.bench[index];
         state.bench[index] = drag.unit;
         state.bench[drag.index] = targetUnit;
-        log(`Swapped ${drag.unit.name} with ${targetUnit.name}.`);
+        log(`Swapped ${displayDragonName(drag.unit)} with ${displayDragonName(targetUnit)}.`);
         state.dragging = null;
         state.hoverCell = null;
         clearDragGhost();
@@ -2414,7 +2861,7 @@
       }
       state.bench[index] = drag.source === "shop" ? makeOwnedUnit(drag.unit) : drag.unit;
       if (drag.source === "bench") state.bench[drag.index] = null;
-      log(`${drag.unit.name} moved to bench slot ${index + 1}.`);
+      log(`${displayDragonName(drag.unit)} moved to bench slot ${index + 1}.`);
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
@@ -2435,7 +2882,7 @@
         return;
       }
       state.bench[benchIndex] = makeOwnedUnit(unit);
-      log(`Bought ${unit.name} into bench slot ${benchIndex + 1}.`);
+      log(`Bought ${displayDragonName(unit)} into bench slot ${benchIndex + 1}.`);
       autoMerge();
       renderUi();
     }
@@ -2477,14 +2924,14 @@
       const oldRow = unit.row;
       const oldCol = unit.col;
       if (target && target.id === unit.id) {
-        log(`${unit.name} stayed in place.`);
+        log(`${displayDragonName(unit)} stayed in place.`);
       } else if (target) {
         setDragonCell(unit, row, col);
         setDragonCell(target, oldRow, oldCol);
-        log(`Swapped ${unit.name} with ${target.name}.`);
+        log(`Swapped ${displayDragonName(unit)} with ${displayDragonName(target)}.`);
       } else {
         setDragonCell(unit, row, col);
-        log(`Moved ${unit.name}.`);
+        log(`Moved ${displayDragonName(unit)}.`);
       }
       state.dragging = null;
       state.hoverCell = null;
@@ -2518,10 +2965,10 @@
         syncDragonHp(boardUnit, true);
         state.dragons.push(boardUnit);
         state.bench[benchIndex] = unit;
-        log(`Swapped ${unit.name} with ${target.name}.`);
+        log(`Swapped ${displayDragonName(unit)} with ${displayDragonName(target)}.`);
       } else {
         state.bench[benchIndex] = unit;
-        log(`${unit.name} moved to bench slot ${benchIndex + 1}.`);
+        log(`${displayDragonName(unit)} moved to bench slot ${benchIndex + 1}.`);
       }
       state.dragging = null;
       state.hoverCell = null;
@@ -2555,7 +3002,7 @@
         state.dragons = state.dragons.filter(d => d.id !== target.id);
         state.dragons.push(incoming);
         state.bench[source.index] = target;
-        log(`Swapped ${incoming.name} with ${target.name}.`);
+        log(`Swapped ${displayDragonName(incoming)} with ${displayDragonName(target)}.`);
         state.dragging = null;
         state.hoverCell = null;
         clearDragGhost();
@@ -2583,7 +3030,7 @@
       syncDragonHp(d, source?.source === "bench");
       state.dragons.push(d);
       if (source?.source === "bench") state.bench[source.index] = null;
-      log(`Placed ${d.name}.`);
+      log(`Placed ${displayDragonName(d)}.`);
       state.dragging = null;
       state.hoverCell = null;
       clearDragGhost();
@@ -2627,7 +3074,7 @@
         .filter(e => {
           if (e.enteringTower || e.burrowed || (!e.wideBoss && e.row !== dragon.row)) return false;
           const dx = e.x - dragon.x;
-          const inFrontOrTouching = dx > 18 || dx >= -2;
+          const inFrontOrTouching = dx >= -CELL_W * 0.5;
           return inFrontOrTouching && dx <= rangeLimit;
         })
         .sort((a, b) => a.x - b.x)[0];
@@ -2707,6 +3154,7 @@
         projectileType: profile.projectileType,
         hitEffect: profile.hitEffect,
         row: dragon.row,
+        targetId: target.id,
         x: dragon.x + 28,
         y: dragon.y - 10,
         speed: profile.speed,
@@ -2727,6 +3175,7 @@
           projectileType: "wave",
           hitEffect: waterProfile.hitEffect,
           row: dragon.row,
+          targetId: target.id,
           x: dragon.x + 28,
           y: dragon.y - 10,
           speed: waterProfile.speed,
@@ -2912,7 +3361,7 @@
           state.effects.push({ type: "dragonDeath", x: d.x, y: d.y, life: .35 });
         }
         state.dragons = state.dragons.filter(d => d.hp > 0);
-        log(`${dragonDeaths[0].name} was defeated.`);
+        log(`${displayDragonName(dragonDeaths[0])} was defeated.`);
       }
 
       for (const p of state.projectiles) {
@@ -2936,7 +3385,8 @@
           const minX = Math.min(prevX, p.x) - radiusX;
           const maxX = Math.max(prevX, p.x) + radiusX;
           const yLine = p.projectileType === "lightning" ? prevY : p.y;
-          return e.x >= minX && e.x <= maxX && Math.abs(e.y - yLine) <= radiusY;
+          const trackedTargetInSameCell = e.id === p.targetId && e.x <= prevX && prevX - e.x <= CELL_W * 0.72;
+          return (trackedTargetInSameCell || (e.x >= minX && e.x <= maxX)) && Math.abs(e.y - yLine) <= radiusY;
         });
         if (enemy) {
           enemy.hp -= p.damage;
@@ -3194,7 +3644,7 @@
       ctx.fillStyle = castleGround;
       ctx.fillRect(0, 0, FIELD_X, canvas.height);
       const grass = img(icon.battleMap);
-      if (grass.complete && (grass.naturalWidth || grass.width)) {
+      if (canDrawImage(grass)) {
         drawImageCover(grass, FIELD_X, 0, FIELD_W, canvas.height, 1.28);
       } else {
         const fallback = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -3204,11 +3654,9 @@
         ctx.fillStyle = fallback;
         ctx.fillRect(FIELD_X, 0, FIELD_W, canvas.height);
       }
-      ctx.fillStyle = "rgba(0, 0, 0, .08)";
-      ctx.fillRect(FIELD_X, 0, FIELD_W, canvas.height);
       drawTowerAsset();
       drawPortal();
-      if (state.dragging || state.pendingMerge) {
+      if (state.dragging || state.pendingMerge || state.selected) {
         const pulse = 0.45 + Math.sin(performance.now() / 120) * 0.25;
         ctx.save();
         for (let r = 0; r < ROWS; r++) {
@@ -3297,6 +3745,7 @@
     }
 
     function drawImageContained(image, boxSize) {
+      if (!canDrawImage(image)) return { width: boxSize, height: boxSize };
       const iw = image.naturalWidth || image.width || boxSize;
       const ih = image.naturalHeight || image.height || boxSize;
       const scale = Math.min(boxSize / iw, boxSize / ih);
@@ -3307,6 +3756,7 @@
     }
 
     function drawSheetFrameContained(image, frameIndex, frameCount, boxSize) {
+      if (!canDrawImage(image)) return { width: boxSize, height: boxSize };
       const iw = image.naturalWidth || image.width || boxSize * frameCount;
       const ih = image.naturalHeight || image.height || boxSize;
       const frameW = iw / frameCount;
@@ -3318,27 +3768,48 @@
       return { width: drawW, height: drawH };
     }
 
+    function drawWithAlpha(alpha, drawCall) {
+      ctx.save();
+      ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
+      const result = drawCall();
+      ctx.restore();
+      return result;
+    }
+
     function drawDragonImage(d, size) {
       const baseImage = img(assetForUnit(d));
       const attackActive = d.attackAnim > 0;
       if (attackActive) {
         const sheet = img(attackSheetForUnit(d));
-        if (sheet.complete && (sheet.naturalWidth || sheet.width)) {
+        if (canDrawImage(sheet)) {
           const progress = 1 - Math.max(0, Math.min(1, d.attackAnim / ATTACK_ANIM_DURATION));
           const frame = Math.max(0, Math.min(5, Math.floor(progress * 6)));
-          return drawSheetFrameContained(sheet, frame, 6, size);
+          const transitionWindow = 0.16;
+          const blendRaw = Math.min(1, progress / transitionWindow, (1 - progress) / transitionWindow);
+          const attackAlpha = blendRaw * blendRaw * (3 - 2 * blendRaw);
+          let drawn = { width: size, height: size };
+          if (attackAlpha < 1 && canDrawImage(baseImage)) {
+            drawn = drawWithAlpha(1 - attackAlpha, () => drawImageContained(baseImage, size));
+          }
+          if (attackAlpha > 0) {
+            const attackDrawn = drawWithAlpha(attackAlpha, () => drawSheetFrameContained(sheet, frame, 6, size));
+            if (attackAlpha >= 0.5) drawn = attackDrawn;
+          }
+          return drawn;
         }
       }
       return drawImageContained(baseImage, size);
     }
 
     function drawImageCover(image, x, y, w, h, zoom = 1) {
+      if (!canDrawImage(image)) return false;
       const iw = image.naturalWidth || image.width || w;
       const ih = image.naturalHeight || image.height || h;
       const scale = Math.max(w / iw, h / ih) * zoom;
       const drawW = iw * scale;
       const drawH = ih * scale;
       ctx.drawImage(image, x + (w - drawW) / 2, y + (h - drawH) / 2, drawW, drawH);
+      return true;
     }
 
     function towerLayout(tower) {
@@ -3427,7 +3898,7 @@
         const sx = layout.x + layout.w * (0.5 + Math.sin(i * 1.73) * sourceBand);
         const sy = layout.y + layout.h * (burning ? 0.42 : 0.38) + Math.cos(i * 1.2) * 10;
         const drift = Math.sin(t * 1.8 + i * 0.9) * (10 + phase * 18);
-        const smokeY = sy - phase * (burning ? 138 : 126);
+        const smokeY = sy - phase * (burning ? 218 : 190);
         const smokeR = (13 + i % 4 * 4) * (0.68 + phase * 1.08) * intensity;
         ctx.globalAlpha = (1 - phase) * (burning ? .74 : .62);
         ctx.fillStyle = burning ? "rgba(39, 35, 35, .9)" : "rgba(91, 89, 88, .78)";
@@ -3506,19 +3977,23 @@
 
     function drawDragon(d) {
       const size = d.star === 3 ? 116 : d.star === 2 ? 104 : 92;
+      const visualY = d.row === 0 ? Math.max(d.y, size / 2 + 32) : d.y;
       let drawn = { width: size, height: size };
       const rarityColor = tierColor(d.cost);
       ctx.imageSmoothingEnabled = false;
       ctx.save();
       if (state.dragging?.source === "board" && state.dragging.id === d.id) ctx.globalAlpha = .35;
-      ctx.translate(d.x, d.y);
+      ctx.translate(d.x, visualY);
       ctx.scale(-1, 1);
       if (d.star === 3) {
-        ctx.shadowColor = "#ffe65a";
-        ctx.shadowBlur = 26;
-        drawn = drawDragonImage(d, size);
-        ctx.shadowColor = "#fff4a8";
-        ctx.shadowBlur = 12;
+        const glow = ctx.createRadialGradient(0, 0, size * 0.12, 0, 0, size * 0.64);
+        glow.addColorStop(0, "rgba(255, 246, 138, .48)");
+        glow.addColorStop(.52, "rgba(255, 216, 64, .2)");
+        glow.addColorStop(1, "rgba(255, 216, 64, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.64, 0, Math.PI * 2);
+        ctx.fill();
       }
       drawn = drawDragonImage(d, size);
       if (d.damageFlash > 0) {
@@ -3529,7 +4004,7 @@
         ctx.globalCompositeOperation = "source-over";
       }
       ctx.restore();
-      const topIconY = d.y - size / 2 - 14;
+      const topIconY = Math.max(24, visualY - size / 2 - 14);
       const rankWidth = 30;
       const hpWidth = 54;
       const gap = 0.5;
@@ -3542,7 +4017,7 @@
       const labelX = dragonCellLeft + 4;
       const textX = labelX + labelPad;
       const textMaxW = labelW - labelPad * 2;
-      const nameLayout = boardDragonNameLayout(d.name, textMaxW);
+      const nameLayout = boardDragonNameLayout(displayDragonName(d), textMaxW);
       const labelH = 20;
       const labelY = (d.row + 1) * CELL_H - labelH - 4;
       ctx.save();
@@ -3563,6 +4038,17 @@
       ctx.fillText(nameLayout.text, labelX + labelW / 2, labelY + 15);
       ctx.restore();
       ctx.textAlign = "left";
+
+      if (state.selected?.source === "board" && state.selected.id === d.id) {
+        const pulse = 0.72 + Math.sin(performance.now() / 130) * 0.18;
+        ctx.save();
+        ctx.strokeStyle = `rgba(255, 224, 80, ${pulse})`;
+        ctx.lineWidth = 5;
+        ctx.shadowColor = "#ffe050";
+        ctx.shadowBlur = 18;
+        ctx.strokeRect(cellLeft(d.col) + 7, d.row * CELL_H + 7, CELL_W - 14, CELL_H - 14);
+        ctx.restore();
+      }
 
       if (isBlinkCandidate(d)) {
         const pulse = 0.45 + Math.sin(performance.now() / 85) * 0.25;
@@ -3606,7 +4092,7 @@
         ctx.shadowColor = "#77ff8f";
         ctx.shadowBlur = 14;
       }
-      ctx.drawImage(image, -size / 2, -size / 2, size, size);
+      if (canDrawImage(image)) ctx.drawImage(image, -size / 2, -size / 2, size, size);
       ctx.restore();
       if (e.damageFlash > 0 && !e.wideBoss) {
         const maxFlash = 0.16;
@@ -4216,28 +4702,60 @@
       ctx.restore();
     }
 
+    function safelyDraw(layer, drawCall) {
+      try {
+        drawCall();
+      } catch (error) {
+        if (!renderWarnings.has(layer)) {
+          renderWarnings.add(layer);
+          console.warn(`Skipped ${layer} render after an asset error.`, error);
+        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+        ctx.shadowBlur = 0;
+      }
+    }
+
     function draw() {
-      drawBoard();
-      for (const d of state.dragons) drawDragon(d);
-      for (const e of state.enemies) drawEnemy(e);
-      for (const p of state.projectiles) drawProjectile(p);
-      for (const p of state.enemyProjectiles) drawEnemyProjectile(p);
-      drawEffects();
-      drawPlanningCountdown();
-      drawGameOver();
+      safelyDraw("board", drawBoard);
+      for (const d of state.dragons) safelyDraw("dragon", () => drawDragon(d));
+      for (const e of state.enemies) safelyDraw("enemy", () => drawEnemy(e));
+      for (const p of state.projectiles) safelyDraw("projectile", () => drawProjectile(p));
+      for (const p of state.enemyProjectiles) safelyDraw("enemy projectile", () => drawEnemyProjectile(p));
+      safelyDraw("effects", drawEffects);
+      safelyDraw("planning countdown", drawPlanningCountdown);
+      safelyDraw("game over", drawGameOver);
     }
 
     function loop(ts) {
+      requestAnimationFrame(loop);
       const dt = Math.min(0.05, (ts - state.lastTs) / 1000 || 0);
       state.lastTs = ts;
-      update(dt * state.gameSpeed, dt);
-      draw();
-      document.getElementById("hpText").textContent = state.hp;
-      document.getElementById("waveText").textContent = state.wave;
-      document.getElementById("waveTimerText").textContent = waveTimerText();
-      document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
-      requestAnimationFrame(loop);
+      try {
+        update(dt * state.gameSpeed, dt);
+        draw();
+        document.getElementById("hpText").textContent = state.hp;
+        document.getElementById("waveText").textContent = state.wave;
+        document.getElementById("waveTimerText").textContent = waveTimerText();
+        document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
+      } catch (error) {
+        if (!renderWarnings.has("game loop")) {
+          renderWarnings.add("game loop");
+          console.error("Game loop recovered from an unexpected error.", error);
+        }
+      }
     }
+
+    document.addEventListener("pointermove", moveTouchPointerDrag, { passive: false });
+    document.addEventListener("pointerup", ev => finishTouchPointerDrag(ev, false), { passive: false });
+    document.addEventListener("pointercancel", ev => finishTouchPointerDrag(ev, true), { passive: false });
+    document.addEventListener("click", ev => {
+      if (isTouchUi() && performance.now() < suppressTouchClickUntil) {
+        ev.preventDefault();
+        ev.stopImmediatePropagation();
+      }
+    }, true);
 
     canvas.addEventListener("click", ev => {
       if (state.gameOver) return;
@@ -4246,10 +4764,10 @@
         return;
       }
       if (state.dragging?.source === "board") return;
+      const rect = canvas.getBoundingClientRect();
+      const x = (ev.clientX - rect.left) / rect.width * canvas.width;
+      const y = (ev.clientY - rect.top) / rect.height * canvas.height;
       if (state.pendingMerge) {
-        const rect = canvas.getBoundingClientRect();
-        const x = (ev.clientX - rect.left) / rect.width * canvas.width;
-        const y = (ev.clientY - rect.top) / rect.height * canvas.height;
         const cell = canvasPointToCell(x, y, false);
         const dragon = cell ? dragonAtCell(cell.row, cell.col) : null;
         if (!completeBoardMerge(dragon)) {
@@ -4257,11 +4775,41 @@
         }
         return;
       }
+      if (isTouchUi()) {
+        ev.stopPropagation();
+        const selection = selectedDrag();
+        if (selection) {
+          const cell = canvasPointToCell(x, y, false);
+          clearTouchSelection();
+          if (!cell) {
+            log("Tap a battlefield cell to place the selected dragon.");
+            renderUi();
+            return;
+          }
+          state.dragging = selection;
+          placeUnit(selection.unit, cell.row, cell.col, selection);
+          clearTouchSelection();
+          renderUi();
+          return;
+        }
+        const dragon = dragonAtPoint(x, y);
+        if (dragon) {
+          if (state.waveRunning) {
+            showStats(dragon, ev.clientX, ev.clientY);
+            log("Board dragons are locked during a wave.");
+          } else {
+            selectForTouch({ source: "board", id: dragon.id, unit: dragon });
+          }
+        } else {
+          log("Tap a shop or bench dragon, then tap a battlefield cell.");
+        }
+        return;
+      }
       log("Drag a dragon from the shop or bench onto the board to place it.");
     });
 
     canvas.addEventListener("mousedown", ev => {
-      if (state.gameOver || state.pendingMerge || ev.button !== 0) return;
+      if (isTouchUi() || state.gameOver || state.pendingMerge || ev.button !== 0) return;
       const rect = canvas.getBoundingClientRect();
       const x = (ev.clientX - rect.left) / rect.width * canvas.width;
       const y = (ev.clientY - rect.top) / rect.height * canvas.height;
@@ -4277,8 +4825,8 @@
       state.suppressCanvasClick = true;
       state.hoverCell = null;
       makeBoardDragGhost(dragon, ev.clientX, ev.clientY);
-      document.getElementById("selectedText").textContent = dragon.name;
-      log(`Drag ${dragon.name} to the bench, another board cell, or Sell Dragon.`);
+      document.getElementById("selectedText").textContent = displayDragonName(dragon);
+      log(`Drag ${displayDragonName(dragon)} to the bench, another board cell, or Sell Dragon.`);
     });
 
     document.addEventListener("mousemove", ev => {
@@ -4306,21 +4854,21 @@
           if (cell) {
             moveBoardDragon(drag.unit, cell.row, cell.col);
           } else {
-            log(`${drag.unit.name} returned to the board.`);
+            log(`${displayDragonName(drag.unit)} returned to the board.`);
             state.dragging = null;
             state.hoverCell = null;
             clearDragGhost();
             renderUi();
           }
         } else {
-          log(`${drag.unit.name} returned to the board.`);
+          log(`${displayDragonName(drag.unit)} returned to the board.`);
           state.dragging = null;
           state.hoverCell = null;
           clearDragGhost();
           renderUi();
         }
       } else {
-        log(`${drag.unit.name} returned to the board. Board is locked while a wave is running.`);
+        log(`${displayDragonName(drag.unit)} returned to the board. Board is locked while a wave is running.`);
         state.dragging = null;
         state.hoverCell = null;
         clearDragGhost();
@@ -4388,6 +4936,9 @@
     document.getElementById("statPopover").addEventListener("wheel", ev => ev.stopPropagation(), { passive: true });
 
     window.addEventListener("resize", () => requestAnimationFrame(fitCanvasToScreen));
+    window.visualViewport?.addEventListener("resize", () => requestAnimationFrame(fitCanvasToScreen));
+    screen.orientation?.addEventListener?.("change", () => requestAnimationFrame(fitCanvasToScreen));
+    coarsePointer.addEventListener?.("change", () => renderUi());
 
     rollShop(true);
     renderUi();

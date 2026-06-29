@@ -20,7 +20,7 @@ Tagline: **Buy dragons, merge stars, and protect the tower.**
 
 ## Current Prototype Scope
 
-- HTML5 canvas prototype in `prototype.html`.
+- HTML5 canvas game in `Dragons vs Monsters.html`.
 - 5 lanes x 9 battlefield columns.
 - Left side has a tower objective and a 10-segment HP bar.
 - Column 1 is reserved for the tower/breach zone; dragons are placed from column 2 onward.

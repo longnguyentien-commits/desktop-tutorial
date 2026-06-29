@@ -22,14 +22,14 @@ echo %CD%
 echo.
 if defined IP (
   echo Share this link with computers on the same network:
-  echo http://%IP%:%PORT%/prototype.html
+  echo http://%IP%:%PORT%/Dragons%%20vs%%20Monsters.html
 ) else (
   echo Could not auto-detect IPv4 address.
-  echo Run ipconfig and use: http://YOUR_IPV4:%PORT%/prototype.html
+  echo Run ipconfig and use: http://YOUR_IPV4:%PORT%/Dragons%%20vs%%20Monsters.html
 )
 echo.
 echo Local test link:
-echo http://127.0.0.1:%PORT%/prototype.html
+echo http://127.0.0.1:%PORT%/Dragons%%20vs%%20Monsters.html
 echo.
 echo Keep this window open while people are playing.
 echo Press Ctrl+C to stop the server.

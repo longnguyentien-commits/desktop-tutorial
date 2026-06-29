@@ -40,7 +40,7 @@ while ($true) {
     $parts = $requestLine.Split(" ")
     $urlPath = if ($parts.Length -ge 2) { $parts[1] } else { "/" }
     $urlPath = $urlPath.Split("?")[0]
-    if ($urlPath -eq "/") { $urlPath = "/prototype.html" }
+    if ($urlPath -eq "/") { $urlPath = "/Dragons%20vs%20Monsters.html" }
     $relativePath = [System.Uri]::UnescapeDataString($urlPath.TrimStart("/")).Replace("/", [System.IO.Path]::DirectorySeparatorChar)
     $filePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($rootPath, $relativePath))
 

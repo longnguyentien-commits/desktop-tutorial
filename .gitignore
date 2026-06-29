@@ -5,3 +5,11 @@ Thumbs.db
 *.bak
 __pycache__/
 .cache/
+node_modules/
+test-results/
+playwright-report/
+blob-report/
+.chrome-draft-profile/
+draft-screenshot.png
+prototype-combat-board-draft.html
+Challenge

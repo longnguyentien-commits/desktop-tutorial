@@ -1,0 +1,25 @@
+{
+  "name": "qa-challenge",
+  "version": "1.0.0",
+  "description": "HTML5 dragon defense auto-battler inspired by Plants vs. Zombies and Teamfight Tactics.",
+  "main": "game.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test tests/smoke.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QA-VibeJam/Dragons-vs-Monsters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/QA-VibeJam/Dragons-vs-Monsters/issues"
+  },
+  "homepage": "https://github.com/QA-VibeJam/Dragons-vs-Monsters#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1"
+  }
+}
