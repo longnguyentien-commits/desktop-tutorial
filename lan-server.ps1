@@ -19,6 +19,7 @@ function Get-MimeType([string]$Path) {
     ".jpg" { "image/jpeg"; break }
     ".jpeg" { "image/jpeg"; break }
     ".gif" { "image/gif"; break }
+    ".webp" { "image/webp"; break }
     ".svg" { "image/svg+xml"; break }
     default { "application/octet-stream" }
   }
