@@ -654,13 +654,13 @@
     }
     .stat-popover {
       position: fixed;
-      z-index: 10;
+      z-index: 1000;
       min-width: 230px;
       max-width: 380px;
       border-radius: 8px;
       background: #172016;
       border: 1px solid #f3c94f;
-      box-shadow: 0 12px 28px rgba(0,0,0,.38);
+      box-shadow: 0 16px 42px rgba(0,0,0,.72), 0 0 0 2px rgba(243,201,79,.16);
       padding: 10px;
       display: none;
       pointer-events: auto;
@@ -765,6 +765,18 @@
       height: 30px;
       image-rendering: pixelated;
       object-fit: contain;
+    }
+    .stat-element-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 7px 2px 3px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 16px;
+      background: rgba(0,0,0,.28);
+      color: #f3f4df;
+      font-size: 13px;
+      font-weight: 900;
     }
     .trait-roster {
       margin-top: 9px;
@@ -985,71 +997,1802 @@
       #lockShopBtn { grid-template-columns: 20px auto; column-gap: 4px; }
       .tool-button img { width: 20px; height: 20px; }
     }
+
+    /* Prototype HUD: DML visual language with TFT-style information hierarchy. */
+    body {
+      background: #0d1511;
+    }
+    .app {
+      width: min(1600px, 100vw);
+      padding: 6px;
+      gap: 6px;
+    }
+    .prototype-topbar {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: minmax(300px, 1fr) minmax(330px, 500px) minmax(250px, 1fr);
+      gap: 8px;
+      min-height: 66px;
+      align-items: stretch;
+    }
+    .hud-cluster {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .hud-resources { justify-content: flex-start; }
+    .hud-status { justify-content: flex-end; }
+    .prototype-topbar .pill {
+      min-width: 0;
+      min-height: 48px;
+      padding: 6px 10px;
+      background: rgba(20, 32, 25, .96);
+      border: 1px solid #6d6845;
+      box-shadow: inset 0 0 0 1px rgba(255, 229, 139, .08), 0 3px 12px rgba(0, 0, 0, .28);
+    }
+    .prototype-topbar .pill span {
+      color: #b9c4ae;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .prototype-topbar .pill strong {
+      color: #fff1b4;
+      font-size: 15px;
+      white-space: nowrap;
+    }
+    .hp-pill, .gold-pill { flex: 0 1 118px; }
+    .keeper-pill { flex: 0 1 150px; }
+    .stage-hud {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: 1fr auto;
+      align-items: center;
+      gap: 3px 12px;
+      padding: 7px 14px;
+      background: rgba(15, 25, 19, .98);
+      border: 1px solid #9e884e;
+      border-radius: 8px;
+      box-shadow: inset 0 0 0 1px rgba(255, 230, 143, .12), 0 5px 16px rgba(0, 0, 0, .35);
+    }
+    .stage-heading {
+      grid-row: 1 / 3;
+      display: grid;
+      place-items: center;
+      min-width: 54px;
+      padding-right: 12px;
+      border-right: 1px solid rgba(255, 224, 138, .28);
+      color: #c6cfbb;
+      font-size: 10px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .stage-heading strong {
+      color: #ffe08a;
+      font-family: Georgia, serif;
+      font-size: 27px;
+      line-height: 25px;
+    }
+    .wave-preview {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      min-width: 130px;
+    }
+    .wave-preview-dot {
+      width: 23px;
+      height: 23px;
+      border: 2px solid #566359;
+      border-radius: 50%;
+      background: #18231c;
+      box-shadow: inset 0 0 0 3px #0c130f;
+    }
+    .wave-preview-dot.active {
+      border-color: #d5aa48;
+      background: #d5aa48;
+      box-shadow: inset 0 0 0 4px #493b1c, 0 0 9px rgba(243, 201, 79, .42);
+    }
+    .wave-preview-dot.special {
+      border-color: #ad7fdf;
+      background: #7444a2;
+    }
+    .stage-meta {
+      grid-column: 2 / 4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      min-height: 18px;
+      color: #9eaa9b;
+      font-size: 11px;
+    }
+    .stage-meta strong { color: #f7e9b0; }
+    .stage-meta .wave-timer {
+      min-width: 92px;
+      color: #ffe08a;
+      text-align: center;
+    }
+    .stage-meta .wave-timer:empty { display: none; }
+    .sound-toggle {
+      min-width: 78px;
+      min-height: 48px;
+      padding: 7px 10px;
+      border-color: #807548 !important;
+      color: #ffe7a0 !important;
+    }
+    .sound-toggle.muted { color: #a9b0a6 !important; border-color: #4e5a50 !important; }
+    .selection-pill { flex: 0 1 190px; }
+    .main {
+      grid-template-columns: 230px minmax(620px, 1fr) 132px;
+      gap: 6px;
+    }
+    .panel, .board-wrap {
+      background: rgba(16, 26, 20, .97);
+      border-color: #465b47;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+    }
+    .left-panel { padding: 7px; }
+    .left-panel h2, .control-panel h2 {
+      color: #d6bd70;
+      font-family: Georgia, serif;
+      letter-spacing: .02em;
+    }
+    .trait {
+      grid-template-columns: 30px 1fr auto;
+      gap: 6px;
+      padding: 4px 0;
+      font-size: 13px;
+    }
+    .trait img { width: 27px; height: 27px; }
+    .trait-stack { min-width: 19px; padding: 2px 3px; font-size: 10px; }
+    .board-wrap {
+      grid-template-areas:
+        "game"
+        "bench-title"
+        "bench-hint"
+        "bench"
+        "shop-title"
+        "shop"
+        "log";
+      grid-template-rows: minmax(0, 1fr) auto auto auto auto auto auto;
+      padding: 6px;
+      gap: 4px;
+    }
+    #game { grid-area: game; }
+    .bench-title { grid-area: bench-title; }
+    .bench-heal-hint { grid-area: bench-hint; }
+    .bench { grid-area: bench; }
+    .shop-title { grid-area: shop-title; }
+    .shop-row { grid-area: shop; }
+    .log { grid-area: log; }
+    .bench-title, .shop-title {
+      color: #d9bd68;
+      font-family: Georgia, serif;
+      font-size: 11px;
+    }
+    .shop-row { gap: 4px; }
+    .card {
+      height: 124px;
+      min-height: 124px;
+      grid-template-columns: 74px 1fr;
+      grid-template-rows: 18px 66px 22px;
+      padding: 5px;
+      border-width: 2px;
+      background: #202b24;
+    }
+    .card .dragon-img { max-width: 74px; max-height: 70px; }
+    .card-title { font-size: 11px; }
+    .element-tag { font-size: 9px; }
+    .control-panel { padding: 6px; }
+    .control-panel h2 { font-size: 15px; text-align: center; }
+    .side-actions { gap: 5px; }
+    .side-actions button, .sell-zone { min-height: 46px; padding: 7px 5px; font-size: 11px; }
+
+    @media (max-width: 1180px) {
+      .prototype-topbar {
+        grid-template-columns: minmax(250px, 1fr) minmax(300px, 430px) minmax(190px, 1fr);
+      }
+      .selection-pill { display: none; }
+      .main { grid-template-columns: 190px minmax(540px, 1fr) 118px; }
+      .drop-rate-panel { display: none; }
+    }
+
+    @media (max-width: 800px), (max-width: 1180px) and (pointer: coarse) {
+      .app { padding: 4px; gap: 4px; }
+      .prototype-topbar {
+        grid-template-columns: minmax(0, 1fr) minmax(225px, 1.25fr) auto;
+        min-height: 52px;
+        gap: 4px;
+      }
+      .hud-resources { gap: 3px; }
+      .prototype-topbar .pill {
+        min-height: 46px;
+        padding: 4px 6px;
+      }
+      .prototype-topbar .pill span { display: none; }
+      .prototype-topbar .pill strong { font-size: 12px; }
+      .prototype-topbar .icon { width: 18px; height: 18px; }
+      .keeper-pill { display: none !important; }
+      .hp-pill, .gold-pill { flex: 1 1 50%; }
+      .stage-hud {
+        grid-template-columns: auto 1fr;
+        gap: 2px 7px;
+        padding: 4px 8px;
+      }
+      .stage-heading { min-width: 38px; padding-right: 7px; }
+      .stage-heading strong { font-size: 22px; }
+      .wave-preview { gap: 4px; min-width: 0; }
+      .wave-preview-dot { width: 17px; height: 17px; }
+      .stage-meta { grid-column: 2; gap: 5px; font-size: 9px; }
+      .stage-meta .wave-timer { min-width: 65px; }
+      .hud-status { display: block; }
+      .sound-toggle { min-width: 54px; min-height: 46px; padding: 4px; font-size: 10px; }
+      .main { display: flex; flex-direction: column; gap: 4px; }
+      .main > section { order: 1; }
+      .control-panel { order: 2; }
+      .left-panel { order: 3; }
+      .board-wrap {
+        display: grid;
+        grid-template-areas:
+          "shop-title"
+          "shop"
+          "game"
+          "bench-title"
+          "bench-hint"
+          "bench"
+          "log";
+        grid-template-rows: auto auto auto auto auto auto auto;
+      }
+      body.wave-active .shop-title,
+      body.wave-active .shop-row { display: none; }
+      .shop-row {
+        grid-template-columns: repeat(5, minmax(128px, 1fr));
+        gap: 4px;
+        padding-bottom: 4px;
+      }
+      .card {
+        height: 108px;
+        min-height: 108px;
+        grid-template-columns: 62px 1fr;
+        grid-template-rows: 16px 56px 20px;
+      }
+      .card .dragon-img { max-width: 62px; max-height: 60px; }
+      .bench-slot { height: 60px; min-height: 60px; }
+      .side-actions {
+        grid-template-columns: repeat(6, minmax(76px, 1fr));
+        grid-template-rows: minmax(45px, auto);
+        overflow-x: auto;
+      }
+      .side-actions button, .sell-zone { min-height: 45px; }
+      .control-panel h2 { display: none; }
+      .left-panel { max-height: 150px; }
+      .left-panel > h2 { font-size: 13px; margin-bottom: 3px; }
+      #traitPanel { display: flex; gap: 10px; overflow-x: auto; }
+      .trait { min-width: 150px; border-bottom: 0; }
+    }
+
+    @media (max-width: 1180px) and (pointer: coarse) and (orientation: landscape) {
+      html, body { overflow: hidden; }
+      .app {
+        height: 100dvh;
+        min-height: 0;
+        grid-template-rows: auto minmax(0, 1fr);
+      }
+      .mobile-toolbar { display: none; }
+      .prototype-topbar { min-height: 46px; }
+      .prototype-topbar .pill, .sound-toggle { min-height: 42px; }
+      .main {
+        position: relative;
+        display: block;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .main > section { width: 100%; height: 100%; min-height: 0; }
+      .board-wrap {
+        position: relative;
+        display: block;
+        height: 100%;
+        overflow: hidden;
+        padding: 0;
+        border: 0;
+        background: #09100c;
+      }
+      #game {
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: min(100%, calc((100dvh - 56px) * 16 / 9)) !important;
+        height: auto !important;
+        transform: translate(-50%, -50%);
+      }
+      .shop-title, .bench-title, .bench-heal-hint, .log { display: none; }
+      .shop-row {
+        position: absolute;
+        z-index: 8;
+        top: 4px;
+        left: 50%;
+        width: min(96%, 720px);
+        transform: translateX(-50%);
+        overflow: hidden;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        padding: 0;
+      }
+      .card {
+        height: clamp(76px, 24vh, 94px);
+        min-height: 76px;
+        grid-template-columns: minmax(48px, 38%) 1fr;
+        grid-template-rows: 15px minmax(38px, 1fr) 18px;
+        background: rgba(22, 31, 25, .94);
+      }
+      .bench {
+        position: absolute;
+        z-index: 7;
+        bottom: 4px;
+        left: 50%;
+        width: min(78%, 650px);
+        transform: translateX(-50%);
+        padding: 3px;
+        background: rgba(8, 14, 10, .78);
+        border: 1px solid rgba(214, 189, 112, .32);
+        border-radius: 7px;
+      }
+      .bench-slot { height: clamp(45px, 15vh, 58px); min-height: 45px; background: rgba(20, 32, 24, .84); }
+      .left-panel {
+        position: absolute;
+        z-index: 10;
+        top: 50%;
+        left: 4px;
+        display: block;
+        width: min(118px, 14vw);
+        max-height: 72%;
+        transform: translateY(-50%);
+        overflow: hidden;
+        background: rgba(10, 17, 12, .82);
+      }
+      .left-panel > h2 { display: none; }
+      #traitPanel { display: grid; gap: 2px; overflow: hidden; }
+      .trait { min-width: 0; grid-template-columns: 24px minmax(0, 1fr); font-size: 10px; }
+      .trait img { width: 22px; height: 22px; }
+      .trait-stacks { display: none; }
+      .control-panel {
+        position: absolute;
+        z-index: 12;
+        top: 50%;
+        right: 4px;
+        width: min(112px, 13vw);
+        transform: translateY(-50%);
+        padding: 3px;
+        background: rgba(10, 17, 12, .82);
+      }
+      .side-actions {
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+      }
+      .side-actions button, .sell-zone { min-height: 34px; padding: 4px 3px; font-size: 9px; }
+      .tool-button img, .sell-zone img { width: 16px; height: 16px; }
+      body.wave-active .side-actions > *:not(#speedBtn) { display: none; }
+      body.wave-active #speedBtn { min-width: 86px; border-radius: 8px; }
+    }
+
+    @media (max-width: 520px) and (orientation: portrait) {
+      .prototype-topbar { grid-template-columns: 1fr minmax(190px, 1.25fr); }
+      .hud-status { display: none; }
+      .wave-preview-dot { width: 14px; height: 14px; }
+      .stage-meta span { display: none; }
+    }
+
+    /* Freestyle visual pass: a distinct tactical fantasy HUD. */
+    .prototype-topbar::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      width: min(640px, 46vw);
+      height: 2px;
+      transform: translateX(-50%);
+      background: #a98d43;
+      opacity: .7;
+      pointer-events: none;
+    }
+    .stage-hud {
+      border-color: #c6a653;
+      background: #101713;
+      box-shadow: inset 0 0 0 2px #273329, 0 6px 18px rgba(0,0,0,.5);
+      clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%);
+    }
+    .phase-text {
+      color: #7ddbc6 !important;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    body.wave-active .phase-text { color: #ff9278 !important; }
+    .prototype-topbar .hp-pill { border-left: 3px solid #d85d58; }
+    .prototype-topbar .gold-pill { border-left: 3px solid #e5bc4e; }
+    .prototype-topbar .keeper-pill { border-left: 3px solid #5fbfae; }
+    .prototype-topbar .pill .icon {
+      width: 28px;
+      height: 28px;
+      padding: 3px;
+      background: #0b110e;
+      border: 1px solid #5b674f;
+      border-radius: 50%;
+    }
+    .left-panel .trait.active {
+      margin: 2px 0;
+      padding: 6px;
+      background: #16231c;
+      border: 1px solid #536b52;
+      border-left: 3px solid #d8b655;
+      border-radius: 5px;
+    }
+    .left-panel .trait.active img { filter: drop-shadow(0 0 5px rgba(255,224,138,.4)); }
+    .bench {
+      position: relative;
+      padding: 5px;
+      background: #0c1410;
+      border: 1px solid #665e3c;
+      box-shadow: inset 0 0 0 2px #202d23, 0 4px 12px rgba(0,0,0,.35);
+      border-radius: 7px;
+    }
+    .bench-slot { border-color: #445047; background: #131d17; }
+    .bench-slot:not(.filled)::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      border: 1px solid #48554b;
+      transform: rotate(45deg);
+      opacity: .45;
+    }
+    .side-actions button {
+      background: #1b2820;
+      color: #f1e6bd;
+      border: 1px solid #736b46;
+      box-shadow: inset 0 0 0 1px #29382c, 0 3px 7px rgba(0,0,0,.28);
+    }
+    .side-actions button:hover:not(:disabled) {
+      color: #fff4c9;
+      border-color: #d0ad52;
+      background: #26372b;
+    }
+    #spawnBtn {
+      background: #315b4d;
+      border-color: #72c8aa;
+      color: #ecfff8;
+      box-shadow: inset 0 0 0 1px #18382f, 0 0 12px rgba(65,189,151,.24);
+    }
+    body.wave-active #spawnBtn { background: #522b29; border-color: #a35c52; }
+    #rerollBtn { border-color: #9f8751; }
+    #buyXpBtn { background: #292c4b; border-color: #777dce; color: #eff0ff; }
+    .sell-zone { background: #29191a; border-style: solid; border-color: #744043; }
+
+    @media (min-width: 801px) and (pointer: fine) {
+      .app { padding: 7px 10px 9px; }
+      .prototype-topbar {
+        grid-template-columns: minmax(340px, 1fr) minmax(390px, 520px) minmax(280px, 1fr);
+        min-height: 72px;
+      }
+      .prototype-topbar .pill { min-height: 54px; background: #141e18; }
+      .main { grid-template-columns: 205px minmax(650px, 1fr) 124px; gap: 7px; }
+      .panel { background: #111a15; border-color: #4f5d45; }
+      .left-panel {
+        border-top: 3px solid #9d8342;
+        box-shadow: inset -8px 0 18px rgba(0,0,0,.2);
+      }
+      .left-panel h2, .control-panel h2 {
+        font-size: 14px;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: .12em;
+      }
+      .board-wrap {
+        padding: 7px;
+        border: 1px solid #8d7841;
+        background: #090f0c;
+        box-shadow: inset 0 0 0 2px #26342a, 0 5px 20px rgba(0,0,0,.45);
+      }
+      canvas { border-radius: 3px; }
+      .bench-title, .shop-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #efe1aa;
+        letter-spacing: .13em;
+      }
+      .bench-title::after, .shop-title::after {
+        content: "";
+        height: 1px;
+        flex: 1;
+        background: #5f5738;
+      }
+      .shop-row {
+        gap: 6px;
+        padding: 5px;
+        background: #0b120e;
+        border: 1px solid #5f5738;
+        border-radius: 7px;
+      }
+      .card {
+        display: block;
+        height: 146px;
+        min-height: 146px;
+        padding: 0;
+        overflow: hidden;
+        border-width: 1px 1px 4px;
+        background: #20272a;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 3px 7px rgba(0,0,0,.4);
+      }
+      .card.tier-1 { background: #252b2e; }
+      .card.tier-2 { background: #193323; }
+      .card.tier-3 { background: #172d42; }
+      .card.tier-4 { background: #302342; }
+      .card.tier-5 { background: #3e3518; }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 5px 5px 32px;
+        border: 1px solid rgba(255,255,255,.08);
+        pointer-events: none;
+      }
+      .card-title {
+        position: absolute;
+        z-index: 3;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        min-height: 29px;
+        padding: 7px 42px 5px 7px;
+        overflow: hidden;
+        background: #101613;
+        color: #fff4c7;
+        font-family: Georgia, serif;
+        font-size: 12px;
+        line-height: 17px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .dragon-img, .card .dragon-img {
+        left: 50%;
+        top: 16px;
+        width: 108px;
+        height: 108px;
+        max-width: none;
+        max-height: none;
+        transform: translateX(-50%) scaleX(-1);
+        filter: drop-shadow(0 8px 5px rgba(0,0,0,.45));
+      }
+      .elements {
+        position: absolute;
+        z-index: 4;
+        top: 6px;
+        left: 6px;
+        width: auto;
+        height: auto;
+        flex-direction: row;
+        gap: 2px;
+      }
+      .element-tag {
+        width: 23px;
+        min-width: 23px;
+        height: 23px;
+        overflow: hidden;
+        font-size: 0;
+        background: #101613;
+        border: 1px solid rgba(255,255,255,.14);
+        border-radius: 50%;
+      }
+      .element-dot { width: 21px; height: 21px; }
+      .cost {
+        position: absolute;
+        z-index: 5;
+        right: 5px;
+        bottom: 4px;
+        width: auto;
+        min-width: 34px;
+        height: 22px;
+        margin: 0;
+        padding: 2px 4px;
+        background: #211b0d;
+        border-color: #78692f;
+        color: #ffe878;
+      }
+      .cost .icon { width: 15px; height: 15px; }
+      .shop-lock-badge { top: 6px; right: 6px; }
+      .merge-star-hint { position: absolute; left: 6px; bottom: 32px; margin: 0; }
+      .bench-slot { height: 68px; min-height: 68px; }
+      .bench-slot img { width: 45px; height: 45px; }
+      .control-panel {
+        border-top: 3px solid #9d8342;
+        box-shadow: inset 8px 0 18px rgba(0,0,0,.2);
+      }
+      .side-actions { gap: 6px; }
+      .side-actions button, .sell-zone { border-radius: 6px; }
+    }
+
+    @media (max-width: 1180px) and (pointer: coarse) and (orientation: landscape) {
+      .shop-row {
+        padding: 4px;
+        background: rgba(8,14,10,.94);
+        border: 1px solid #77683c;
+        box-shadow: 0 5px 14px rgba(0,0,0,.45);
+      }
+      .card { border-width: 1px 1px 3px; box-shadow: 0 3px 8px rgba(0,0,0,.4); }
+      .stage-hud { clip-path: none; }
+      .phase-text { display: inline !important; }
+    }
+
+    /* HUD balance and board-width correction. */
+    .stage-hud {
+      clip-path: none;
+      transform: none;
+      border-width: 2px;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+    }
+    .prototype-topbar .pill {
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .prototype-topbar .pill strong {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (min-width: 801px) and (pointer: fine) {
+      .prototype-topbar {
+        grid-template-columns: minmax(210px, 1fr) minmax(360px, 470px) minmax(210px, 1fr);
+        gap: 12px;
+      }
+      .hud-resources, .hud-status {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: min(100%, 300px);
+        gap: 7px;
+      }
+      .hud-resources { justify-self: start; }
+      .hud-status { justify-self: end; }
+      .selection-pill { display: none; }
+      .hp-pill, .gold-pill, .keeper-pill { width: auto; max-width: none; }
+      .sound-toggle { width: 100%; min-width: 0; }
+
+      .main {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+      }
+      .main > section {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        min-width: 0;
+      }
+      .left-panel, .control-panel {
+        position: absolute;
+        z-index: 9;
+        top: 10px;
+        bottom: 230px;
+        width: clamp(118px, 14vw, 196px);
+        max-height: none;
+        background: rgba(12, 20, 15, .9);
+      }
+      .left-panel { left: 10px; }
+      .control-panel { right: 10px; }
+      .board-wrap {
+        width: 100%;
+        background: #121c16;
+      }
+      .card { height: 126px; min-height: 126px; }
+      .dragon-img, .card .dragon-img {
+        top: 8px;
+        width: 94px;
+        height: 94px;
+      }
+      .bench-slot { height: 56px; min-height: 56px; }
+      .bench-slot img { width: 38px; height: 38px; }
+      .bench-name { font-size: 9px; line-height: 12px; }
+      .side-actions {
+        grid-template-rows: minmax(56px, 1fr) repeat(5, minmax(38px, 46px));
+      }
+      .side-actions button, .sell-zone { min-height: 38px; padding: 5px 4px; font-size: 11px; }
+    }
+
+    @media (min-width: 801px) and (max-height: 760px) and (pointer: fine) {
+      .left-panel, .control-panel { bottom: 205px; }
+      .card { height: 108px; min-height: 108px; }
+      .dragon-img, .card .dragon-img { width: 82px; height: 82px; }
+      .bench-slot { height: 48px; min-height: 48px; }
+      .bench-slot img { width: 32px; height: 32px; }
+    }
+
+    /* Stable stage layout: Traits | Map | Controls, followed by Bench and Shop. */
+    @media (min-width: 801px) and (pointer: fine) {
+      .app {
+        padding: 5px 8px 7px;
+        gap: 5px;
+      }
+      .prototype-topbar { min-height: 54px; }
+      .prototype-topbar .pill, .sound-toggle { min-height: 44px; }
+      .main {
+        display: block;
+        position: static;
+        overflow: hidden;
+      }
+      .main > section { width: 100%; height: 100%; overflow: hidden; }
+      .board-wrap {
+        grid-template-areas:
+          "game"
+          "bench-title"
+          "bench-hint"
+          "bench"
+          "shop-title"
+          "shop"
+          "log";
+        grid-template-rows: minmax(0, 1fr) auto auto auto auto auto auto;
+        padding: 5px;
+        gap: 3px;
+      }
+      .battle-stage {
+        grid-area: game;
+        display: grid;
+        grid-template-columns: clamp(160px, 14vw, 180px) minmax(0, 1fr) clamp(145px, 13vw, 170px);
+        gap: 5px;
+        align-items: stretch;
+        justify-items: stretch;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+      }
+      .battle-stage #game {
+        grid-area: auto;
+        position: static;
+        inset: auto;
+        width: 100% !important;
+        height: auto !important;
+        min-width: 0;
+        align-self: center;
+        transform: none;
+      }
+      .battle-stage .left-panel,
+      .battle-stage .control-panel {
+        position: static;
+        inset: auto;
+        width: auto;
+        height: 100%;
+        min-width: 0;
+        max-height: none;
+        transform: none;
+        overflow: hidden;
+        background: #0d1711;
+      }
+      .battle-stage .left-panel { box-shadow: inset -7px 0 16px rgba(0,0,0,.18); }
+      .battle-stage .control-panel { box-shadow: inset 7px 0 16px rgba(0,0,0,.18); }
+      .bench-title, .shop-title { font-size: 10px; line-height: 10px; }
+      .bench { padding: 3px; gap: 3px; }
+      .bench-slot { height: 36px; min-height: 36px; padding: 1px; }
+      .bench-slot img { width: 27px; height: 27px; }
+      .bench-name { height: 11px; font-size: 8px; line-height: 10px; padding: 0 2px; }
+      .rank-icon { width: 10px; height: 10px; font-size: 7px; line-height: 10px; }
+      .shop-row { padding: 3px; gap: 4px; }
+      .card { height: 62px; min-height: 62px; border-bottom-width: 3px; }
+      .card::before { inset: 3px 3px 20px; }
+      .card-title {
+        min-height: 19px;
+        padding: 2px 33px 2px 5px;
+        font-size: 10px;
+        line-height: 15px;
+      }
+      .dragon-img, .card .dragon-img {
+        top: 1px;
+        width: 52px;
+        height: 52px;
+      }
+      .elements { top: 3px; left: 3px; }
+      .element-tag { width: 16px; min-width: 16px; height: 16px; }
+      .element-dot { width: 14px; height: 14px; }
+      .cost { right: 3px; bottom: 1px; min-width: 28px; height: 17px; font-size: 10px; padding: 1px 3px; }
+      .cost .icon { width: 12px; height: 12px; }
+      .shop-lock-badge { top: 3px; right: 3px; width: 16px; height: 16px; }
+      .merge-star-hint { left: 3px; bottom: 20px; transform: scale(.72); transform-origin: left bottom; }
+      .side-actions {
+        grid-template-rows: minmax(58px, 1fr) repeat(5, minmax(31px, 1fr));
+        gap: 4px;
+      }
+      .side-actions button, .sell-zone { min-height: 31px; padding: 3px; font-size: 10px; }
+    }
+
+    @media (max-width: 800px), (max-width: 1180px) and (pointer: coarse) {
+      .battle-stage { display: contents; }
+      .battle-stage #game { grid-area: game; }
+      .battle-stage .control-panel { grid-area: controls; }
+      .battle-stage .left-panel { grid-area: traits; }
+      .board-wrap {
+        grid-template-areas:
+          "shop-title"
+          "shop"
+          "game"
+          "bench-title"
+          "bench-hint"
+          "bench"
+          "log"
+          "controls"
+          "traits";
+      }
+    }
+
+    @media (max-width: 1180px) and (pointer: coarse) and (orientation: landscape) {
+      .board-wrap { display: block; }
+      .battle-stage { display: contents; }
+      .battle-stage .left-panel,
+      .battle-stage .control-panel { position: absolute; }
+      .battle-stage #game { position: absolute; }
+    }
+
+    /* Restore readable HUD proportions without reintroducing panel overlap. */
+    @media (min-width: 801px) and (pointer: fine) {
+      .board-wrap {
+        grid-template-rows: auto auto auto auto auto auto auto;
+        align-content: start;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .battle-stage {
+        grid-template-columns: clamp(180px, 19vw, 240px) minmax(0, 1fr) clamp(165px, 17vw, 220px);
+        align-items: stretch;
+        overflow: visible;
+      }
+      .battle-stage .left-panel,
+      .battle-stage .control-panel {
+        min-height: 0;
+        overflow-y: auto;
+        scrollbar-width: thin;
+      }
+      .drop-rate-table { gap: 1px; font-size: 9px; }
+      .drop-rate-row { min-height: 17px; padding: 1px 0; }
+      .bench { padding: 4px; gap: 4px; }
+      .bench-slot { height: 58px; min-height: 58px; padding: 2px; }
+      .bench-slot img { width: 42px; height: 42px; }
+      .bench-name { height: 14px; font-size: 9px; line-height: 13px; padding: 0 3px; }
+      .rank-icon { width: 12px; height: 12px; font-size: 8px; line-height: 12px; }
+      .shop-row { padding: 4px; gap: 5px; }
+      .card { height: 100px; min-height: 100px; }
+      .card::before { inset: 4px 4px 25px; }
+      .card-title {
+        min-height: 25px;
+        padding: 4px 38px 3px 6px;
+        font-size: 11px;
+        line-height: 18px;
+      }
+      .dragon-img, .card .dragon-img {
+        top: 5px;
+        width: 78px;
+        height: 78px;
+      }
+      .elements { top: 4px; left: 4px; }
+      .element-tag { width: 19px; min-width: 19px; height: 19px; }
+      .element-dot { width: 17px; height: 17px; }
+      .cost { right: 4px; bottom: 2px; min-width: 31px; height: 20px; font-size: 11px; }
+      .cost .icon { width: 14px; height: 14px; }
+      .shop-lock-badge { top: 4px; right: 4px; width: 18px; height: 18px; }
+      .merge-star-hint { left: 4px; bottom: 26px; transform: scale(.84); }
+      .side-actions {
+        grid-template-rows: minmax(76px, 1.25fr) repeat(5, minmax(38px, 1fr));
+        gap: 5px;
+      }
+      .side-actions button, .sell-zone { min-height: 38px; padding: 5px 4px; font-size: 11px; }
+    }
+
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(165px, 18vw, 195px) minmax(0, 1fr) clamp(145px, 16vw, 175px);
+      }
+      .card { height: 88px; min-height: 88px; }
+      .dragon-img, .card .dragon-img { width: 68px; height: 68px; }
+      .bench-slot { height: 52px; min-height: 52px; }
+    }
+
+    /* Keep the full Keeper level and XP readable at every desktop width. */
+    .keeper-pill {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 1px;
+    }
+    .keeper-pill strong {
+      width: 100%;
+      font-size: 13px !important;
+      line-height: 15px;
+    }
+    @media (min-width: 801px) and (pointer: fine) {
+      .hud-status {
+        grid-template-columns: minmax(145px, 1.45fr) minmax(78px, .65fr);
+        width: min(100%, 330px);
+      }
+    }
+
+    .keeper-pill {
+      display: grid;
+      grid-template-rows: auto auto;
+      align-content: center;
+      gap: 3px;
+    }
+    .keeper-pill #levelText {
+      color: #fff0ad;
+      font-family: Georgia, serif;
+      font-size: 14px !important;
+      line-height: 15px;
+      text-transform: uppercase;
+    }
+    .keeper-xp-track {
+      position: relative;
+      width: 100%;
+      height: 14px;
+      overflow: hidden;
+      border: 1px solid #5b755f;
+      border-radius: 4px;
+      background: #09100c;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.7);
+    }
+    .keeper-xp-track i {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      background: #4fc8aa;
+      box-shadow: 0 0 8px rgba(79,200,170,.5);
+      transition: width .25s ease;
+    }
+    .keeper-xp-track span {
+      position: absolute;
+      inset: 0;
+      display: grid !important;
+      place-items: center;
+      color: #f4fff8 !important;
+      font-size: 8px !important;
+      font-weight: 900;
+      line-height: 12px;
+      letter-spacing: .02em;
+      text-shadow: 0 1px 2px #000;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 801px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(210px, 21vw, 260px) minmax(0, 1fr) clamp(155px, 15vw, 190px);
+      }
+      .card { height: 112px; min-height: 112px; }
+      .dragon-img, .card .dragon-img { width: 88px; height: 88px; }
+      .card::before { inset: 4px 4px 27px; }
+    }
+
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(185px, 20vw, 215px) minmax(0, 1fr) clamp(145px, 15vw, 165px);
+      }
+      .card { height: 96px; min-height: 96px; }
+      .dragon-img, .card .dragon-img { width: 74px; height: 74px; }
+    }
+
+    /* Final readability sizing for Keeper, Shop and Controls. */
+    .keeper-pill #levelText {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 15px !important;
+      font-weight: 900;
+      line-height: 16px;
+      letter-spacing: 0;
+    }
+    .keeper-xp-track {
+      height: 19px;
+      border-color: #88b99c;
+      background: #050a07;
+      box-shadow: inset 0 0 0 1px #18241c, inset 0 2px 4px rgba(0,0,0,.8);
+    }
+    .keeper-xp-track i { background: #278d75; }
+    .keeper-xp-track span {
+      color: #ffffff !important;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10px !important;
+      line-height: 17px;
+      letter-spacing: 0;
+      text-shadow: 0 1px 2px #000, 0 0 3px #000;
+    }
+    @media (min-width: 801px) and (pointer: fine) {
+      .keeper-pill { min-height: 50px !important; }
+      .hud-status {
+        grid-template-columns: minmax(170px, 1.55fr) minmax(76px, .6fr);
+        width: min(100%, 340px);
+      }
+      .battle-stage {
+        grid-template-columns: clamp(215px, 21vw, 265px) minmax(0, 1fr) clamp(140px, 13vw, 165px);
+      }
+      .card { height: 132px; min-height: 132px; }
+      .dragon-img, .card .dragon-img {
+        top: 7px;
+        width: 102px;
+        height: 102px;
+      }
+      .card::before { inset: 4px 4px 29px; }
+    }
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(190px, 20vw, 220px) minmax(0, 1fr) clamp(135px, 13vw, 150px);
+      }
+      .card { height: 112px; min-height: 112px; }
+      .dragon-img, .card .dragon-img { width: 86px; height: 86px; }
+    }
+
+    /* Stronger second sizing pass requested for the prototype. */
+    .keeper-pill {
+      grid-template-rows: 17px 12px;
+      gap: 2px;
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+    }
+    .keeper-pill #levelText {
+      font-family: "Arial Black", Arial, Helvetica, sans-serif;
+      font-size: 16px !important;
+      line-height: 17px;
+      color: #fff2b5;
+    }
+    .keeper-xp-block {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      min-width: 0;
+    }
+    .keeper-xp-block > span {
+      display: block !important;
+      overflow: visible;
+      color: #e9fff7 !important;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9px !important;
+      font-weight: 900;
+      line-height: 10px;
+      letter-spacing: 0;
+      text-align: left;
+      text-shadow: 0 1px 2px #000;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    .keeper-xp-track {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 30px;
+      height: 8px;
+      border-color: #9fc9ad;
+      border-radius: 3px;
+    }
+    @media (min-width: 801px) and (pointer: fine) {
+      .keeper-pill { min-height: 50px !important; }
+      .hud-status {
+        grid-template-columns: minmax(190px, 1fr) minmax(68px, 74px);
+        width: min(100%, 350px);
+      }
+      .battle-stage {
+        grid-template-columns: clamp(250px, 24vw, 305px) minmax(0, 1fr) clamp(125px, 11.5vw, 145px);
+      }
+      .card { height: 145px; min-height: 145px; }
+      .dragon-img, .card .dragon-img {
+        top: 8px;
+        width: 114px;
+        height: 114px;
+      }
+      .card::before { inset: 4px 4px 30px; }
+      .bench-slot { height: 50px; min-height: 50px; }
+      .bench-slot img { width: 36px; height: 36px; }
+      .control-panel { padding-left: 5px; padding-right: 5px; }
+      .side-actions button, .sell-zone { font-size: 10px; }
+    }
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .hud-status { grid-template-columns: minmax(165px, 1fr) 66px; }
+      .battle-stage {
+        grid-template-columns: clamp(210px, 23vw, 245px) minmax(0, 1fr) clamp(118px, 12vw, 132px);
+      }
+      .card { height: 124px; min-height: 124px; }
+      .dragon-img, .card .dragon-img { width: 96px; height: 96px; }
+    }
+
+    /* Prevent the owned dragon art and nameplate from clipping inside Bench. */
+    @media (min-width: 801px) and (pointer: fine) {
+      .bench-slot {
+        height: 66px;
+        min-height: 66px;
+        grid-template-rows: minmax(0, 1fr) 15px;
+        padding: 2px;
+      }
+      .bench-slot img {
+        width: 44px;
+        height: 44px;
+        max-height: 100%;
+      }
+      .bench-name {
+        height: 15px;
+        min-height: 15px;
+        font-size: 9px;
+        line-height: 14px;
+      }
+    }
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .bench-slot { height: 60px; min-height: 60px; }
+      .bench-slot img { width: 39px; height: 39px; }
+    }
+
+    /* Keep Traits readable without allowing it to dominate the battlefield. */
+    @media (min-width: 801px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(230px, 18vw, 280px) minmax(0, 1fr) clamp(125px, 11.5vw, 145px);
+      }
+      .battle-stage .left-panel {
+        padding: 7px;
+      }
+      .battle-stage .left-panel > h2 {
+        margin-bottom: 6px;
+        font-size: 16px;
+        text-align: center;
+      }
+      .battle-stage #traitPanel {
+        align-content: start;
+        min-width: 0;
+      }
+      .battle-stage .trait {
+        grid-template-columns: 30px minmax(0, 1fr) auto;
+        gap: 6px;
+        padding: 5px 1px;
+        min-width: 0;
+        font-size: 13px;
+      }
+      .battle-stage .trait img {
+        width: 27px;
+        height: 27px;
+      }
+      .battle-stage .trait b {
+        min-width: 0;
+        overflow: hidden;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .battle-stage .trait-stacks { gap: 3px; }
+      .battle-stage .trait-stack {
+        min-width: 19px;
+        padding: 2px 3px;
+        font-size: 10px;
+      }
+      .battle-stage .drop-rate-panel {
+        padding-top: 5px;
+      }
+      .battle-stage .drop-rate-panel h2 {
+        margin-bottom: 4px;
+        font-size: 14px;
+        text-align: center;
+      }
+      .battle-stage .drop-rate-row {
+        grid-template-columns: 32px repeat(5, minmax(0, 1fr));
+        gap: 2px;
+      }
+    }
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(205px, 21vw, 230px) minmax(0, 1fr) clamp(118px, 12vw, 132px);
+      }
+      .battle-stage .trait-stack { min-width: 17px; font-size: 9px; }
+    }
+
+    /* Full-viewport battlefield and placeholder end-state screens. */
+    .end-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3, 9, 6, .92);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .22s ease, visibility .22s ease;
+    }
+    .end-screen.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .end-screen-card {
+      width: min(460px, calc(100vw - 32px));
+      padding: 28px 26px 24px;
+      border: 2px solid #b99b4b;
+      border-radius: 8px;
+      background: #101a14;
+      box-shadow: inset 0 0 0 3px #26352a, 0 18px 50px rgba(0,0,0,.65);
+      text-align: center;
+    }
+    .end-screen-kicker {
+      color: #78cdb5;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .end-screen-card h1 {
+      margin: 8px 0 5px;
+      color: #ffe493;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 42px;
+      line-height: 1;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    .end-screen-card p {
+      margin: 0 0 20px;
+      color: #d7e3d8;
+      font-size: 14px;
+    }
+    .end-screen .play-again {
+      position: static;
+      display: inline-flex;
+      min-width: 170px;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border: 1px solid #e3c15e;
+      border-radius: 6px;
+      background: #d2ad46;
+      color: #171106;
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    @media (min-width: 801px) and (pointer: fine) {
+      html, body { width: 100%; height: 100%; overflow: hidden; }
+      .app {
+        width: 100vw;
+        max-width: none;
+        height: 100dvh;
+        margin: 0;
+      }
+      .board-wrap {
+        display: block;
+        overflow: hidden;
+      }
+      .battle-stage {
+        grid-template-columns:
+          clamp(230px, 18vw, 280px)
+          minmax(0, 1fr)
+          clamp(125px, 11.5vw, 145px);
+        min-height: 0;
+        height: calc(100% - 120px);
+        overflow: hidden;
+        background: #0d1711;
+      }
+      .battle-stage .left-panel,
+      .battle-stage .control-panel { height: 100%; }
+      .battle-stage #game {
+        width: auto !important;
+        height: 100% !important;
+        max-width: 100%;
+        max-height: 100%;
+        aspect-ratio: 16 / 9;
+        align-self: center;
+        justify-self: center;
+      }
+      .bench-slot { height: 66px; min-height: 66px; }
+      .bench-slot img { width: 48px; height: 48px; }
+      .card { height: 136px; min-height: 136px; }
+      .dragon-img, .card .dragon-img { width: 108px; height: 108px; }
+
+      .bottom-tray {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        left: 5px;
+        z-index: 24;
+        display: grid;
+        grid-template-rows: 30px 66px;
+        gap: 5px;
+        padding: 6px;
+        border: 1px solid #77683c;
+        border-radius: 7px;
+        background: rgba(8, 14, 10, .98);
+        box-shadow: 0 -5px 16px rgba(0,0,0,.46);
+      }
+      .tray-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+      }
+      .tray-bar .bench-title {
+        grid-area: auto;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex: 1 1 auto;
+        font-size: 15px;
+        line-height: 20px;
+        letter-spacing: .08em;
+      }
+      .tray-bar .bench-title::after {
+        content: "";
+        height: 1px;
+        flex: 1 1 auto;
+        background: #5f5738;
+      }
+      .shop-drawer-toggle {
+        display: inline-flex;
+        min-width: 132px;
+        min-height: 28px;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        padding: 4px 14px;
+        border: 2px solid #d0aa45;
+        border-radius: 6px;
+        background: #2b382d;
+        color: #ffe59a;
+        font-size: 14px;
+        line-height: 18px;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+      }
+      .shop-drawer-toggle strong { color: #78d5bb; font-size: 12px; }
+      .shop-drawer-toggle[aria-expanded="true"] {
+        background: #725c25;
+        color: #fff4c4;
+      }
+      .shop-drawer-toggle:disabled {
+        cursor: default;
+        opacity: .48;
+      }
+      .shop-drawer {
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 4px);
+        left: 0;
+        z-index: 2;
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 4px;
+        border: 0 solid #77683c;
+        border-radius: 7px;
+        background: rgba(8, 14, 10, .985);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(12px);
+        transition: max-height .2s ease, opacity .16s ease, transform .2s ease, padding .2s ease, border-width .2s ease;
+      }
+      .bottom-tray.shop-open .shop-drawer {
+        max-height: 172px;
+        padding: 6px;
+        border-width: 1px;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+      .bottom-tray.shop-open.shop-drag-hidden .shop-drawer {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(12px);
+      }
+      .shop-drawer .shop-title { margin-bottom: 5px; font-size: 15px; line-height: 18px; letter-spacing: .08em; }
+      .shop-drawer .log { display: none; }
+      .bottom-tray .bench { grid-area: auto; width: 100%; height: 66px; padding: 0; }
+      .bottom-tray .bench-heal-hint { top: -39px; }
+
+      body {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: geometricPrecision;
+      }
+      .prototype-topbar .pill span, .stage-heading { font-size: 11px; }
+      .prototype-topbar .pill strong { font-size: 16px; }
+      .stage-meta { font-size: 12px; }
+      .battle-stage .left-panel > h2,
+      .battle-stage .control-panel > h2 { font-size: 18px; line-height: 21px; }
+      .battle-stage .trait { font-size: 15px; }
+      .battle-stage .trait img { width: 30px; height: 30px; }
+      .battle-stage .trait b,
+      .battle-stage .trait span { font-size: 13px; }
+      .battle-stage .trait-stack { min-width: 21px; font-size: 11px !important; }
+      .battle-stage .drop-rate-panel h2 { font-size: 16px; letter-spacing: .05em; }
+      .battle-stage .drop-rate-table {
+        gap: 2px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+        text-rendering: geometricPrecision;
+      }
+      .battle-stage .drop-rate-row {
+        min-height: 22px;
+        padding: 2px 1px;
+        border-bottom-color: rgba(255,255,255,.11);
+      }
+      .battle-stage .drop-rate-row.header { color: #ffe79a; font-weight: 1000; }
+      .battle-stage .drop-rate-row.active {
+        background: rgba(243,201,79,.16);
+        box-shadow: inset 0 0 0 1px rgba(243,201,79,.14);
+      }
+      .battle-stage .drop-rate-row.header .gold-cost img { width: 18px; height: 18px; flex-basis: 18px; }
+      .side-actions button, .sell-zone { font-size: 13px; }
+      .bench-name { height: 17px; min-height: 17px; font-size: 11px; line-height: 16px; }
+      .card-title { font-size: 13px; line-height: 17px; }
+      .cost { font-size: 12px; }
+      .card .elements {
+        position: absolute;
+        top: 31px;
+        left: 7px;
+        z-index: 4;
+        display: flex;
+        width: 102px;
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        overflow: visible;
+      }
+      .card .elements-count-3 {
+        top: 23px;
+        gap: 2px;
+      }
+      .card .elements-count-3 .element-tag {
+        min-width: 84px;
+        height: 24px;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        font-size: 11px;
+        line-height: 18px;
+      }
+      .card .elements-count-3 .element-dot {
+        width: 20px;
+        height: 20px;
+        flex-basis: 20px;
+      }
+      .card .element-tag {
+        width: auto;
+        min-width: 88px;
+        max-width: 102px;
+        height: 27px;
+        gap: 5px;
+        padding: 2px 7px 2px 3px;
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 14px;
+        background: rgba(5, 10, 8, .82);
+        font-size: 12px;
+        line-height: 21px;
+        text-shadow: 0 1px 2px #000;
+      }
+      .card .element-dot { width: 23px; height: 23px; flex-basis: 23px; }
+      .bench-slot { position: relative; }
+      .bench-elements {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        z-index: 5;
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        padding: 2px;
+        border-radius: 8px;
+        background: rgba(5, 10, 8, .72);
+        pointer-events: none;
+      }
+      .bench-elements img {
+        width: 19px !important;
+        height: 19px !important;
+        object-fit: contain;
+        image-rendering: auto !important;
+        transform: none !important;
+      }
+      #lockShopBtn, #spawnBtn, #speedBtn, #rerollBtn {
+        font-size: 15px;
+        font-weight: 900;
+        letter-spacing: .01em;
+        text-rendering: geometricPrecision;
+      }
+      #rerollBtn .gold-cost { gap: 5px; font-size: 14px; }
+      #rerollBtn .gold-cost img { width: 20px; height: 20px; flex-basis: 20px; image-rendering: auto; }
+      #lockShopBtn img, #speedBtn img { image-rendering: auto; }
+      .shop-lock-badge { width: 22px; height: 22px; }
+      .stat-popover { min-width: 270px; padding: 13px; }
+      .stat-popover h3 { font-size: 18px; }
+      .stat-popover .stat-line { font-size: 14px; }
+      .dragon-img, .bench-slot img, .trait img, .element-dot, .icon, .shop-lock-badge {
+        image-rendering: auto;
+      }
+      .card img, .bench-slot img {
+        -webkit-user-drag: none;
+        user-select: none;
+      }
+    }
+
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .battle-stage {
+        grid-template-columns: clamp(205px, 21vw, 230px) minmax(0, 1fr) clamp(118px, 12vw, 132px);
+      }
+      .card { height: 118px; min-height: 118px; }
+      .dragon-img, .card .dragon-img { width: 90px; height: 90px; }
+    }
+
+    @media (max-width: 800px), (max-width: 1180px) and (pointer: coarse) {
+      .bottom-tray, .shop-drawer, .tray-bar { display: contents; }
+      .shop-drawer-toggle { display: none; }
+    }
+
+    body.board-drag-active #sellZone {
+      border-color: #ff4f4f !important;
+      background: rgba(116, 25, 29, .58) !important;
+      box-shadow: inset 0 0 18px rgba(255, 54, 54, .42), 0 0 15px rgba(255, 54, 54, .5) !important;
+      animation: sellDragonWarningPulse .58s ease-in-out infinite alternate;
+    }
+    body.board-drag-active #game {
+      outline: 4px solid rgba(91, 234, 128, .92);
+      outline-offset: -4px;
+      box-shadow: 0 0 0 2px rgba(16, 45, 25, .9), 0 0 20px rgba(91, 234, 128, .6);
+      animation: boardDropZonePulse .72s ease-in-out infinite alternate;
+    }
+    .level-up-attention {
+      animation: levelUpHudPulse 1.15s ease-out;
+    }
+    .battle-stage { position: relative; }
+    #game.level-up-board-glow {
+      animation: levelUpBoardCanvas 1.2s ease-out;
+    }
+    .board-level-up-overlay {
+      position: absolute;
+      z-index: 18;
+      overflow: hidden;
+      border: 3px solid rgba(255, 227, 113, .9);
+      border-radius: 6px;
+      background: radial-gradient(circle at 50% 48%, rgba(255,255,224,.48) 0%, rgba(255,222,104,.2) 28%, rgba(105,238,191,.11) 58%, rgba(255,255,255,0) 78%);
+      box-shadow: inset 0 0 38px rgba(255,235,146,.38), 0 0 28px rgba(255,218,90,.68);
+      opacity: 0;
+      pointer-events: none;
+      animation: levelUpBoardOverlay 1.2s ease-out forwards;
+    }
+    .board-level-up-overlay::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 26%;
+      aspect-ratio: 1;
+      border: 4px solid rgba(255,245,178,.88);
+      border-radius: 50%;
+      box-shadow: 0 0 24px rgba(255,229,115,.7);
+      transform: translate(-50%, -50%) scale(.2);
+      opacity: 0;
+      animation: levelUpBoardRing 1.05s ease-out .05s forwards;
+    }
+    #capText.level-up-attention {
+      display: inline-block;
+      border-radius: 5px;
+      color: #fff4ad;
+    }
+    .hud-level-fireworks {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1200;
+      width: 1px;
+      height: 1px;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .hud-level-spark {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 6px;
+      height: 6px;
+      margin: -3px;
+      border-radius: 50%;
+      background: var(--spark-color, #ffe16b);
+      box-shadow: 0 0 8px var(--spark-color, #ffe16b);
+      opacity: 0;
+      animation: hudLevelSpark .9s ease-out var(--spark-delay, 0s) forwards;
+    }
+    @keyframes sellDragonWarningPulse {
+      from { transform: scale(1); filter: brightness(1); }
+      to { transform: scale(1.025); filter: brightness(1.28); }
+    }
+    @keyframes boardDropZonePulse {
+      from { outline-color: rgba(91, 234, 128, .58); box-shadow: 0 0 0 2px rgba(16,45,25,.9), 0 0 10px rgba(91,234,128,.35); }
+      to { outline-color: rgba(127, 255, 161, 1); box-shadow: 0 0 0 2px rgba(16,45,25,.9), 0 0 24px rgba(91,234,128,.78); }
+    }
+    @keyframes levelUpHudPulse {
+      0% { transform: scale(1); filter: brightness(1); box-shadow: none; }
+      22% { transform: scale(1.08); filter: brightness(1.75); box-shadow: 0 0 22px rgba(255,224,96,.95); }
+      58% { transform: scale(1.035); filter: brightness(1.25); box-shadow: 0 0 13px rgba(106,240,193,.65); }
+      100% { transform: scale(1); filter: brightness(1); box-shadow: none; }
+    }
+    @keyframes levelUpBoardCanvas {
+      0% { filter: brightness(1) saturate(1); }
+      16% { filter: brightness(1.42) saturate(1.2); }
+      42% { filter: brightness(1.18) saturate(1.1); }
+      100% { filter: brightness(1) saturate(1); }
+    }
+    @keyframes levelUpBoardOverlay {
+      0% { opacity: 0; }
+      12% { opacity: .9; }
+      46% { opacity: .42; }
+      100% { opacity: 0; }
+    }
+    @keyframes levelUpBoardRing {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.2); }
+      18% { opacity: .9; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(4.2); }
+    }
+    @keyframes hudLevelSpark {
+      0% { opacity: 0; transform: translate(0, 0) scale(.35); }
+      16% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--spark-x), var(--spark-y)) scale(0); }
+    }
   </style>
 </head>
 <body>
   <div class="app">
-    <div class="topbar">
-      <div class="pill wave-pill"><span>Wave</span><strong id="waveText">1</strong><strong id="waveTimerText" class="wave-timer"></strong></div>
-      <div class="pill"><img class="icon" src="Resource Asset/Health_Icon.png" alt="" /><span>Castle HP</span><strong id="hpText">10</strong></div>
-      <div class="pill"><img class="icon" src="Resource Asset/Gold_Icon.png" alt="" /><span>Gold</span><strong id="goldText">10</strong></div>
-      <div class="pill"><span>Keeper</span><strong id="levelText">Lv. 1 0/2 XP</strong></div>
-      <div class="pill"><span>Dragon Limit</span><strong id="capText">0 / 3</strong></div>
-      <div class="pill"><span>Drag</span><strong id="selectedText">Shop to board</strong></div>
+    <div class="topbar prototype-topbar">
+      <div class="hud-cluster hud-resources">
+        <div class="pill hp-pill"><img class="icon" src="Resource Asset/Health_Icon.png" alt="" /><span>Castle</span><strong id="hpText">10</strong></div>
+        <div class="pill gold-pill"><img class="icon" src="Resource Asset/Gold_Icon.png" alt="" /><span>Gold</span><strong id="goldText">10</strong></div>
+      </div>
+
+      <div class="stage-hud">
+        <div class="stage-heading"><span>Wave</span><strong id="waveText">1</strong></div>
+        <div class="wave-preview" id="wavePreview" aria-hidden="true"></div>
+        <div class="stage-meta">
+          <span id="phaseText" class="phase-text">Planning</span>
+          <strong id="waveTimerText" class="wave-timer"></strong>
+          <span>Board</span><strong id="capText">0 / 3</strong>
+        </div>
+      </div>
+
+      <div class="hud-cluster hud-status">
+        <div class="pill keeper-pill">
+          <strong id="levelText">Level 1</strong>
+          <div class="keeper-xp-block">
+            <span id="keeperXpText">Next Level 0 / 2 XP</span>
+            <div class="keeper-xp-track" title="Experience progress to the next Keeper level">
+              <i id="keeperXpFill"></i>
+            </div>
+          </div>
+        </div>
+        <div class="pill selection-pill"><span>Selected</span><strong id="selectedText">Shop to board</strong></div>
+        <button id="soundBtn" class="sound-toggle secondary" type="button" title="Toggle sound effects">SFX On</button>
+      </div>
     </div>
     <div class="mobile-toolbar">
       <button id="orientationBtn" type="button">Landscape Mode</button>
     </div>
 
     <div class="main">
-      <aside class="panel left-panel">
-        <h2>Traits</h2>
-        <div id="traitPanel"></div>
-        <div class="drop-rate-panel">
-          <h2>Drop Rates</h2>
-          <div id="dropRatePanel" class="drop-rate-table"></div>
-        </div>
-      </aside>
-
       <section>
         <div class="board-wrap">
-          <canvas id="game" width="1280" height="720"></canvas>
-          <div class="bench-title">Bench</div>
-          <div class="bench-heal-hint" id="benchHealHint">Put your injured dragon on the bench to heal</div>
-          <div class="bench" id="bench"></div>
-          <div class="shop-title">Shop</div>
-          <div class="shop-row" id="shopRow"></div>
-          <div class="log" id="logText">Drag a dragon from the shop into the bench or directly onto the board.</div>
+          <div class="battle-stage">
+            <aside class="panel left-panel">
+              <h2>Traits</h2>
+              <div id="traitPanel"></div>
+              <div class="drop-rate-panel">
+                <h2>Drop Rates</h2>
+                <div id="dropRatePanel" class="drop-rate-table"></div>
+              </div>
+            </aside>
+
+            <canvas id="game" width="1280" height="720"></canvas>
+
+            <aside class="panel control-panel">
+              <h2>Controls</h2>
+              <div class="side-actions">
+                <div class="sell-zone" id="sellZone">
+                  <img src="Resource Asset/Gold_Icon.png" alt="" /> Sell Dragon
+                </div>
+                <button id="buyXpBtn" class="xp-button">Buy XP</button>
+                <button id="rerollBtn">Reroll</button>
+                <button id="lockShopBtn" class="secondary tool-button">
+                  <img src="Resource Asset/Unlock_Icon.png" alt="" /> Unlock
+                </button>
+                <button id="spawnBtn" class="secondary">Start Wave</button>
+                <button id="speedBtn" class="secondary tool-button">
+                  <img src="Resource Asset/Double_Arrow.svg" alt="" /> Speed Up
+                </button>
+              </div>
+            </aside>
+          </div>
+          <div class="bottom-tray" id="bottomTray">
+            <div class="shop-drawer" id="shopDrawer">
+              <div class="shop-title">Shop</div>
+              <div class="shop-row" id="shopRow"></div>
+              <div class="log" id="logText">Select a dragon, close the Shop, then click a battlefield Slot.</div>
+            </div>
+            <div class="tray-bar">
+              <div class="bench-title">Bench</div>
+              <button class="shop-drawer-toggle" id="shopDrawerToggle" type="button" aria-expanded="false" aria-controls="shopDrawer">
+                <span>Shop</span><strong>Open</strong>
+              </button>
+            </div>
+            <div class="bench-heal-hint" id="benchHealHint">Put your injured dragon on the bench to heal</div>
+            <div class="bench" id="bench"></div>
+          </div>
         </div>
       </section>
-
-      <aside class="panel control-panel">
-        <h2>Controls</h2>
-        <div class="side-actions">
-          <div class="sell-zone" id="sellZone">
-            <img src="Resource Asset/Gold_Icon.png" alt="" /> Sell Dragon
-          </div>
-          <button id="buyXpBtn" class="xp-button">Buy XP</button>
-          <button id="rerollBtn">Reroll</button>
-          <button id="lockShopBtn" class="secondary tool-button">
-            <img src="Resource Asset/Unlock_Icon.png" alt="" /> Unlock
-          </button>
-          <button id="spawnBtn" class="secondary">Start Wave</button>
-          <button id="speedBtn" class="secondary tool-button">
-            <img src="Resource Asset/Double_Arrow.svg" alt="" /> Speed Up
-          </button>
-        </div>
-      </aside>
     </div>
   </div>
   <div class="stat-popover" id="statPopover"></div>
   <div class="mobile-toast" id="mobileToast" role="status" aria-live="polite"></div>
-  <button id="playAgainBtn" class="play-again">Play Again</button>
+  <div id="endScreen" class="end-screen" aria-hidden="true">
+    <section class="end-screen-card" role="dialog" aria-modal="true" aria-labelledby="endScreenTitle">
+      <div class="end-screen-kicker">Battle Complete</div>
+      <h1 id="endScreenTitle">Victory</h1>
+      <p id="endScreenSummary">The Dragon Keep stands.</p>
+      <button id="playAgainBtn" class="play-again">Play Again</button>
+    </section>
+  </div>
 
   <script>
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
     let canvasLayoutCache = null;
+    let sfxEnabled = true;
+    let audioContext = null;
+    const sfxLastPlayed = new Map();
+
+    function ensureAudioContext() {
+      if (!sfxEnabled) return null;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      if (!audioContext) audioContext = new AudioContextClass();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return audioContext;
+    }
+
+    function playTone(frequency, duration, options = {}) {
+      const audio = ensureAudioContext();
+      if (!audio) return;
+      const start = audio.currentTime + (options.delay || 0);
+      const oscillator = audio.createOscillator();
+      const gain = audio.createGain();
+      oscillator.type = options.wave || "sine";
+      oscillator.frequency.setValueAtTime(frequency, start);
+      if (options.endFrequency) oscillator.frequency.exponentialRampToValueAtTime(options.endFrequency, start + duration);
+      gain.gain.setValueAtTime(.0001, start);
+      gain.gain.exponentialRampToValueAtTime(options.volume || .055, start + .012);
+      gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + .02);
+    }
+
+    function playSfx(name) {
+      if (!sfxEnabled) return;
+      const now = performance.now();
+      const cooldown = name === "towerHit" ? 90 : 45;
+      if (now - (sfxLastPlayed.get(name) || 0) < cooldown) return;
+      sfxLastPlayed.set(name, now);
+      if (name === "ui") playTone(420, .07, { wave: "triangle", endFrequency: 520, volume: .035 });
+      if (name === "buy") {
+        playTone(520, .09, { wave: "triangle", endFrequency: 650, volume: .045 });
+        playTone(780, .12, { delay: .055, wave: "sine", volume: .04 });
+      }
+      if (name === "place") playTone(190, .12, { wave: "triangle", endFrequency: 135, volume: .05 });
+      if (name === "merge") {
+        playTone(440, .16, { wave: "sine", endFrequency: 660, volume: .05 });
+        playTone(660, .2, { delay: .09, wave: "sine", endFrequency: 990, volume: .05 });
+      }
+      if (name === "wave") {
+        playTone(150, .24, { wave: "sawtooth", endFrequency: 230, volume: .045 });
+        playTone(300, .3, { delay: .12, wave: "triangle", endFrequency: 420, volume: .045 });
+      }
+      if (name === "towerHit") {
+        playTone(105, .22, { wave: "square", endFrequency: 65, volume: .04 });
+        playTone(62, .3, { wave: "triangle", endFrequency: 42, volume: .055 });
+      }
+    }
     const coarsePointer = window.matchMedia("(pointer: coarse)");
     const isTouchUi = () => coarsePointer.matches;
     const ROWS = 5;
@@ -1169,7 +2912,7 @@
     const BUY_XP_AMOUNT = 4;
     const FREE_WAVE_XP = 2;
     const MAX_KEEPER_LEVEL = 8;
-    const PLANNING_TIME = 30;
+    const PLANNING_TIME = 45;
     const ATTACK_ANIM_DURATION = 0.42;
     const xpToNextLevel = {
       1: 2,
@@ -1453,6 +3196,8 @@
     let dragGhost = null;
     let touchPointerDrag = null;
     let suppressTouchClickUntil = 0;
+    let shopTrayOpen = true;
+    let shopTrayReopenAfterDrag = false;
     const state = {
       shop: [],
       shopLocked: false,
@@ -1487,6 +3232,32 @@
       gameResult: null,
     };
 
+    function setShopTrayOpen(open) {
+      shopTrayOpen = !!open && !state.gameOver;
+      const tray = document.getElementById("bottomTray");
+      const toggle = document.getElementById("shopDrawerToggle");
+      if (!tray || !toggle) return;
+      tray.classList.toggle("shop-open", shopTrayOpen);
+      if (!shopTrayOpen) tray.classList.remove("shop-drag-hidden");
+      toggle.setAttribute("aria-expanded", shopTrayOpen ? "true" : "false");
+      toggle.disabled = state.gameOver;
+      const status = toggle.querySelector("strong");
+      if (status) status.textContent = shopTrayOpen ? "Close" : "Open";
+    }
+
+    function temporarilyHideShopForDrag() {
+      if (!shopTrayOpen) return;
+      shopTrayReopenAfterDrag = true;
+      document.getElementById("bottomTray")?.classList.add("shop-drag-hidden");
+    }
+
+    function restoreShopAfterDrag() {
+      const shouldReopen = shopTrayReopenAfterDrag;
+      shopTrayReopenAfterDrag = false;
+      document.getElementById("bottomTray")?.classList.remove("shop-drag-hidden");
+      if (shouldReopen && !state.gameOver) setShopTrayOpen(true);
+    }
+
     function selectedDrag() {
       const selection = state.selected;
       if (!selection) return null;
@@ -1513,6 +3284,7 @@
         : { source: source.source, index: source.index };
       state.dragging = null;
       state.hoverCell = null;
+      if (source.source === "shop") setShopTrayOpen(false);
       log(`${displayDragonName(unit)} selected. Tap a board cell, bench slot, or Sell Dragon.`);
       renderUi();
     }
@@ -1573,7 +3345,7 @@
       image.style.width = "120px";
       image.style.height = "120px";
       image.style.objectFit = "contain";
-      image.style.imageRendering = "pixelated";
+      image.style.imageRendering = "auto";
       image.style.transform = "scaleX(-1)";
       dragGhost.appendChild(image);
       document.body.appendChild(dragGhost);
@@ -1616,7 +3388,7 @@
     }
 
     function startTouchPointerDrag(ev, source) {
-      if (!isTouchUi() || state.gameOver || ev.pointerType === "mouse" || !source?.unit) return;
+      if (state.gameOver || !source?.unit || (ev.pointerType === "mouse" && ev.button !== 0)) return;
       if (source.source === "shop" && !UNLIMITED_GOLD && state.gold < source.unit.cost) {
         log(`Need ${source.unit.cost} Gold to buy ${displayDragonName(source.unit)}.`);
         renderUi();
@@ -1641,6 +3413,7 @@
         drag.active = true;
         state.selected = null;
         state.dragging = drag.source;
+        temporarilyHideShopForDrag();
         drag.element.classList.add("dragging");
         makeBoardDragGhost(drag.source.unit, ev.clientX, ev.clientY);
         document.getElementById("selectedText").textContent = displayDragonName(drag.source.unit);
@@ -1672,6 +3445,7 @@
       state.hoverCell = null;
       clearDragGhost();
       renderUi();
+      restoreShopAfterDrag();
     }
 
     function enableTouchPointerDrag(element, sourceFactory) {
@@ -1706,6 +3480,10 @@
       });
     }
 
+    function setBoardDragFeedback(active) {
+      document.body.classList.toggle("board-drag-active", !!active);
+    }
+
     function clearDragGhost() {
       if (dragGhost) {
         dragGhost.remove();
@@ -1715,6 +3493,7 @@
       document.querySelectorAll(".bench-slot.dragging").forEach(slot => slot.classList.remove("dragging"));
       setSellZoneHover(false);
       setBenchHover(-1);
+      setBoardDragFeedback(false);
     }
 
     function img(path) {
@@ -1837,6 +3616,67 @@
       return rates.length;
     }
 
+    function createHudLevelFireworks(target, palette) {
+      if (!target) return;
+      const rect = target.getBoundingClientRect();
+      const burst = document.createElement("div");
+      burst.className = "hud-level-fireworks";
+      burst.style.left = `${rect.left + rect.width / 2}px`;
+      burst.style.top = `${rect.top + rect.height / 2}px`;
+      for (let i = 0; i < 14; i++) {
+        const angle = Math.PI * 2 * i / 14 + (i % 2) * 0.08;
+        const distance = 24 + (i % 4) * 9;
+        const spark = document.createElement("i");
+        spark.className = "hud-level-spark";
+        spark.style.setProperty("--spark-x", `${Math.cos(angle) * distance}px`);
+        spark.style.setProperty("--spark-y", `${Math.sin(angle) * distance}px`);
+        spark.style.setProperty("--spark-delay", `${(i % 3) * 0.035}s`);
+        spark.style.setProperty("--spark-color", palette[i % palette.length]);
+        burst.appendChild(spark);
+      }
+      document.body.appendChild(burst);
+      setTimeout(() => burst.remove(), 1200);
+    }
+
+    function createBoardLevelUpGlow() {
+      const stage = document.querySelector(".battle-stage");
+      const board = document.getElementById("game");
+      if (!stage || !board) return;
+      board.classList.remove("level-up-board-glow");
+      void board.offsetWidth;
+      board.classList.add("level-up-board-glow");
+
+      stage.querySelector(".board-level-up-overlay")?.remove();
+      const stageRect = stage.getBoundingClientRect();
+      const boardRect = board.getBoundingClientRect();
+      const overlay = document.createElement("div");
+      overlay.className = "board-level-up-overlay";
+      overlay.style.left = `${boardRect.left - stageRect.left}px`;
+      overlay.style.top = `${boardRect.top - stageRect.top}px`;
+      overlay.style.width = `${boardRect.width}px`;
+      overlay.style.height = `${boardRect.height}px`;
+      stage.appendChild(overlay);
+      setTimeout(() => {
+        overlay.remove();
+        board.classList.remove("level-up-board-glow");
+      }, 1300);
+    }
+
+    function triggerKeeperLevelUpEffect() {
+      const keeper = document.querySelector(".keeper-pill");
+      const cap = document.getElementById("capText");
+      for (const target of [keeper, cap]) {
+        if (!target) continue;
+        target.classList.remove("level-up-attention");
+        void target.offsetWidth;
+        target.classList.add("level-up-attention");
+        setTimeout(() => target.classList.remove("level-up-attention"), 1250);
+      }
+      createHudLevelFireworks(keeper, ["#ffe16b", "#fff3b0", "#74e8c1"]);
+      createHudLevelFireworks(cap, ["#74e8c1", "#b9ffd9", "#ffe16b"]);
+      createBoardLevelUpGlow();
+    }
+
     function addKeeperXp(amount) {
       if (state.keeperLevel >= MAX_KEEPER_LEVEL) {
         state.keeperXp = 0;
@@ -1851,6 +3691,7 @@
         log(`Keeper reached Level ${state.keeperLevel}. Shop odds improved.`);
       }
       if (state.keeperLevel >= MAX_KEEPER_LEVEL) state.keeperXp = 0;
+      if (levelsGained > 0) setTimeout(triggerKeeperLevelUpEffect, 0);
       return levelsGained;
     }
 
@@ -1904,6 +3745,7 @@
       if (source?.source !== "shop") return true;
       if (!spendGold(unit.cost, `Need ${unit.cost} Gold to buy ${displayDragonName(unit)}.`)) return false;
       state.shop[source.index] = null;
+      playSfx("buy");
       return true;
     }
 
@@ -1969,6 +3811,7 @@
       }
       state.wave += 1;
       state.waveRunning = false;
+      shopTrayOpen = true;
       state.planningTimer = PLANNING_TIME > 0 && state.wave > 1 ? PLANNING_TIME : 0;
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = 0;
@@ -1993,11 +3836,13 @@
         return;
       }
       state.waveRunning = true;
+      setShopTrayOpen(false);
       state.planningTimer = 0;
       state.spawnTimer = 0;
       state.enemiesSpawned = 0;
       state.enemiesToSpawn = waveEnemyCount();
       state.waveReward = waveClearReward();
+      playSfx("wave");
       log(giantBossTypes[state.wave]
         ? `${auto ? "Planning time ended. " : ""}Boss wave ${state.wave} started: clear ${bossPrepEnemyCount()} monsters before the boss appears.`
         : `${auto ? "Planning time ended. " : ""}Wave ${state.wave} started: ${state.enemiesToSpawn} monsters incoming.`);
@@ -2007,6 +3852,7 @@
     function resetGame() {
       state.shop = [];
       state.shopLocked = false;
+      shopTrayOpen = true;
       state.selected = null;
       state.dragging = null;
       state.suppressCanvasClick = false;
@@ -2390,16 +4236,25 @@
     function renderUi() {
       if (state.shopLocked && !shopHasCards()) state.shopLocked = false;
       if (state.selected && !selectedDrag()) state.selected = null;
+      document.body.classList.toggle("wave-active", state.waveRunning);
+      setShopTrayOpen(shopTrayOpen);
+      document.getElementById("phaseText").textContent = state.waveRunning ? "Combat" : "Planning";
       document.getElementById("waveText").textContent = state.wave;
       document.getElementById("waveTimerText").textContent = waveTimerText();
       document.getElementById("hpText").textContent = state.hp;
-      const rewardPreview = waveClearReward();
-      document.getElementById("goldText").textContent = UNLIMITED_GOLD ? `∞ (+${rewardPreview})` : `${state.gold} (+${rewardPreview})`;
+      document.getElementById("goldText").textContent = UNLIMITED_GOLD ? "∞" : state.gold;
       const xpNeed = xpNeededForCurrentLevel();
-      document.getElementById("levelText").textContent = state.keeperLevel >= MAX_KEEPER_LEVEL
-        ? `Lv. ${state.keeperLevel} MAX`
-        : `Lv. ${state.keeperLevel} ${state.keeperXp}/${xpNeed} XP`;
+      const keeperMaxed = state.keeperLevel >= MAX_KEEPER_LEVEL;
+      document.getElementById("levelText").textContent = `Level ${state.keeperLevel}`;
+      document.getElementById("keeperXpText").textContent = keeperMaxed
+        ? "Max Level"
+        : `Next Level ${state.keeperXp} / ${xpNeed} XP`;
+      document.getElementById("keeperXpFill").style.width = `${keeperMaxed ? 100 : Math.min(100, state.keeperXp / xpNeed * 100)}%`;
       document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
+      const previewStrength = Math.min(5, Math.max(1, Math.ceil(state.wave / 3)));
+      document.getElementById("wavePreview").innerHTML = Array.from({ length: 5 }, (_, index) =>
+        `<span class="wave-preview-dot ${index < previewStrength ? "active" : ""} ${giantBossTypes[state.wave] && index === 4 ? "special" : ""}"></span>`
+      ).join("");
       const activeSelection = selectedDrag();
       const selectedUnit = state.dragging?.unit || activeSelection?.unit;
       document.getElementById("selectedText").textContent = state.pendingMerge
@@ -2454,10 +4309,10 @@
         const mergeStars = mergeReady ? Array.from({ length: mergeInfo.finalStar }, () => "<span></span>").join("") : "";
         const mergeClass = mergeInfo?.finalStar === 3 ? "gold" : "silver";
         const selected = state.selected?.source === "shop" && state.selected.index === i;
-        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""} ${selected ? "selected" : ""}" data-shop="${i}" draggable="${isTouchUi() ? "false" : "true"}">
+        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""} ${selected ? "selected" : ""}" data-shop="${i}" draggable="false">
           <div class="card-title">${displayDragonName(d)}</div>
           ${state.shopLocked ? `<img class="shop-lock-badge" src="${icon.lock}" alt="Locked" title="Shop locked" />` : ""}
-          <div class="elements">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
+          <div class="elements elements-count-${d.elements.length}">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
           <img class="dragon-img" src="${d.baby}" alt="" />
           <div class="cost"><img class="icon" src="${icon.gold}" alt="" /> ${d.cost}</div>
           ${mergeReady ? `<div class="merge-star-hint ${mergeClass}" title="Merge ready: ${mergeInfo.finalStar}-star">${mergeStars}</div>` : ""}
@@ -2471,22 +4326,26 @@
         });
         card.addEventListener("click", ev => {
           if (state.gameOver) return;
+          ev.stopPropagation();
           const index = Number(card.dataset.shop);
           const unit = state.shop[index];
           if (!unit) return;
           if (isTouchUi()) {
-            ev.stopPropagation();
             if (state.selected?.source === "shop" && state.selected.index === index) {
               state.selected = null;
               buyToBench(index);
             } else {
               selectForTouch({ source: "shop", index, unit });
             }
-            return;
+          } else {
+            buyToBench(index);
           }
-          buyToBench(index);
         });
         card.addEventListener("dragstart", ev => {
+          if (!card.draggable) {
+            ev.preventDefault();
+            return;
+          }
           if (state.gameOver) {
             ev.preventDefault();
             return;
@@ -2501,6 +4360,7 @@
             return;
           }
           state.dragging = { source: "shop", index, unit };
+          temporarilyHideShopForDrag();
           ev.dataTransfer.setData("text/plain", JSON.stringify({ source: "shop", index }));
           ev.dataTransfer.effectAllowed = "copy";
           ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
@@ -2511,6 +4371,7 @@
           state.dragging = null;
           clearDragGhost();
           renderUi();
+          restoreShopAfterDrag();
         });
         card.addEventListener("contextmenu", ev => {
           ev.preventDefault();
@@ -2521,7 +4382,11 @@
       const rerollBtn = document.getElementById("rerollBtn");
       rerollBtn.innerHTML = `Reroll ${goldCostHtml(REROLL_COST)}`;
       rerollBtn.disabled = state.gameOver || (!UNLIMITED_GOLD && state.gold < REROLL_COST);
-      rerollBtn.onclick = () => rollShop();
+      rerollBtn.onclick = () => {
+        playSfx("ui");
+        setShopTrayOpen(true);
+        rollShop();
+      };
       const lockShopBtn = document.getElementById("lockShopBtn");
       const canLockShop = !state.gameOver && shopHasCards();
       if (!canLockShop && state.shopLocked) state.shopLocked = false;
@@ -2529,6 +4394,7 @@
       lockShopBtn.innerHTML = `<img src="${state.shopLocked ? icon.lock : icon.unlock}" alt="" /><span>${state.shopLocked ? "Lock" : "Unlock"}</span>`;
       lockShopBtn.onclick = () => {
         if (state.gameOver || !shopHasCards()) return;
+        playSfx("ui");
         state.shopLocked = !state.shopLocked;
         log(state.shopLocked ? "Shop locked. It will not refresh after the next wave." : "Shop unlocked. It will refresh after each wave.");
         renderUi();
@@ -2536,7 +4402,10 @@
       const buyXpBtn = document.getElementById("buyXpBtn");
       buyXpBtn.innerHTML = state.keeperLevel >= MAX_KEEPER_LEVEL ? "XP MAX" : `Buy XP ${goldCostHtml(BUY_XP_COST)}`;
       buyXpBtn.disabled = state.gameOver || state.keeperLevel >= MAX_KEEPER_LEVEL || (!UNLIMITED_GOLD && state.gold < BUY_XP_COST);
-      buyXpBtn.onclick = buyKeeperXp;
+      buyXpBtn.onclick = () => {
+        playSfx("ui");
+        buyKeeperXp();
+      };
       const spawnBtn = document.getElementById("spawnBtn");
       spawnBtn.textContent = state.waveRunning ? "Wave Running" : giantBossTypes[state.wave] ? "Start Boss" : "Start Wave";
       spawnBtn.disabled = state.gameOver || state.waveRunning;
@@ -2546,19 +4415,34 @@
       speedBtn.innerHTML = `<img src="${icon.doubleArrow}" alt="" /> ${speedButtonLabel()}`;
       speedBtn.onclick = () => {
         if (state.gameOver) return;
+        playSfx("ui");
         state.gameSpeed = state.gameSpeed === 1 ? 2 : state.gameSpeed === 2 ? 3 : 1;
         renderUi();
       };
+      const soundBtn = document.getElementById("soundBtn");
+      soundBtn.textContent = sfxEnabled ? "SFX On" : "SFX Off";
+      soundBtn.classList.toggle("muted", !sfxEnabled);
+      soundBtn.onclick = () => {
+        sfxEnabled = !sfxEnabled;
+        if (sfxEnabled) playSfx("ui");
+        renderUi();
+      };
       document.getElementById("orientationBtn").onclick = requestLandscapeMode;
+      const endScreen = document.getElementById("endScreen");
       const playAgainBtn = document.getElementById("playAgainBtn");
-      playAgainBtn.style.display = state.gameOver ? "block" : "none";
+      endScreen.classList.toggle("visible", state.gameOver);
+      endScreen.setAttribute("aria-hidden", state.gameOver ? "false" : "true");
+      document.getElementById("endScreenTitle").textContent = state.gameResult === "won" ? "Victory" : "Defeat";
+      document.getElementById("endScreenSummary").textContent = state.gameResult === "won"
+        ? `The Dragon Keep survived all ${state.wave} waves.`
+        : `The Keep fell during Wave ${state.wave}.`;
       playAgainBtn.onclick = resetGame;
 
       const bench = document.getElementById("bench");
       bench.innerHTML = state.bench.map((d, i) => {
         const selected = state.selected?.source === "bench" && state.selected.index === i;
-        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""} ${selected ? "selected" : ""}" data-bench="${i}" ${d ? `draggable="${isTouchUi() ? "false" : "true"}"` : ""}>
-          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${displayDragonName(d)}" /><div class="bench-name" title="${displayDragonName(d)}">${rankIconHtml(d.star)}<span>${displayDragonName(d)}</span></div>` : ""}
+        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""} ${selected ? "selected" : ""}" data-bench="${i}" ${d ? "draggable=\"false\"" : ""}>
+          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${displayDragonName(d)}" /><div class="bench-elements">${d.elements.map(name => `<img src="${elements[name].icon}" alt="${name}" title="${name}" />`).join("")}</div><div class="bench-name" title="${displayDragonName(d)}">${rankIconHtml(d.star)}<span>${displayDragonName(d)}</span></div>` : ""}
         </div>`;
       }).join("");
 
@@ -2568,7 +4452,7 @@
           return { source: "bench", index, unit: state.bench[index] };
         });
         slot.addEventListener("click", ev => {
-          if (!isTouchUi() || state.gameOver) return;
+          if (state.gameOver) return;
           ev.stopPropagation();
           const index = Number(slot.dataset.bench);
           const unit = state.bench[index];
@@ -2602,10 +4486,15 @@
           dropToBench(index);
         });
         slot.addEventListener("dragstart", ev => {
+          if (!slot.draggable) {
+            ev.preventDefault();
+            return;
+          }
           const index = Number(slot.dataset.bench);
           const unit = state.bench[index];
           if (!unit) return;
           state.dragging = { source: "bench", index, unit };
+          temporarilyHideShopForDrag();
           ev.dataTransfer.setData("text/plain", JSON.stringify({ source: "bench", index }));
           ev.dataTransfer.effectAllowed = "move";
           ev.dataTransfer.setDragImage(makeDragGhost(unit), 64, 64);
@@ -2616,6 +4505,7 @@
           state.dragging = null;
           clearDragGhost();
           renderUi();
+          restoreShopAfterDrag();
         });
         slot.addEventListener("contextmenu", ev => {
           const index = Number(slot.dataset.bench);
@@ -2656,6 +4546,7 @@
 
     function log(text) {
       document.getElementById("logText").textContent = text;
+      if (/merged (directly )?to/i.test(text)) playSfx("merge");
     }
 
     function showStats(unit, x, y) {
@@ -2670,15 +4561,18 @@
         <div class="stat-line"><img src="${icon.attackSpeed}" alt="" /> Next Attack <strong>${nextAttack.toFixed(2)}s</strong></div>
         <div class="stat-line"><img src="${icon.hp}" alt="" /> HP <strong>${s.hp}</strong></div>
         <div class="stat-line"><img src="${icon.gold}" alt="" /> Cost <strong>${unit.cost}</strong></div>
-        <div class="stat-line"><span class="stat-elements">${unit.elements.map(name => `<img src="${elements[name].icon}" alt="${name}" title="${name}" />`).join("")}</span></div>
+        <div class="stat-line"><span class="stat-elements">${unit.elements.map(name => `<span class="stat-element-item" style="color:${elements[name].color}"><img src="${elements[name].icon}" alt="${name}" title="${name}" /><b>${name}</b></span>`).join("")}</span></div>
         <div class="stat-line sell-value-line">Sell for <strong>${goldCostHtml(refund)}</strong></div>
       `;
-      popover.style.left = `${Math.min(window.innerWidth - 250, x + 12)}px`;
-      popover.style.top = `${Math.min(window.innerHeight - 190, y + 12)}px`;
       popover.style.width = "";
       popover.style.maxHeight = "";
       popover.style.overflowY = "";
       popover.style.display = "block";
+      const popoverRect = popover.getBoundingClientRect();
+      const left = Math.max(8, Math.min(window.innerWidth - popoverRect.width - 8, x + 12));
+      const top = Math.max(8, Math.min(window.innerHeight - popoverRect.height - 8, y + 12));
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
       clearTimeout(showStats.hideTimer);
       showStats.hideTimer = setTimeout(() => popover.style.display = "none", 3600);
     }
@@ -2791,8 +4685,8 @@
 
     function sellUnit(unit, source) {
       if (!unit) return;
-      if (state.waveRunning && source?.source === "board") {
-        log("Board dragons cannot be sold during a wave.");
+      if (state.waveRunning) {
+        log("Dragons cannot be sold during a wave.");
         state.dragging = null;
         state.hoverCell = null;
         clearDragGhost();
@@ -2986,7 +4880,14 @@
       if (maybeMergeByDroppingOnBoard(unit, source, row, col)) return true;
       if (tryAutoMergeIncoming(unit, source, dragonAtCell(row, col))) return true;
       const target = dragonAtCell(row, col);
-      if (state.waveRunning && target) return log("During a wave, you can add dragons to empty cells or merge, but not replace board dragons.");
+      if (state.waveRunning && target) {
+        log("During battle, dragons can only be added to empty Slots or merged. Board positions are locked.");
+        state.dragging = null;
+        state.hoverCell = null;
+        clearDragGhost();
+        renderUi();
+        return true;
+      }
       if (target && source?.source === "bench") {
         const incoming = {
           ...unit,
@@ -3030,6 +4931,7 @@
       syncDragonHp(d, source?.source === "bench");
       state.dragons.push(d);
       if (source?.source === "bench") state.bench[source.index] = null;
+      playSfx("place");
       log(`Placed ${displayDragonName(d)}.`);
       state.dragging = null;
       state.hoverCell = null;
@@ -3147,7 +5049,8 @@
       const profile = projectileProfile(main);
       const crit = Math.random() < bonuses.critChance;
       const damage = Math.round(s.damage * bonuses.damageMult * (crit ? 1.8 : 1));
-      dragon.attackAnim = ATTACK_ANIM_DURATION;
+      const attackSheet = img(attackSheetForUnit(dragon));
+      dragon.attackAnim = canDrawImage(attackSheet) ? ATTACK_ANIM_DURATION : 0;
       state.projectiles.push({
         id: state.nextId++,
         type: main,
@@ -3458,6 +5361,7 @@
       const entered = state.enemies.filter(e => e.enteredTower).length;
       if (entered) {
         addTowerDamageNumbers(entered);
+        playSfx("towerHit");
         state.hp = Math.max(0, state.hp - entered);
         state.enemies = state.enemies.filter(e => !e.enteredTower);
         if (state.hp <= 0) {
@@ -3768,14 +5672,6 @@
       return { width: drawW, height: drawH };
     }
 
-    function drawWithAlpha(alpha, drawCall) {
-      ctx.save();
-      ctx.globalAlpha *= Math.max(0, Math.min(1, alpha));
-      const result = drawCall();
-      ctx.restore();
-      return result;
-    }
-
     function drawDragonImage(d, size) {
       const baseImage = img(assetForUnit(d));
       const attackActive = d.attackAnim > 0;
@@ -3784,18 +5680,7 @@
         if (canDrawImage(sheet)) {
           const progress = 1 - Math.max(0, Math.min(1, d.attackAnim / ATTACK_ANIM_DURATION));
           const frame = Math.max(0, Math.min(5, Math.floor(progress * 6)));
-          const transitionWindow = 0.16;
-          const blendRaw = Math.min(1, progress / transitionWindow, (1 - progress) / transitionWindow);
-          const attackAlpha = blendRaw * blendRaw * (3 - 2 * blendRaw);
-          let drawn = { width: size, height: size };
-          if (attackAlpha < 1 && canDrawImage(baseImage)) {
-            drawn = drawWithAlpha(1 - attackAlpha, () => drawImageContained(baseImage, size));
-          }
-          if (attackAlpha > 0) {
-            const attackDrawn = drawWithAlpha(attackAlpha, () => drawSheetFrameContained(sheet, frame, 6, size));
-            if (attackAlpha >= 0.5) drawn = attackDrawn;
-          }
-          return drawn;
+          return drawSheetFrameContained(sheet, frame, 6, size);
         }
       }
       return drawImageContained(baseImage, size);
@@ -3961,7 +5846,7 @@
     }
 
     function boardDragonNameLayout(name, maxWidth) {
-      const font = "900 11px Arial";
+      const font = "900 14px Arial";
       ctx.font = font;
       if (ctx.measureText(name).width <= maxWidth) return { text: name, font };
       const ellipsis = "...";
@@ -3977,10 +5862,11 @@
 
     function drawDragon(d) {
       const size = d.star === 3 ? 116 : d.star === 2 ? 104 : 92;
-      const visualY = d.row === 0 ? Math.max(d.y, size / 2 + 32) : d.y;
+      const visualY = d.row === 0 ? Math.max(d.y, size / 2 + 30) : d.y;
       let drawn = { width: size, height: size };
       const rarityColor = tierColor(d.cost);
-      ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
       ctx.save();
       if (state.dragging?.source === "board" && state.dragging.id === d.id) ctx.globalAlpha = .35;
       ctx.translate(d.x, visualY);
@@ -4004,7 +5890,7 @@
         ctx.globalCompositeOperation = "source-over";
       }
       ctx.restore();
-      const topIconY = Math.max(24, visualY - size / 2 - 14);
+      const topIconY = Math.max(d.row === 0 ? 34 : 24, visualY - size / 2 - 14);
       const rankWidth = 30;
       const hpWidth = 54;
       const gap = 0.5;
@@ -4018,7 +5904,7 @@
       const textX = labelX + labelPad;
       const textMaxW = labelW - labelPad * 2;
       const nameLayout = boardDragonNameLayout(displayDragonName(d), textMaxW);
-      const labelH = 20;
+      const labelH = 24;
       const labelY = (d.row + 1) * CELL_H - labelH - 4;
       ctx.save();
       ctx.fillStyle = "rgba(7, 10, 12, .78)";
@@ -4035,7 +5921,7 @@
       ctx.beginPath();
       ctx.rect(textX, labelY, textMaxW, labelH);
       ctx.clip();
-      ctx.fillText(nameLayout.text, labelX + labelW / 2, labelY + 15);
+      ctx.fillText(nameLayout.text, labelX + labelW / 2, labelY + 18);
       ctx.restore();
       ctx.textAlign = "left";
 
@@ -4064,10 +5950,10 @@
 
     function drawEnemy(e) {
       const image = img(e.img);
-      const size = e.size || (e.boss ? 138 : e.maxHp > 700 ? 110 : e.maxHp > 300 ? 96 : 82);
+      const size = Math.round(e.size || (e.boss ? 138 : e.maxHp > 700 ? 110 : e.maxHp > 300 ? 96 : 82));
       ctx.imageSmoothingEnabled = false;
       ctx.save();
-      ctx.translate(e.x, e.y);
+      ctx.translate(Math.round(e.x), Math.round(e.y));
       if (e.flying || e.ability === "flying") {
         ctx.translate(0, Math.sin(performance.now() / 130 + e.id) * 5 - 8);
       }
@@ -4751,7 +6637,7 @@
     document.addEventListener("pointerup", ev => finishTouchPointerDrag(ev, false), { passive: false });
     document.addEventListener("pointercancel", ev => finishTouchPointerDrag(ev, true), { passive: false });
     document.addEventListener("click", ev => {
-      if (isTouchUi() && performance.now() < suppressTouchClickUntil) {
+      if (performance.now() < suppressTouchClickUntil) {
         ev.preventDefault();
         ev.stopImmediatePropagation();
       }
@@ -4775,23 +6661,23 @@
         }
         return;
       }
-      if (isTouchUi()) {
-        ev.stopPropagation();
-        const selection = selectedDrag();
-        if (selection) {
-          const cell = canvasPointToCell(x, y, false);
-          clearTouchSelection();
-          if (!cell) {
-            log("Tap a battlefield cell to place the selected dragon.");
-            renderUi();
-            return;
-          }
-          state.dragging = selection;
-          placeUnit(selection.unit, cell.row, cell.col, selection);
-          clearTouchSelection();
+      const selection = selectedDrag();
+      if (selection) {
+        const cell = canvasPointToCell(x, y, false);
+        clearTouchSelection();
+        if (!cell) {
+          log("Click a battlefield Slot to place the selected dragon.");
           renderUi();
           return;
         }
+        state.dragging = selection;
+        placeUnit(selection.unit, cell.row, cell.col, selection);
+        clearTouchSelection();
+        renderUi();
+        return;
+      }
+      if (isTouchUi()) {
+        ev.stopPropagation();
         const dragon = dragonAtPoint(x, y);
         if (dragon) {
           if (state.waveRunning) {
@@ -4822,6 +6708,8 @@
       }
       ev.preventDefault();
       state.dragging = { source: "board", id: dragon.id, unit: dragon };
+      setBoardDragFeedback(true);
+      temporarilyHideShopForDrag();
       state.suppressCanvasClick = true;
       state.hoverCell = null;
       makeBoardDragGhost(dragon, ev.clientX, ev.clientY);
@@ -4874,6 +6762,7 @@
         clearDragGhost();
         renderUi();
       }
+      restoreShopAfterDrag();
     });
 
     canvas.addEventListener("dragover", ev => {
@@ -4914,6 +6803,7 @@
         placeUnit(drag?.unit, cell.row, cell.col, drag);
       }
       state.hoverCell = null;
+      restoreShopAfterDrag();
     });
 
     canvas.addEventListener("contextmenu", ev => {
@@ -4934,6 +6824,14 @@
     });
     document.getElementById("statPopover").addEventListener("click", ev => ev.stopPropagation());
     document.getElementById("statPopover").addEventListener("wheel", ev => ev.stopPropagation(), { passive: true });
+
+    document.getElementById("shopDrawerToggle").addEventListener("click", ev => {
+      ev.stopPropagation();
+      setShopTrayOpen(!shopTrayOpen);
+    });
+    document.addEventListener("keydown", ev => {
+      if (ev.key === "Escape" && shopTrayOpen) setShopTrayOpen(false);
+    });
 
     window.addEventListener("resize", () => requestAnimationFrame(fitCanvasToScreen));
     window.visualViewport?.addEventListener("resize", () => requestAnimationFrame(fitCanvasToScreen));
