@@ -2268,6 +2268,218 @@
       text-transform: uppercase;
     }
 
+    /* Rich result presentation: generated art stays text-free so UI remains crisp and dynamic. */
+    .end-screen {
+      z-index: 14000;
+      padding: clamp(12px, 2.4vw, 32px);
+      overflow: hidden;
+      background: #101b32;
+      transition: opacity .35s ease, visibility .35s ease;
+      isolation: isolate;
+    }
+    .end-screen::before,
+    .end-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .end-screen::before {
+      z-index: -2;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      transform: scale(1.035);
+      transition: transform 1.1s cubic-bezier(.2,.75,.25,1);
+    }
+    .end-screen::after {
+      z-index: -1;
+      background: radial-gradient(circle at 50% 46%, transparent 20%, rgba(3,6,18,.18) 66%, rgba(1,3,10,.62) 100%);
+    }
+    .end-screen.is-win::before { background-image: url("Resource Asset/End Screens/prototype-victory-bg.png"); }
+    .end-screen.is-lose::before { background-image: url("Resource Asset/End Screens/prototype-defeat-bg.png"); }
+    .end-screen.visible::before { transform: scale(1); }
+    .end-screen-card {
+      width: min(780px, calc(100vw - 28px));
+      max-height: calc(100dvh - 24px);
+      display: grid;
+      justify-items: center;
+      gap: clamp(6px, 1.2vh, 13px);
+      padding: clamp(14px, 2.3vh, 28px) clamp(16px, 3vw, 42px) clamp(16px, 2.8vh, 30px);
+      overflow: auto;
+      border: 2px solid rgba(255,235,160,.66);
+      border-radius: clamp(18px, 2.2vw, 30px);
+      background: linear-gradient(180deg, rgba(37,23,18,.35), rgba(8,13,25,.66));
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.09), 0 24px 75px rgba(0,0,0,.52);
+      backdrop-filter: blur(5px);
+    }
+    .end-screen.is-lose .end-screen-card {
+      border-color: rgba(142,177,255,.68);
+      background: linear-gradient(180deg, rgba(25,35,91,.32), rgba(7,12,38,.7));
+    }
+    .end-screen-kicker {
+      color: #fff2b2;
+      font-size: clamp(11px, 1.05vw, 15px);
+      letter-spacing: .2em;
+      text-shadow: 0 2px 6px rgba(0,0,0,.7);
+    }
+    .end-screen-card h1 {
+      margin: 0;
+      color: #fff8ce;
+      font-family: Impact, Haettenschweiler, "Arial Black", sans-serif;
+      font-size: clamp(48px, 7vw, 92px);
+      line-height: .92;
+      letter-spacing: .035em;
+      -webkit-text-stroke: clamp(1px, .16vw, 3px) #9d4c08;
+      text-shadow: 0 4px 0 #713106, 0 7px 18px rgba(77,32,0,.76), 0 0 34px rgba(255,225,91,.72);
+    }
+    .end-screen.is-lose .end-screen-kicker { color: #c8dcff; }
+    .end-screen.is-lose .end-screen-card h1 {
+      color: #e9efff;
+      -webkit-text-stroke-color: #363c91;
+      text-shadow: 0 4px 0 #1b205e, 0 7px 18px rgba(0,0,0,.72), 0 0 30px rgba(106,126,255,.54);
+    }
+    .end-screen-art-wrap {
+      position: relative;
+      width: clamp(210px, 32vh, 360px);
+      height: clamp(150px, 27vh, 285px);
+      display: grid;
+      place-items: center;
+      margin-block: -2px;
+    }
+    .end-screen-art-wrap::before {
+      content: "";
+      position: absolute;
+      width: 78%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: rgba(255,235,119,.34);
+      filter: blur(18px);
+      animation: resultAura 1.8s ease-in-out infinite alternate;
+    }
+    .end-screen.is-lose .end-screen-art-wrap::before { background: rgba(111,101,255,.32); }
+    .end-screen-boss {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 12px 10px rgba(0,0,0,.5));
+    }
+    .end-screen-card p {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(15px, 1.35vw, 20px);
+      font-weight: 800;
+      text-shadow: 0 2px 5px rgba(0,0,0,.8);
+    }
+    .end-screen-stats {
+      width: min(560px, 100%);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(6px, 1vw, 12px);
+    }
+    .end-stat {
+      min-width: 0;
+      padding: clamp(8px, 1.2vh, 13px) 8px;
+      border: 1px solid rgba(255,241,174,.48);
+      border-radius: 12px;
+      background: rgba(18,13,26,.48);
+      box-shadow: inset 0 1px rgba(255,255,255,.12);
+    }
+    .end-screen.is-lose .end-stat { border-color: rgba(151,184,255,.44); }
+    .end-stat strong,
+    .end-stat span { display: block; }
+    .end-stat strong {
+      color: #fff3a5;
+      font-size: clamp(18px, 2.1vw, 28px);
+      line-height: 1;
+    }
+    .end-screen.is-lose .end-stat strong { color: #d8e5ff; }
+    .end-stat span {
+      margin-top: 5px;
+      color: rgba(255,255,255,.82);
+      font-size: clamp(9px, .9vw, 12px);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .end-screen-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 3px;
+    }
+    .end-screen .result-button {
+      position: static;
+      display: inline-flex;
+      min-width: clamp(150px, 17vw, 210px);
+      min-height: clamp(46px, 6vh, 58px);
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border: 2px solid #efffb1;
+      border-radius: 12px;
+      background: linear-gradient(#b8f86a, #36bb31 64%, #19952b);
+      box-shadow: inset 0 2px rgba(255,255,255,.55), 0 5px 0 #126b22, 0 10px 22px rgba(0,0,0,.36);
+      color: #15370f;
+      font-size: clamp(13px, 1.2vw, 17px);
+      font-weight: 1000;
+      letter-spacing: .04em;
+      text-shadow: 0 1px rgba(255,255,255,.55);
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .end-screen .result-button.secondary {
+      border-color: #c6dbff;
+      background: linear-gradient(#718ed8, #3a54a1 64%, #283b7d);
+      box-shadow: inset 0 2px rgba(255,255,255,.35), 0 5px 0 #1a285c, 0 10px 22px rgba(0,0,0,.36);
+      color: #fff;
+      text-shadow: 0 2px rgba(0,0,0,.45);
+    }
+    .end-screen .result-button:hover,
+    .end-screen .result-button:focus-visible {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+      outline: 3px solid rgba(255,255,255,.75);
+      outline-offset: 3px;
+    }
+    .end-screen.visible .end-screen-kicker { animation: resultDrop .5s .08s both; }
+    .end-screen.visible h1 { animation: resultDrop .58s .16s both; }
+    .end-screen.visible .end-screen-art-wrap { animation: resultRise .62s .24s both; }
+    .end-screen.visible .end-screen-summary,
+    .end-screen.visible .end-screen-stats { animation: resultRise .55s .34s both; }
+    .end-screen.visible .end-screen-actions { animation: resultRise .5s .45s both; }
+    @keyframes resultDrop {
+      from { opacity: 0; transform: translateY(-24px) scale(.92); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes resultRise {
+      from { opacity: 0; transform: translateY(22px) scale(.96); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes resultAura {
+      from { opacity: .58; transform: scale(.88); }
+      to { opacity: 1; transform: scale(1.12); }
+    }
+    @media (max-width: 800px), (max-height: 650px) {
+      .end-screen-card { gap: 5px; padding-block: 12px 15px; }
+      .end-screen-art-wrap { width: clamp(170px, 27vh, 250px); height: clamp(120px, 22vh, 195px); }
+      .end-screen-stats { gap: 5px; }
+      .end-stat { padding-block: 7px; }
+      .end-screen-actions { gap: 7px; }
+    }
+    @media (max-width: 520px) {
+      .end-screen-card { width: calc(100vw - 18px); border-radius: 16px; padding-inline: 10px; }
+      .end-screen-card h1 { font-size: clamp(42px, 16vw, 66px); }
+      .end-screen-actions { width: 100%; }
+      .end-screen .result-button { flex: 1 1 135px; min-width: 0; }
+    }
+
     @media (min-width: 801px) and (pointer: fine) {
       html, body { width: 100%; height: 100%; overflow: hidden; }
       .app {
@@ -4056,8 +4268,19 @@
     <section class="end-screen-card" role="dialog" aria-modal="true" aria-labelledby="endScreenTitle">
       <div class="end-screen-kicker">Battle Complete</div>
       <h1 id="endScreenTitle">Victory</h1>
-      <p id="endScreenSummary">The Dragon Keep stands.</p>
-      <button id="playAgainBtn" class="play-again">Play Again</button>
+      <div class="end-screen-art-wrap" aria-hidden="true">
+        <img id="endScreenBoss" class="end-screen-boss" src="Resource Asset/Boss 2.png" alt="" />
+      </div>
+      <p id="endScreenSummary" class="end-screen-summary">The Dragon Keep stands.</p>
+      <div class="end-screen-stats" aria-label="Battle results">
+        <div class="end-stat"><strong id="endWaveStat">20</strong><span>Wave Reached</span></div>
+        <div class="end-stat"><strong id="endEnemyStat">0</strong><span>Monsters Defeated</span></div>
+        <div class="end-stat"><strong id="endBossStat">2/2</strong><span>Bosses Sealed</span></div>
+      </div>
+      <div class="end-screen-actions">
+        <button id="playAgainBtn" class="result-button play-again" type="button">Play Again</button>
+        <button id="returnToEventBtn" class="result-button secondary" type="button">Return to Event</button>
+      </div>
     </section>
   </div>
 
@@ -4664,6 +4887,8 @@
       waveRunning: false,
       gameOver: false,
       gameResult: null,
+      enemiesDefeated: 0,
+      bossesDefeated: 0,
     };
 
     let trackedDragonName = "";
@@ -6115,12 +6340,31 @@
       state.waveRunning = false;
       state.gameOver = false;
       state.gameResult = null;
+      state.enemiesDefeated = 0;
+      state.bossesDefeated = 0;
       clearDragGhost();
       rollShop(true);
       renderUi();
     }
 
+    function returnToEventLobby() {
+      if (bossPlaytestMode) {
+        const eventUrl = new URL(window.location.href);
+        eventUrl.searchParams.delete("bossTest");
+        window.location.href = eventUrl.toString();
+        return;
+      }
+      resetGame();
+      prototypePregame.hidden = false;
+      prototypePregame.classList.remove("is-leaving");
+      document.body.classList.add("prototype-pregame-active");
+      setPrototypeEventsSection(true);
+      setPrototypeEventOpen(true);
+    }
+
     function completeBossEncounter(boss) {
+      state.enemiesDefeated += 1;
+      state.bossesDefeated += 1;
       state.enemies = [];
       state.projectiles = [];
       state.enemyProjectiles = [];
@@ -6168,6 +6412,8 @@
       state.waveRunning = true;
       state.gameOver = false;
       state.gameResult = null;
+      state.enemiesDefeated = 0;
+      state.bossesDefeated = 0;
 
       const positions = [[0, 3], [1, 4], [2, 3], [2, 5], [3, 4], [4, 3]];
       const testDragons = dragonPool.filter(unit => unit.cost === 5).slice(0, positions.length);
@@ -6765,13 +7011,24 @@
       tutorialReplayBtn.onclick = () => openGuideCenter("tutorial");
       const endScreen = document.getElementById("endScreen");
       const playAgainBtn = document.getElementById("playAgainBtn");
+      const hasWon = state.gameResult === "won";
       endScreen.classList.toggle("visible", state.gameOver);
+      endScreen.classList.toggle("is-win", state.gameOver && hasWon);
+      endScreen.classList.toggle("is-lose", state.gameOver && !hasWon);
       endScreen.setAttribute("aria-hidden", state.gameOver ? "false" : "true");
-      document.getElementById("endScreenTitle").textContent = state.gameResult === "won" ? "Victory" : "Defeat";
-      document.getElementById("endScreenSummary").textContent = state.gameResult === "won"
-        ? `The Dragon Keep survived all ${state.wave} waves.`
-        : `The Keep fell during Wave ${state.wave}.`;
+      endScreen.querySelector(".end-screen-kicker").textContent = hasWon ? "Dragon Keep Secured" : "The Keep Has Fallen";
+      document.getElementById("endScreenTitle").textContent = hasWon ? "Victory" : "Defeat";
+      document.getElementById("endScreenSummary").textContent = hasWon
+        ? (bossPlaytestMode ? `Boss Wave ${state.wave} has been sealed.` : `All ${state.wave} waves cleared. The Dragon Keep stands.`)
+        : `The Keep fell during Wave ${state.wave}. Strengthen your dragons and return.`;
+      document.getElementById("endScreenBoss").src = state.wave > 10
+        ? "Resource Asset/Boss 2.png"
+        : "Resource Asset/Boss 1.png";
+      document.getElementById("endWaveStat").textContent = state.wave;
+      document.getElementById("endEnemyStat").textContent = state.enemiesDefeated.toLocaleString();
+      document.getElementById("endBossStat").textContent = `${state.bossesDefeated}/2`;
       playAgainBtn.onclick = bossPlaytestMode ? () => startBossPlaytest(state.wave === 20 ? 20 : 10) : resetGame;
+      document.getElementById("returnToEventBtn").onclick = returnToEventLobby;
 
       const bench = document.getElementById("bench");
       bench.innerHTML = state.bench.map((d, i) => {
@@ -7984,6 +8241,7 @@
       }
 
       const defeatedEnemies = state.enemies.filter(e => e.hp <= 0);
+      state.enemiesDefeated += defeatedEnemies.length;
       for (const enemy of defeatedEnemies) splitEnemy(enemy);
       state.enemies = state.enemies.filter(e => e.hp > 0);
       if (!state.gameOver && state.waveRunning && state.enemiesSpawned >= state.enemiesToSpawn && !state.enemies.length) {
