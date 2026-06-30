@@ -2632,9 +2632,1108 @@
       16% { opacity: 1; }
       100% { opacity: 0; transform: translate(var(--spark-x), var(--spark-y)) scale(0); }
     }
+
+    /* Prototype-only pre-game flow: loading -> Tycoon lobby -> selected Event -> Battle. */
+    body.prototype-pregame-active .app,
+    body.prototype-pregame-active > .stat-popover,
+    body.prototype-pregame-active > .mobile-toast,
+    body.prototype-pregame-active > .end-screen {
+      visibility: hidden;
+    }
+    .prototype-pregame {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      overflow: hidden;
+      color: #fff9dd;
+      background: #10152d;
+      font-family: Arial, Helvetica, sans-serif;
+      opacity: 1;
+      transition: opacity .42s ease, transform .42s ease;
+    }
+
+    .boss-playtest-controls {
+      display: none;
+      grid-column: 1 / -1;
+      gap: 6px;
+      padding: 8px;
+      border: 2px solid #d3a72f;
+      border-radius: 8px;
+      background: rgba(68, 45, 8, .72);
+    }
+    body.boss-playtest-mode .boss-playtest-controls { display: grid; }
+    .boss-playtest-controls strong {
+      color: #ffe68a;
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: .04em;
+    }
+    .boss-playtest-controls button {
+      min-height: 38px;
+      background: linear-gradient(#8f3a31, #5f211d);
+      border-color: #ffc66d;
+    }
+    .prototype-pregame.is-leaving {
+      opacity: 0;
+      transform: scale(1.025);
+      pointer-events: none;
+    }
+    .prototype-loading,
+    .prototype-tycoon {
+      position: absolute;
+      inset: 0;
+    }
+    .prototype-loading {
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(17, 21, 54, .22), rgba(5, 9, 28, .82)),
+        url("Resource Asset/Prototype Event/dml-lobby-from-video.webp") center / cover no-repeat;
+      transition: opacity .45s ease, visibility .45s ease;
+    }
+    .prototype-loading::before {
+      content: "";
+      position: absolute;
+      inset: -5%;
+      background: inherit;
+      filter: blur(6px) saturate(.9);
+      transform: scale(1.06);
+      animation: prototypeLoadingDrift 7s ease-in-out infinite alternate;
+    }
+    .prototype-loading::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 42%, rgba(76, 228, 255, .23), transparent 36%);
+    }
+    .prototype-loading.is-complete {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .prototype-loading-card {
+      position: relative;
+      z-index: 1;
+      width: min(620px, 86vw);
+      text-align: center;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,.62));
+    }
+    .prototype-loading-emblem {
+      width: clamp(84px, 8vw, 128px);
+      aspect-ratio: 1;
+      margin: 0 auto 12px;
+      display: grid;
+      place-items: center;
+      border: 5px solid #f9d45e;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #7659dc, #29204d 58%, #11162f);
+      box-shadow: 0 0 0 6px rgba(41, 27, 83, .78), 0 0 30px rgba(122, 223, 255, .55);
+      color: #fff4ad;
+      font: 1000 clamp(30px, 4vw, 54px)/1 Georgia, serif;
+      letter-spacing: -5px;
+    }
+    .prototype-loading-title {
+      margin: 0;
+      color: #fff5b5;
+      font: 1000 clamp(34px, 5.2vw, 74px)/.94 Georgia, serif;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      text-shadow: 0 4px 0 #53336f, 0 7px 18px rgba(0,0,0,.78);
+    }
+    .prototype-loading-title span {
+      display: block;
+      margin-top: 9px;
+      color: #9ff5ff;
+      font-size: .43em;
+      letter-spacing: .23em;
+      text-shadow: 0 3px 0 #23556c, 0 6px 16px rgba(0,0,0,.72);
+    }
+    .prototype-loading-bar {
+      height: 18px;
+      margin-top: clamp(28px, 6vh, 62px);
+      padding: 3px;
+      overflow: hidden;
+      border: 2px solid #fff1a7;
+      border-radius: 999px;
+      background: rgba(9, 12, 33, .75);
+      box-shadow: 0 3px 12px rgba(0,0,0,.5);
+    }
+    .prototype-loading-bar i {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #38d7f1, #7df282 58%, #ffe06f);
+      transform-origin: left;
+      animation: prototypeLoadProgress 2.55s cubic-bezier(.14,.67,.32,1) both;
+    }
+    .prototype-loading-copy {
+      margin: 12px 0 0;
+      color: #fdf8dc;
+      font-size: clamp(13px, 1.4vw, 18px);
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .prototype-tycoon {
+      z-index: 1;
+      isolation: isolate;
+      background: url("Resource Asset/Prototype Event/dml-lobby-from-video.webp") center / cover no-repeat;
+    }
+    .prototype-tycoon::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      background: url("Resource Asset/Prototype Event/dml-events-from-video.webp") center / cover no-repeat;
+      transition: opacity .38s ease;
+    }
+    .prototype-tycoon.is-events-open::before {
+      opacity: 1;
+    }
+    .prototype-tycoon::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      pointer-events: none;
+      box-shadow: inset 0 0 80px rgba(8, 13, 34, .2);
+    }
+    .tycoon-topbar {
+      display: none;
+      position: absolute;
+      z-index: 2;
+      top: max(14px, env(safe-area-inset-top));
+      left: 18px;
+      right: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+    .tycoon-brand,
+    .tycoon-resources {
+      border: 2px solid rgba(255, 230, 128, .9);
+      background: linear-gradient(180deg, rgba(56, 46, 104, .96), rgba(25, 29, 69, .94));
+      box-shadow: 0 5px 16px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.08);
+    }
+    .tycoon-brand {
+      padding: 10px 18px;
+      border-radius: 12px 28px 12px 28px;
+      font: 1000 clamp(18px, 2vw, 30px)/1 Georgia, serif;
+      color: #fff2a7;
+      text-transform: uppercase;
+      text-shadow: 0 2px 0 #543069;
+    }
+    .tycoon-brand small {
+      display: block;
+      margin-top: 5px;
+      color: #aeefff;
+      font: 900 10px/1 Arial, sans-serif;
+      letter-spacing: .22em;
+    }
+    .tycoon-resources {
+      display: flex;
+      gap: 10px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-weight: 1000;
+    }
+    .tycoon-resource {
+      min-width: 74px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(6, 15, 38, .46);
+      color: #fff7c1;
+      text-align: center;
+    }
+    .tycoon-event-tag {
+      position: absolute;
+      z-index: 4;
+      left: max(18px, env(safe-area-inset-left));
+      top: 50%;
+      width: clamp(188px, 18vw, 278px);
+      min-height: 104px;
+      padding: 10px 14px 10px 88px;
+      transform: translateY(-50%);
+      overflow: visible;
+      border: 3px solid #ffea87;
+      border-radius: 17px 38px 38px 17px;
+      color: #fff8cf;
+      background:
+        linear-gradient(95deg, rgba(31, 27, 75, .96), rgba(80, 45, 125, .94)),
+        url("Resource Asset/Prototype Event/dragons-vs-monsters-event-banner.webp") center / cover;
+      box-shadow: 0 8px 22px rgba(0,0,0,.48), inset 0 0 0 3px rgba(255,255,255,.1);
+      text-align: left;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform .2s ease, filter .2s ease, box-shadow .2s ease, opacity .22s ease, visibility .22s ease;
+    }
+    .prototype-tycoon.is-events-open .tycoon-event-tag {
+      left: 3.5%;
+      top: 49%;
+      width: min(280px, 23vw);
+      min-height: 92px;
+      padding-left: 82px;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .tycoon-event-tag:hover,
+    .tycoon-event-tag:focus-visible,
+    .tycoon-event-tag.is-selected {
+      transform: translateY(-50%) translateX(8px) scale(1.03);
+      filter: brightness(1.12);
+      box-shadow: 0 0 0 5px rgba(96, 235, 255, .38), 0 10px 26px rgba(0,0,0,.55);
+      outline: none;
+    }
+    .event-tag-crest {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      width: 64px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      transform: translateY(-50%);
+      border: 3px solid #fff0a2;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 25%, #4ee3ed, #3c338d 52%, #211943);
+      color: #fff3a4;
+      font: 1000 24px/1 Georgia, serif;
+      box-shadow: 0 0 14px rgba(86, 232, 255, .72);
+    }
+    .tycoon-event-tag strong {
+      display: block;
+      font: 1000 clamp(16px, 1.55vw, 23px)/1.05 Georgia, serif;
+      text-transform: uppercase;
+      text-shadow: 0 2px 2px #20143e;
+    }
+    .tycoon-event-tag small {
+      display: block;
+      margin-top: 7px;
+      color: #9ff6ff;
+      font-size: 11px;
+      font-weight: 1000;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .event-new-badge {
+      position: absolute;
+      top: -12px;
+      right: 13px;
+      padding: 5px 10px;
+      border: 2px solid #fff3a4;
+      border-radius: 999px;
+      background: #e83f50;
+      color: white;
+      font: 1000 11px/1 Arial, sans-serif;
+      letter-spacing: .08em;
+    }
+    .tycoon-event-panel {
+      position: absolute;
+      z-index: 5;
+      top: max(72px, calc(env(safe-area-inset-top) + 58px));
+      right: max(18px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      width: min(560px, 46vw);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      padding: 14px;
+      transform: translateX(calc(100% + 40px));
+      opacity: 0;
+      pointer-events: none;
+      border: 3px solid #ffe684;
+      border-radius: 24px 10px 24px 10px;
+      background: linear-gradient(180deg, rgba(48, 37, 93, .98), rgba(16, 25, 57, .98));
+      box-shadow: 0 18px 46px rgba(0,0,0,.62), inset 0 0 0 3px rgba(255,255,255,.07);
+      transition: transform .36s cubic-bezier(.2,.88,.28,1), opacity .25s ease;
+    }
+    .tycoon-event-panel.is-open {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .event-panel-header {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 4px 2px 12px;
+    }
+    .event-panel-kicker {
+      margin: 0 0 4px;
+      color: #78ecff;
+      font-size: 12px;
+      font-weight: 1000;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .event-panel-title {
+      margin: 0;
+      color: #fff1a1;
+      font: 1000 clamp(24px, 3vw, 42px)/.95 Georgia, serif;
+      text-transform: uppercase;
+      text-shadow: 0 3px 0 #5a3277;
+    }
+    .event-panel-close {
+      width: 42px;
+      height: 42px;
+      margin-left: auto;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 2px solid #ffd989;
+      border-radius: 10px;
+      background: linear-gradient(#f15c62, #ad263a);
+      color: white;
+      font-size: 24px;
+      line-height: 1;
+    }
+    .event-banner-wrap {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border: 3px solid #bcefff;
+      border-radius: 16px;
+      background: #17234f;
+      box-shadow: inset 0 0 20px rgba(0,0,0,.42);
+    }
+    .event-banner-wrap img {
+      width: 100%;
+      height: 100%;
+      min-height: 230px;
+      display: block;
+      object-fit: cover;
+    }
+    .event-banner-copy {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 38px 18px 15px;
+      background: linear-gradient(transparent, rgba(9, 14, 39, .93));
+      color: #fff9dc;
+      font-size: clamp(13px, 1.15vw, 17px);
+      font-weight: 800;
+      text-shadow: 0 2px 3px rgba(0,0,0,.8);
+    }
+    .event-panel-footer {
+      display: grid;
+      grid-template-columns: 1fr minmax(170px, .8fr);
+      gap: 12px;
+      align-items: center;
+      padding-top: 12px;
+    }
+    .event-status {
+      color: #b7f7ff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+    .event-status strong {
+      display: block;
+      margin-top: 3px;
+      color: #fff1a2;
+      font-size: 16px;
+    }
+    .event-battle-button {
+      min-height: 58px;
+      border: 3px solid #fff2a4;
+      border-radius: 13px;
+      background: linear-gradient(#8bee58, #35a92d 60%, #24851f);
+      color: #fff;
+      font: 1000 clamp(20px, 2.3vw, 30px)/1 Georgia, serif;
+      letter-spacing: .05em;
+      text-shadow: 0 3px 0 #21651d;
+      box-shadow: inset 0 3px 0 rgba(255,255,255,.3), 0 5px 0 #155b22, 0 9px 18px rgba(0,0,0,.35);
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .event-battle-button:hover,
+    .event-battle-button:focus-visible {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      outline: 4px solid rgba(112, 238, 255, .45);
+    }
+    .event-battle-button:active { transform: translateY(3px); box-shadow: inset 0 3px 0 rgba(255,255,255,.22), 0 2px 0 #155b22; }
+    .tycoon-hint {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      bottom: max(22px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      padding: 9px 16px;
+      border: 1px solid rgba(255, 240, 167, .72);
+      border-radius: 999px;
+      background: rgba(15, 20, 54, .78);
+      color: #fff7c3;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: 0 4px 14px rgba(0,0,0,.35);
+      transition: opacity .2s ease;
+    }
+    .prototype-tycoon:has(.tycoon-event-panel.is-open) .tycoon-hint { opacity: 0; }
+    .tycoon-hint .event-step-hint { display: none; }
+    .prototype-tycoon.is-events-open .tycoon-hint .lobby-step-hint { display: none; }
+    .prototype-tycoon.is-events-open .tycoon-hint .event-step-hint { display: inline; }
+    .lobby-events-hotspot {
+      position: absolute;
+      z-index: 4;
+      left: 7.3%;
+      top: 23.1%;
+      width: 18.2%;
+      height: 10.7%;
+      padding: 0;
+      border: 3px solid rgba(255, 239, 113, .95);
+      border-radius: 12px;
+      background: rgba(83, 230, 255, .08);
+      color: transparent;
+      box-shadow: 0 0 0 4px rgba(68, 227, 255, .25), 0 0 22px rgba(255, 237, 91, .8);
+      animation: lobbyEventPulse 1.45s ease-in-out infinite alternate;
+      transition: opacity .2s ease, visibility .2s ease, filter .2s ease;
+    }
+    .lobby-events-hotspot::after {
+      content: "OPEN EVENTS";
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 8px);
+      transform: translateX(-50%);
+      min-width: 110px;
+      padding: 5px 10px;
+      border: 1px solid #ffe681;
+      border-radius: 999px;
+      background: rgba(37, 25, 76, .92);
+      color: #fff7bd;
+      font: 1000 11px/1 Arial, sans-serif;
+      letter-spacing: .1em;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,.42);
+    }
+    .lobby-events-hotspot:hover,
+    .lobby-events-hotspot:focus-visible {
+      filter: brightness(1.2);
+      outline: 4px solid rgba(255,255,255,.7);
+    }
+    .prototype-tycoon.is-events-open .lobby-events-hotspot {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .event-section-back {
+      position: absolute;
+      z-index: 4;
+      top: 0;
+      right: 0;
+      width: 7.2%;
+      min-width: 74px;
+      height: 12.5%;
+      min-height: 70px;
+      padding: 0;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      border: 0;
+      border-radius: 0 0 0 18px;
+      background: transparent;
+      color: transparent;
+      transition: opacity .2s ease, visibility .2s ease;
+    }
+    .prototype-tycoon.is-events-open .event-section-back {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .event-section-back:hover,
+    .event-section-back:focus-visible {
+      background: rgba(255, 234, 105, .16);
+      outline: 4px solid rgba(255, 235, 111, .78);
+      outline-offset: -5px;
+    }
+    @keyframes lobbyEventPulse {
+      from { box-shadow: 0 0 0 3px rgba(68, 227, 255, .18), 0 0 12px rgba(255, 237, 91, .5); }
+      to { box-shadow: 0 0 0 6px rgba(68, 227, 255, .35), 0 0 28px rgba(255, 237, 91, .92); }
+    }
+    @keyframes prototypeLoadProgress {
+      0% { transform: scaleX(.03); }
+      35% { transform: scaleX(.42); }
+      72% { transform: scaleX(.76); }
+      100% { transform: scaleX(1); }
+    }
+    @keyframes prototypeLoadingDrift {
+      from { transform: scale(1.06) translate3d(-.4%, -.25%, 0); }
+      to { transform: scale(1.1) translate3d(.4%, .25%, 0); }
+    }
+    .tutorial-replay-button {
+      position: static;
+      width: 44px;
+      height: 100%;
+      min-height: 44px !important;
+      padding: 4px 6px !important;
+      border-color: #6f8fd2 !important;
+      border-radius: 8px !important;
+      background: linear-gradient(180deg, #263d66, #182840) !important;
+      color: #eaf4ff !important;
+      font-size: 18px !important;
+    }
+    .hud-utility-buttons {
+      display: grid;
+      grid-template-columns: minmax(62px, 1fr) 44px;
+      gap: 5px;
+      min-width: 111px;
+      height: 100%;
+    }
+    .hud-utility-buttons .sound-toggle {
+      width: 100%;
+      min-width: 0 !important;
+      height: 100%;
+      padding: 5px 4px;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 11px;
+      line-height: 1;
+    }
+    @media (min-width: 801px) and (pointer: fine) {
+      .hud-status {
+        grid-template-columns: minmax(165px, 1fr) minmax(111px, 120px);
+        width: min(100%, 390px);
+      }
+    }
+    @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
+      .hud-status { grid-template-columns: minmax(155px, 1fr) 106px; }
+      .hud-utility-buttons { grid-template-columns: minmax(58px, 1fr) 39px; min-width: 102px; gap: 4px; }
+      .tutorial-replay-button { width: 39px; }
+      .hud-utility-buttons .sound-toggle { font-size: 10px; padding-inline: 2px; }
+    }
+    .mobile-guide-button { min-width: 46px; }
+    .guide-center {
+      position: fixed;
+      inset: 0;
+      z-index: 13200;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(4, 8, 17, .78);
+      backdrop-filter: blur(4px);
+    }
+    .guide-center[hidden] { display: none; }
+    .guide-window {
+      width: min(1040px, 96vw);
+      height: min(720px, 92vh);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      overflow: hidden;
+      border: 2px solid #e5c760;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #1c2741, #0e1728 68%);
+      color: #eef5ed;
+      box-shadow: 0 24px 70px rgba(0,0,0,.78), inset 0 0 0 2px rgba(255,255,255,.05);
+    }
+    .guide-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(229,199,96,.35);
+    }
+    .guide-header h2 { margin: 0; color: #ffe58a; font: 1000 25px/1 Georgia, serif; }
+    .guide-header p { margin: 3px 0 0; color: #a9c7c0; font-size: 12px; font-weight: 800; }
+    .guide-close {
+      width: 38px;
+      height: 38px;
+      margin-left: auto;
+      padding: 0;
+      border: 1px solid #ffb3a9;
+      background: #793640;
+      color: white;
+      font-size: 22px;
+    }
+    .guide-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 9px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(4,9,19,.35);
+    }
+    .guide-tab {
+      min-height: 38px;
+      padding: 7px 14px;
+      border: 1px solid #51627c;
+      background: #22324c;
+      color: #dce8e5;
+    }
+    .guide-tab.active { border-color: #f1d46d; background: #4d4163; color: #fff4b5; }
+    .guide-body { min-height: 0; overflow: auto; padding: 16px; }
+    .guide-page[hidden] { display: none; }
+    .guide-step-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .guide-step {
+      padding: 12px;
+      border: 1px solid #41546b;
+      border-radius: 10px;
+      background: rgba(29,43,63,.74);
+    }
+    .guide-step strong { display: block; margin-bottom: 5px; color: #ffe58a; font-size: 15px; }
+    .guide-step span { color: #cbd8d2; font-size: 13px; line-height: 1.35; }
+    .guide-practice {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #4d8c76;
+      border-radius: 10px;
+      background: rgba(33,77,64,.32);
+    }
+    .guide-practice p { margin: 0; color: #cce9df; font-size: 13px; }
+    .guide-practice button { margin-left: auto; white-space: nowrap; background: #55b66c; color: #fff; }
+    .dragon-guide-toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .dragon-guide-search {
+      width: min(420px, 100%);
+      min-height: 40px;
+      padding: 8px 12px;
+      border: 1px solid #66809a;
+      border-radius: 8px;
+      background: #101a2a;
+      color: white;
+      font: 800 14px Arial, sans-serif;
+    }
+    .dragon-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-height: 40px;
+      padding: 4px 6px;
+      border: 1px solid #41566e;
+      border-radius: 8px;
+      background: rgba(11,20,34,.72);
+    }
+    .dragon-filter-label {
+      margin-right: 2px;
+      color: #9fb8b2;
+      font-size: 10px;
+      font-weight: 1000;
+      text-transform: uppercase;
+    }
+    .dragon-filter-button {
+      width: 30px;
+      height: 30px;
+      min-height: 30px;
+      display: grid;
+      place-items: center;
+      padding: 3px;
+      border: 1px solid #4d6078;
+      border-radius: 7px;
+      background: #1b2a3d;
+      color: white;
+      opacity: .72;
+    }
+    .dragon-filter-button img { width: 22px; height: 22px; object-fit: contain; image-rendering: auto; }
+    .dragon-filter-button.rarity-filter {
+      border-color: var(--rarity-color);
+      background: color-mix(in srgb, var(--rarity-color) 24%, #121c2a);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 1000;
+    }
+    .dragon-filter-button.active {
+      opacity: 1;
+      transform: translateY(-1px);
+      border-color: #fff1a2;
+      box-shadow: 0 0 0 2px rgba(255,232,128,.32), 0 0 12px var(--rarity-color, rgba(98,231,183,.75));
+    }
+    .dragon-filter-clear {
+      min-height: 30px;
+      padding: 4px 8px;
+      border: 1px solid #6f7785;
+      background: #303746;
+      color: #dce4e4;
+      font-size: 11px;
+    }
+    .dragon-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .dragon-guide-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      padding: 9px;
+      border: 1px solid #41566e;
+      border-radius: 10px;
+      background: rgba(19,31,48,.86);
+    }
+    .dragon-guide-card.owned {
+      border-color: #4f806e;
+      background: rgba(19,49,43,.68);
+    }
+    .dragon-guide-card.not-owned {
+      border-color: rgba(197,91,91,.62);
+      background: rgba(89,34,42,.34);
+    }
+    .dragon-guide-card h3 { grid-column: 1 / -1; margin: 0; color: #ffe58a; font-size: 14px; }
+    .dragon-form {
+      min-width: 0;
+      padding: 5px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+      text-align: center;
+    }
+    .dragon-form img { width: 100%; height: 82px; object-fit: contain; image-rendering: auto; }
+    .dragon-form span { display: block; color: #bde9df; font-size: 11px; font-weight: 900; }
+    .dragon-guide-meta { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; }
+    .dragon-guide-element {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 5px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.045);
+      font-size: 10px;
+      font-weight: 900;
+    }
+    .dragon-guide-element .element-dot { width: 18px; height: 18px; }
+    .dragon-guide-rarity {
+      padding: 3px 6px;
+      border: 1px solid var(--rarity-color);
+      border-radius: 999px;
+      color: #fff6d7;
+      font-size: 10px;
+      font-weight: 1000;
+    }
+    .dragon-guide-owned { margin-left: auto; color: #9df0bd; font-size: 12px; font-weight: 900; }
+    .dragon-guide-card.not-owned .dragon-guide-owned { color: #ff9e9e; }
+    .dragon-guide-locate {
+      grid-column: 1 / -1;
+      min-height: 32px;
+      padding: 5px 8px;
+      background: #314f67;
+      color: #eafaff;
+      font-size: 12px;
+    }
+    .dragon-form-compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin: 8px 0;
+    }
+    .dragon-form-compare .dragon-form img { height: 92px; }
+    .stat-popover.dragon-detail-popover {
+      width: min(430px, calc(100vw - 16px));
+      max-width: 430px;
+      max-height: min(720px, calc(100vh - 16px));
+      overflow-y: auto;
+    }
+    .dragon-owned-summary {
+      margin-top: 8px;
+      padding: 8px;
+      border: 1px solid rgba(102,218,173,.35);
+      border-radius: 8px;
+      background: rgba(51,105,84,.18);
+    }
+    .dragon-owned-summary strong { color: #9cf0bd; }
+    .dragon-location-list { display: grid; gap: 5px; margin-top: 6px; }
+    .dragon-location-item {
+      width: 100%;
+      min-height: 30px;
+      padding: 5px 8px;
+      border: 1px solid #4f7c6d;
+      background: #263f3a;
+      color: #e7fff5;
+      text-align: left;
+      font-size: 12px;
+    }
+    .owned-copy-badge {
+      position: absolute;
+      z-index: 6;
+      top: 31px;
+      right: 4px;
+      padding: 2px 5px;
+      border: 1px solid #78d9a2;
+      border-radius: 999px;
+      background: rgba(14,55,42,.9);
+      color: #caffdc;
+      font-size: 9px;
+      font-weight: 1000;
+      pointer-events: none;
+    }
+    .card.dragon-tracked,
+    .bench-slot.dragon-tracked {
+      border-color: #ffe56f !important;
+      box-shadow: 0 0 0 3px rgba(255,229,111,.55), 0 0 22px rgba(100,240,178,.95) !important;
+      filter: brightness(1.15);
+    }
+    @media (max-width: 820px) {
+      .guide-center { padding: 7px; }
+      .guide-window { width: 100%; height: 96vh; }
+      .guide-step-grid, .dragon-guide-grid { grid-template-columns: 1fr; }
+      .guide-practice { align-items: stretch; flex-direction: column; }
+      .guide-practice button { margin-left: 0; }
+      .owned-copy-badge { top: 24px; font-size: 8px; }
+    }
+    .tutorial-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 14000;
+      pointer-events: none;
+      color: #f8f7e9;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    .tutorial-overlay[hidden] { display: none; }
+    .tutorial-blocker,
+    .tutorial-target-blocker {
+      position: fixed;
+      z-index: 14000;
+      background: rgba(5, 10, 22, .72);
+      pointer-events: none;
+      touch-action: none;
+    }
+    .tutorial-target-blocker {
+      background: transparent;
+    }
+    .tutorial-secondary-spotlight {
+      border-color: #ffd968;
+      box-shadow:
+        0 0 0 4px rgba(255, 201, 70, .25),
+        0 0 24px rgba(255, 218, 104, .95),
+        inset 0 0 18px rgba(255, 218, 104, .18);
+    }
+    .tutorial-spotlight {
+      position: fixed;
+      z-index: 14001;
+      border: 4px solid #76f0b2;
+      border-radius: 13px;
+      pointer-events: none;
+      box-shadow:
+        0 0 0 4px rgba(52, 213, 137, .25),
+        0 0 24px rgba(91, 255, 181, .95),
+        inset 0 0 18px rgba(91, 255, 181, .18);
+      animation: tutorialSpotlightPulse .9s ease-in-out infinite alternate;
+      transition: left .18s ease, top .18s ease, width .18s ease, height .18s ease;
+    }
+    .tutorial-card {
+      position: fixed;
+      z-index: 14003;
+      width: min(390px, calc(100vw - 24px));
+      padding: 16px;
+      border: 2px solid #f6d76d;
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(38, 44, 75, .99), rgba(14, 23, 42, .99));
+      box-shadow: 0 16px 42px rgba(0,0,0,.68), inset 0 0 0 2px rgba(255,255,255,.06);
+      pointer-events: auto;
+    }
+    .tutorial-progress {
+      margin-bottom: 7px;
+      color: #80ebff;
+      font-size: 11px;
+      font-weight: 1000;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .tutorial-card h2 {
+      margin: 0 0 8px;
+      color: #ffe58a;
+      font: 1000 clamp(21px, 2.3vw, 29px)/1.05 Georgia, serif;
+    }
+    .tutorial-card p {
+      margin: 0;
+      color: #edf5e8;
+      font-size: clamp(14px, 1.35vw, 17px);
+      font-weight: 700;
+      line-height: 1.42;
+    }
+    .tutorial-card p strong { color: #91f4c1; }
+    .tutorial-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .tutorial-skip {
+      padding: 8px 10px;
+      background: transparent;
+      color: #bfc9d5;
+      border: 1px solid #647187;
+      font-size: 12px;
+    }
+    .tutorial-next {
+      min-width: 118px;
+      padding: 10px 16px;
+      border: 2px solid #fff0a4;
+      background: linear-gradient(#73dc4c, #2f9d2d);
+      color: white;
+      text-shadow: 0 2px 0 #22651f;
+    }
+    .tutorial-action-note {
+      margin-left: auto;
+      color: #8feab8;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    body.tutorial-running .stat-popover,
+    body.tutorial-running .mobile-toast { display: none !important; }
+    body.tutorial-level-focus #game {
+      filter: brightness(1.12) saturate(1.16);
+      box-shadow: 0 0 18px #fff0a0, 0 0 42px rgba(112, 239, 191, .85) !important;
+    }
+    body.tutorial-level-focus .keeper-pill,
+    body.tutorial-level-focus #capText,
+    body.tutorial-level-focus .drop-rate-panel {
+      filter: brightness(1.2);
+      box-shadow: 0 0 0 3px rgba(255, 226, 111, .72), 0 0 22px rgba(111, 239, 190, .72);
+    }
+    .tutorial-replay-notice {
+      position: fixed;
+      z-index: 13500;
+      right: 18px;
+      bottom: 18px;
+      width: min(390px, calc(100vw - 36px));
+      padding: 15px 46px 15px 16px;
+      border: 2px solid #f4d56b;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(39, 48, 82, .98), rgba(16, 26, 47, .98));
+      color: #edf7eb;
+      box-shadow: 0 14px 34px rgba(0,0,0,.58), 0 0 24px rgba(99, 225, 178, .28);
+      animation: tutorialNoticeIn .28s ease-out both;
+    }
+    .tutorial-replay-notice[hidden] { display: none; }
+    .tutorial-replay-notice strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #ffe58a;
+      font: 1000 18px/1.1 Georgia, serif;
+    }
+    .tutorial-replay-notice p { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.4; }
+    .tutorial-replay-notice button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 50%;
+      background: #733941;
+      color: white;
+    }
+    .tutorial-replay-button.attention {
+      animation: tutorialHelpPulse .8s ease-in-out 5 alternate;
+    }
+    @keyframes tutorialSpotlightPulse {
+      from { filter: brightness(.9); transform: scale(.995); }
+      to { filter: brightness(1.18); transform: scale(1.008); }
+    }
+    @keyframes tutorialNoticeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes tutorialHelpPulse {
+      from { box-shadow: 0 0 0 0 rgba(255, 226, 104, .35); filter: brightness(1); }
+      to { box-shadow: 0 0 0 7px rgba(255, 226, 104, .5), 0 0 20px #71efb3; filter: brightness(1.35); }
+    }
+    @media (max-width: 820px), (max-height: 600px) {
+      .tycoon-topbar { top: 8px; left: 10px; right: 10px; }
+      .tycoon-brand { padding: 7px 12px; }
+      .tycoon-resources { padding: 4px 7px; gap: 4px; }
+      .tycoon-resource { min-width: 56px; padding: 5px 7px; font-size: 12px; }
+      .tycoon-event-tag { left: 10px; top: 55%; width: 205px; min-height: 82px; padding-left: 72px; }
+      .event-tag-crest { width: 52px; }
+      .tycoon-event-panel { top: 58px; right: 8px; bottom: 8px; width: min(510px, 64vw); padding: 10px; }
+      .event-panel-title { font-size: 25px; }
+      .event-banner-wrap img { min-height: 150px; }
+      .event-panel-footer { grid-template-columns: 1fr 150px; }
+      .event-battle-button { min-height: 48px; font-size: 21px; }
+      .tycoon-hint { display: none; }
+      .tutorial-card { width: min(340px, calc(100vw - 16px)); padding: 12px; }
+      .tutorial-card p { font-size: 13px; }
+      .tutorial-actions { margin-top: 10px; }
+    }
+    @media (max-width: 620px) and (orientation: portrait) {
+      .tycoon-resources { display: none; }
+      .tycoon-event-tag { top: auto; bottom: 24px; transform: none; }
+      .tycoon-event-tag:hover,
+      .tycoon-event-tag:focus-visible,
+      .tycoon-event-tag.is-selected { transform: translateX(5px) scale(1.02); }
+      .tycoon-event-panel { top: 72px; left: 10px; right: 10px; bottom: 10px; width: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .prototype-loading::before,
+      .prototype-loading-bar i,
+      .tutorial-spotlight { animation: none; }
+    }
   </style>
 </head>
-<body>
+<body class="prototype-pregame-active">
+  <div id="prototypePregame" class="prototype-pregame" aria-label="Dragons vs Monsters event lobby">
+    <section id="prototypeLoading" class="prototype-loading" aria-label="Loading game">
+      <div class="prototype-loading-card">
+        <div class="prototype-loading-emblem" aria-hidden="true">DML</div>
+        <h1 class="prototype-loading-title">Dragon Mania <span>Legends</span></h1>
+        <div class="prototype-loading-bar" aria-hidden="true"><i></i></div>
+        <p class="prototype-loading-copy">Loading Event Lobby…</p>
+      </div>
+    </section>
+
+    <section id="prototypeTycoon" class="prototype-tycoon" aria-label="Dragon Mania Legends lobby and Events section">
+      <header class="tycoon-topbar">
+        <div class="tycoon-brand">Dragon Kingdom <small>Tycoon Lobby</small></div>
+        <div class="tycoon-resources" aria-label="Kingdom resources">
+          <span class="tycoon-resource">🪙 8,450</span>
+          <span class="tycoon-resource">💎 125</span>
+        </div>
+      </header>
+
+      <button id="prototypeLobbyEventButton" class="lobby-events-hotspot" type="button" aria-label="Open the Events section" aria-expanded="false">Open Events</button>
+      <button id="prototypeEventBack" class="event-section-back" type="button" aria-label="Return to the Dragon Mania Legends lobby" aria-hidden="true">Back to Lobby</button>
+
+      <button id="prototypeEventTag" class="tycoon-event-tag" type="button" aria-controls="prototypeEventPanel" aria-expanded="false">
+        <span class="event-new-badge">NEW</span>
+        <span class="event-tag-crest" aria-hidden="true">D⚔M</span>
+        <strong>Dragons vs Monsters</strong>
+        <small>Battle Event</small>
+      </button>
+
+      <aside id="prototypeEventPanel" class="tycoon-event-panel" aria-hidden="true" aria-labelledby="prototypeEventTitle">
+        <header class="event-panel-header">
+          <div>
+            <p class="event-panel-kicker">Selected Event</p>
+            <h2 id="prototypeEventTitle" class="event-panel-title">Dragons vs Monsters</h2>
+          </div>
+          <button id="prototypeEventClose" class="event-panel-close" type="button" aria-label="Close event panel">×</button>
+        </header>
+        <div class="event-banner-wrap">
+          <img src="Resource Asset/Prototype Event/dragons-vs-monsters-event-banner.webp" alt="Colorful dragons facing a monster army" />
+          <div class="event-banner-copy">Defend the Dragon Keep, build your team and defeat every monster wave.</div>
+        </div>
+        <footer class="event-panel-footer">
+          <div class="event-status">Current selection<strong>Dragons vs Monsters</strong></div>
+          <button id="prototypeBattleButton" class="event-battle-button" type="button">BATTLE</button>
+        </footer>
+      </aside>
+
+      <div class="tycoon-hint">
+        <span class="lobby-step-hint">Select the highlighted Event on the DML Lobby</span>
+        <span class="event-step-hint">Choose the Dragons vs Monsters Event Tag to begin</span>
+      </div>
+    </section>
+  </div>
   <div class="app">
     <div class="topbar prototype-topbar">
       <div class="hud-cluster hud-resources">
@@ -2663,11 +3762,15 @@
           </div>
         </div>
         <div class="pill selection-pill"><span>Selected</span><strong id="selectedText">Shop to board</strong></div>
-        <button id="soundBtn" class="sound-toggle secondary" type="button" title="Toggle sound effects">SFX On</button>
+        <div class="hud-utility-buttons">
+          <button id="soundBtn" class="sound-toggle secondary" type="button" title="Toggle sound effects">SFX On</button>
+          <button id="tutorialReplayBtn" class="secondary tutorial-replay-button" type="button" aria-label="Open Guide Center" title="Guide Center">?</button>
+        </div>
       </div>
     </div>
     <div class="mobile-toolbar">
       <button id="orientationBtn" type="button">Landscape Mode</button>
+      <button id="mobileGuideBtn" class="mobile-guide-button" type="button" aria-label="Open Guide Center">? Guide</button>
     </div>
 
     <div class="main">
@@ -2700,6 +3803,11 @@
                 <button id="speedBtn" class="secondary tool-button">
                   <img src="Resource Asset/Double_Arrow.svg" alt="" /> Speed Up
                 </button>
+                <div id="bossPlaytestControls" class="boss-playtest-controls" aria-label="Boss playtest controls">
+                  <strong>BOSS PLAYTEST</strong>
+                  <button id="testBoss10Btn" type="button">Fight Wave 10 Boss</button>
+                  <button id="testBoss20Btn" type="button">Fight Wave 20 Boss</button>
+                </div>
               </div>
             </aside>
           </div>
@@ -2724,6 +3832,73 @@
   </div>
   <div class="stat-popover" id="statPopover"></div>
   <div class="mobile-toast" id="mobileToast" role="status" aria-live="polite"></div>
+  <div id="tutorialOverlay" class="tutorial-overlay" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle" hidden>
+    <div class="tutorial-blocker" data-tutorial-blocker="top"></div>
+    <div class="tutorial-blocker" data-tutorial-blocker="left"></div>
+    <div class="tutorial-blocker" data-tutorial-blocker="right"></div>
+    <div class="tutorial-blocker" data-tutorial-blocker="bottom"></div>
+    <div id="tutorialTargetBlocker" class="tutorial-target-blocker"></div>
+    <div id="tutorialSpotlight" class="tutorial-spotlight" aria-hidden="true"></div>
+    <div id="tutorialSecondarySpotlight" class="tutorial-spotlight tutorial-secondary-spotlight" aria-hidden="true" hidden></div>
+    <section id="tutorialCard" class="tutorial-card">
+      <div id="tutorialProgress" class="tutorial-progress">Tutorial</div>
+      <h2 id="tutorialTitle">Welcome</h2>
+      <p id="tutorialText"></p>
+      <div class="tutorial-actions">
+        <button id="tutorialSkipBtn" class="tutorial-skip" type="button">Skip Tutorial</button>
+        <span id="tutorialActionNote" class="tutorial-action-note">Perform the highlighted action</span>
+        <button id="tutorialNextBtn" class="tutorial-next" type="button">Continue</button>
+      </div>
+    </section>
+  </div>
+  <aside id="tutorialReplayNotice" class="tutorial-replay-notice" role="status" aria-live="polite" hidden>
+    <strong>Tutorial hoàn tất!</strong>
+    <p>Bạn có thể mở Guide Center bất cứ lúc nào bằng nút <b>?</b> cạnh SFX trên Topbar.</p>
+    <button id="tutorialReplayNoticeClose" type="button" aria-label="Đóng thông báo">×</button>
+  </aside>
+  <div id="guideCenter" class="guide-center" aria-hidden="true" hidden>
+    <section class="guide-window" role="dialog" aria-modal="true" aria-labelledby="guideCenterTitle">
+      <header class="guide-header">
+        <div>
+          <h2 id="guideCenterTitle">Guide Center</h2>
+          <p>Xem hướng dẫn mà không làm mất tiến trình trận hiện tại.</p>
+        </div>
+        <button id="guideCenterClose" class="guide-close" type="button" aria-label="Close Guide Center">×</button>
+      </header>
+      <nav class="guide-tabs" aria-label="Guide sections">
+        <button class="guide-tab active" type="button" data-guide-tab="tutorial">Game Guide</button>
+        <button class="guide-tab" type="button" data-guide-tab="dragons">Dragon Forms</button>
+      </nav>
+      <div class="guide-body">
+        <section class="guide-page" data-guide-page="tutorial">
+          <div class="guide-step-grid">
+            <article class="guide-step"><strong>1. Buy & Gold</strong><span>Kiểm tra Gold và giá trên thẻ trước khi mua rồng.</span></article>
+            <article class="guide-step"><strong>2. Bench & Board</strong><span>Bấm hoặc kéo rồng từ Bench vào Slot trên Board.</span></article>
+            <article class="guide-step"><strong>3. Merge</strong><span>Ba rồng cùng tên và cùng sao sẽ Merge lên cấp sao tiếp theo.</span></article>
+            <article class="guide-step"><strong>4. Traits</strong><span>Kết hợp rồng cùng hệ để kích hoạt các mốc 2/4/6/8.</span></article>
+            <article class="guide-step"><strong>5. Level & XP</strong><span>Level tăng Board Capacity và cơ hội xuất hiện rồng hiếm.</span></article>
+            <article class="guide-step"><strong>6. Shop Tools</strong><span>Reroll đổi lựa chọn; Lock giữ Shop qua Wave tiếp theo.</span></article>
+          </div>
+          <div class="guide-practice">
+            <div>
+              <strong>Muốn thực hành lại?</strong>
+              <p>Interactive Tutorial sẽ mở trong tab riêng. Trận hiện tại ở tab này không bị reset.</p>
+            </div>
+            <button id="openTutorialPracticeBtn" type="button">Practice Tutorial</button>
+          </div>
+        </section>
+        <section class="guide-page" data-guide-page="dragons" hidden>
+          <div class="dragon-guide-toolbar">
+            <input id="dragonGuideSearch" class="dragon-guide-search" type="search" placeholder="Tìm theo tên hoặc hệ rồng…" autocomplete="off" />
+            <div id="dragonElementFilters" class="dragon-filter-group" aria-label="Filter by dragon element"></div>
+            <div id="dragonRarityFilters" class="dragon-filter-group" aria-label="Filter by rarity"></div>
+            <button id="dragonFiltersClear" class="dragon-filter-clear" type="button">Clear</button>
+          </div>
+          <div id="dragonGuideGrid" class="dragon-guide-grid"></div>
+        </section>
+      </div>
+    </section>
+  </div>
   <div id="endScreen" class="end-screen" aria-hidden="true">
     <section class="end-screen-card" role="dialog" aria-modal="true" aria-labelledby="endScreenTitle">
       <div class="end-screen-kicker">Battle Complete</div>
@@ -2734,6 +3909,96 @@
   </div>
 
   <script>
+    const pageParams = new URLSearchParams(window.location.search);
+    const bossPlaytestMode = pageParams.has("bossTest");
+    const initialBossPlaytestWave = Number(pageParams.get("bossTest")) === 20 ? 20 : 10;
+    const prototypePregame = document.getElementById("prototypePregame");
+    const prototypeLoading = document.getElementById("prototypeLoading");
+    const prototypeTycoon = document.getElementById("prototypeTycoon");
+    const prototypeLobbyEventButton = document.getElementById("prototypeLobbyEventButton");
+    const prototypeEventBack = document.getElementById("prototypeEventBack");
+    const prototypeEventTag = document.getElementById("prototypeEventTag");
+    const prototypeEventPanel = document.getElementById("prototypeEventPanel");
+    const prototypeEventClose = document.getElementById("prototypeEventClose");
+    const prototypeBattleButton = document.getElementById("prototypeBattleButton");
+
+    if (bossPlaytestMode) {
+      prototypePregame.hidden = true;
+      document.body.classList.remove("prototype-pregame-active");
+      document.body.classList.add("boss-playtest-mode");
+    }
+
+    function setPrototypeEventOpen(open) {
+      prototypeEventPanel.classList.toggle("is-open", open);
+      prototypeEventPanel.setAttribute("aria-hidden", String(!open));
+      prototypeEventTag.classList.toggle("is-selected", open);
+      prototypeEventTag.setAttribute("aria-expanded", String(open));
+      if (open) {
+        playSfx("ui");
+        window.setTimeout(() => prototypeBattleButton.focus({ preventScroll: true }), 360);
+      }
+    }
+
+    function setPrototypeEventsSection(open) {
+      if (!open) setPrototypeEventOpen(false);
+      prototypeTycoon.classList.toggle("is-events-open", open);
+      prototypeLobbyEventButton.setAttribute("aria-expanded", String(open));
+      prototypeEventBack.setAttribute("aria-hidden", String(!open));
+      playSfx("ui");
+      window.setTimeout(() => {
+        (open ? prototypeEventTag : prototypeLobbyEventButton).focus({ preventScroll: true });
+      }, open ? 390 : 220);
+    }
+
+    function preloadPrototypeImage(src) {
+      return new Promise(resolve => {
+        const image = new Image();
+        image.onload = resolve;
+        image.onerror = resolve;
+        image.src = src;
+      });
+    }
+
+    Promise.all([
+      new Promise(resolve => window.setTimeout(resolve, 2600)),
+      preloadPrototypeImage("Resource Asset/Prototype Event/dml-lobby-from-video.webp"),
+      preloadPrototypeImage("Resource Asset/Prototype Event/dml-events-from-video.webp"),
+      preloadPrototypeImage("Resource Asset/Prototype Event/dragons-vs-monsters-event-banner.webp")
+    ]).then(() => {
+      prototypeLoading.classList.add("is-complete");
+      prototypeLoading.setAttribute("aria-hidden", "true");
+      window.setTimeout(() => prototypeLobbyEventButton.focus({ preventScroll: true }), 460);
+    });
+
+    prototypeLobbyEventButton.addEventListener("click", () => setPrototypeEventsSection(true));
+    prototypeEventBack.addEventListener("click", () => setPrototypeEventsSection(false));
+    prototypeEventTag.addEventListener("click", () => setPrototypeEventOpen(true));
+    prototypeEventClose.addEventListener("click", () => {
+      setPrototypeEventOpen(false);
+      prototypeEventTag.focus({ preventScroll: true });
+    });
+    prototypeBattleButton.addEventListener("click", () => {
+      playSfx("wave");
+      prototypePregame.classList.add("is-leaving");
+      prototypeEventPanel.setAttribute("aria-hidden", "true");
+      window.setTimeout(() => {
+        prototypePregame.hidden = true;
+        document.body.classList.remove("prototype-pregame-active");
+        requestAnimationFrame(() => {
+          fitCanvasToScreen();
+          window.setTimeout(maybeStartTutorial, 220);
+        });
+      }, 430);
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && prototypeEventPanel.classList.contains("is-open")) {
+        setPrototypeEventOpen(false);
+        prototypeEventTag.focus({ preventScroll: true });
+      } else if (event.key === "Escape" && prototypeTycoon.classList.contains("is-events-open")) {
+        setPrototypeEventsSection(false);
+      }
+    });
+
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
     let canvasLayoutCache = null;
@@ -2912,7 +4177,7 @@
     const BUY_XP_AMOUNT = 4;
     const FREE_WAVE_XP = 2;
     const MAX_KEEPER_LEVEL = 8;
-    const PLANNING_TIME = 45;
+    const PLANNING_TIME = 30;
     const ATTACK_ANIM_DURATION = 0.42;
     const xpToNextLevel = {
       1: 2,
@@ -3161,22 +4426,38 @@
       10: {
         name: "Big Bad Boss",
         img: "Resource Asset/Boss 1.png",
-        hp: 20800,
-        speed: 7.5,
+        hp: 24000,
+        speed: 5.2,
         boss: true,
         wideBoss: true,
         faceLeft: true,
         size: 820,
+        rangedInterval: 4.5,
+        skillCycle: ["fire", "stun"],
+        fireDamageRatio: 0.10,
+        fireBurnRatio: 0.015,
+        stunDamageRatio: 0.08,
+        summonThresholds: [0.50],
+        summonCount: 3,
       },
       20: {
         name: "Big Bad Boss",
         img: "Resource Asset/Boss 2.png",
-        hp: 41600,
-        speed: 6.5,
+        hp: 46000,
+        speed: 4.5,
         boss: true,
         wideBoss: true,
         faceLeft: true,
         size: 900,
+        rangedInterval: 3.6,
+        skillCycle: ["fire", "stun", "blast"],
+        fireDamageRatio: 0.13,
+        fireBurnRatio: 0.02,
+        stunDamageRatio: 0.10,
+        blastDamageRatio: 0.14,
+        blastRadiusCells: 2,
+        summonThresholds: [0.70, 0.35],
+        summonCount: 3,
       },
     };
     const miniEnemyType = {
@@ -3231,6 +4512,778 @@
       gameOver: false,
       gameResult: null,
     };
+
+    let trackedDragonName = "";
+    let pinnedTrackedDragonName = "";
+    let trackedDragonTimer = null;
+    let guideCenterOpen = false;
+    const dragonGuideFilters = {
+      query: "",
+      elements: new Set(),
+      rarities: new Set(),
+    };
+
+    function ownedDragonLocations(name) {
+      return ownedSlots()
+        .filter(slot => slot.unit.name === name)
+        .map(slot => ({
+          ...slot,
+          label: slot.place === "board"
+            ? `Board — Row ${slot.unit.row + 1}, Slot ${slot.unit.col + 1}`
+            : `Bench — Slot ${slot.index + 1}`,
+        }));
+    }
+
+    function updateTrackedDragonDom() {
+      document.querySelectorAll("[data-dragon-key]").forEach(node => {
+        const name = decodeURIComponent(node.dataset.dragonKey || "");
+        node.classList.toggle("dragon-tracked", !!trackedDragonName && name === trackedDragonName);
+      });
+    }
+
+    function setTrackedDragon(name, duration = 0) {
+      trackedDragonName = name || "";
+      if (duration > 0) pinnedTrackedDragonName = trackedDragonName;
+      if (duration > 0) clearTimeout(trackedDragonTimer);
+      updateTrackedDragonDom();
+      if (duration > 0) {
+        trackedDragonTimer = setTimeout(() => {
+          if (pinnedTrackedDragonName === name) pinnedTrackedDragonName = "";
+          if (trackedDragonName === name) trackedDragonName = "";
+          updateTrackedDragonDom();
+        }, duration);
+      }
+    }
+
+    function clearHoverTrackedDragon(name) {
+      if (trackedDragonName !== name) return;
+      trackedDragonName = pinnedTrackedDragonName || "";
+      updateTrackedDragonDom();
+    }
+
+    function dragonGuideTemplates() {
+      return [...new Map(dragonPool.map(unit => [unit.name, unit])).values()]
+        .sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
+    }
+
+    function renderDragonGuideFilters() {
+      const elementFilters = document.getElementById("dragonElementFilters");
+      const rarityFilters = document.getElementById("dragonRarityFilters");
+      elementFilters.innerHTML = `<span class="dragon-filter-label">Element</span>${Object.entries(elements).map(([name, data]) => `
+        <button class="dragon-filter-button ${dragonGuideFilters.elements.has(name) ? "active" : ""}" type="button" data-filter-element="${name}" title="${name}" aria-label="Filter ${name}" aria-pressed="${dragonGuideFilters.elements.has(name)}">
+          <img src="${data.icon}" alt="${name}" />
+        </button>`).join("")}`;
+      rarityFilters.innerHTML = `<span class="dragon-filter-label">Rarity</span>${[1, 2, 3, 4, 5].map(cost => `
+        <button class="dragon-filter-button rarity-filter ${dragonGuideFilters.rarities.has(cost) ? "active" : ""}" style="--rarity-color:${tierColor(cost)}" type="button" data-filter-rarity="${cost}" title="${cost}-Gold rarity" aria-label="Filter ${cost}-Gold rarity" aria-pressed="${dragonGuideFilters.rarities.has(cost)}">${cost}</button>`).join("")}`;
+
+      elementFilters.querySelectorAll("[data-filter-element]").forEach(button => {
+        button.addEventListener("click", () => {
+          const name = button.dataset.filterElement;
+          if (dragonGuideFilters.elements.has(name)) dragonGuideFilters.elements.delete(name);
+          else dragonGuideFilters.elements.add(name);
+          renderDragonGuideFilters();
+          renderDragonGuide();
+        });
+      });
+      rarityFilters.querySelectorAll("[data-filter-rarity]").forEach(button => {
+        button.addEventListener("click", () => {
+          const cost = Number(button.dataset.filterRarity);
+          if (dragonGuideFilters.rarities.has(cost)) dragonGuideFilters.rarities.delete(cost);
+          else dragonGuideFilters.rarities.add(cost);
+          renderDragonGuideFilters();
+          renderDragonGuide();
+        });
+      });
+    }
+
+    function clearDragonGuideFilters() {
+      dragonGuideFilters.query = "";
+      dragonGuideFilters.elements.clear();
+      dragonGuideFilters.rarities.clear();
+      document.getElementById("dragonGuideSearch").value = "";
+      renderDragonGuideFilters();
+      renderDragonGuide();
+    }
+
+    function renderDragonGuide(filter = null) {
+      const grid = document.getElementById("dragonGuideGrid");
+      if (typeof filter === "string") dragonGuideFilters.query = filter;
+      const query = dragonGuideFilters.query.trim().toLowerCase();
+      const templates = dragonGuideTemplates().filter(unit => {
+        const searchText = `${displayDragonName(unit)} ${unit.elements.join(" ")}`.toLowerCase();
+        const matchesSearch = !query || searchText.includes(query);
+        const matchesElement = !dragonGuideFilters.elements.size || unit.elements.some(name => dragonGuideFilters.elements.has(name));
+        const matchesRarity = !dragonGuideFilters.rarities.size || dragonGuideFilters.rarities.has(unit.cost);
+        return matchesSearch && matchesElement && matchesRarity;
+      });
+      grid.innerHTML = templates.length ? templates.map(unit => {
+        const locations = ownedDragonLocations(unit.name);
+        const ownedText = locations.length ? `Owned ${locations.length}` : "Not owned";
+        return `<article class="dragon-guide-card ${locations.length ? "owned" : "not-owned"}" data-guide-dragon="${encodeURIComponent(unit.name)}">
+          <h3>${displayDragonName(unit)}</h3>
+          <div class="dragon-form"><img src="${unit.baby}" alt="${displayDragonName(unit)} Baby" /><span>Baby · 1★</span></div>
+          <div class="dragon-form"><img src="${unit.adult}" alt="${displayDragonName(unit)} Adult" /><span>Adult · 2★/3★</span></div>
+          <div class="dragon-guide-meta">
+            ${unit.elements.map(name => `<span class="dragon-guide-element" style="color:${elements[name].color}"><img class="element-dot" src="${elements[name].icon}" alt="${name}" /><b>${name}</b></span>`).join("")}
+            <span class="dragon-guide-rarity" style="--rarity-color:${tierColor(unit.cost)}">${unit.cost} Gold</span>
+            <span class="dragon-guide-owned">${ownedText}</span>
+          </div>
+          <button class="dragon-guide-locate" type="button" ${locations.length ? "" : "disabled"}>${locations.length ? "Highlight on Board & Bench" : "No owned copy to highlight"}</button>
+        </article>`;
+      }).join("") : `<div class="trait-empty">Không tìm thấy rồng phù hợp.</div>`;
+
+      grid.querySelectorAll("[data-guide-dragon]").forEach(card => {
+        const name = decodeURIComponent(card.dataset.guideDragon || "");
+        card.querySelector(".dragon-guide-locate")?.addEventListener("click", () => {
+          if (!ownedDragonLocations(name).length) return;
+          closeGuideCenter();
+          setTrackedDragon(name, 6000);
+          log(`Highlighting every owned ${displayDragonName(name)} on Board and Bench.`);
+        });
+      });
+    }
+
+    function setGuideTab(tab) {
+      document.querySelectorAll("[data-guide-tab]").forEach(button => {
+        button.classList.toggle("active", button.dataset.guideTab === tab);
+      });
+      document.querySelectorAll("[data-guide-page]").forEach(page => {
+        page.hidden = page.dataset.guidePage !== tab;
+      });
+      if (tab === "dragons") {
+        renderDragonGuideFilters();
+        renderDragonGuide(document.getElementById("dragonGuideSearch").value);
+      }
+    }
+
+    function openGuideCenter(tab = "tutorial") {
+      const guide = document.getElementById("guideCenter");
+      hideTutorialReplayNotice();
+      document.getElementById("statPopover").style.display = "none";
+      guideCenterOpen = true;
+      guide.hidden = false;
+      guide.setAttribute("aria-hidden", "false");
+      setGuideTab(tab);
+      document.getElementById("guideCenterClose").focus({ preventScroll: true });
+    }
+
+    function closeGuideCenter() {
+      const guide = document.getElementById("guideCenter");
+      guideCenterOpen = false;
+      guide.hidden = true;
+      guide.setAttribute("aria-hidden", "true");
+    }
+
+    function openTutorialPractice() {
+      const practiceUrl = new URL(window.location.href);
+      practiceUrl.search = "";
+      practiceUrl.searchParams.set("tutorial", "1");
+      practiceUrl.searchParams.set("practice", "1");
+      window.open(practiceUrl.toString(), "_blank", "noopener");
+    }
+
+    const TUTORIAL_STORAGE_KEY = "dvm_tutorial_completed_v1";
+    const tutorialState = {
+      active: false,
+      index: 0,
+      dragonName: "",
+      rerolls: 0,
+      levelEffectShown: false,
+      levelDetailPage: 0,
+      placePrepared: false,
+      positioningFrame: 0,
+      targetCell: { row: 2, col: 3 },
+    };
+
+    const tutorialOverlay = document.getElementById("tutorialOverlay");
+    const tutorialSpotlight = document.getElementById("tutorialSpotlight");
+    const tutorialSecondarySpotlight = document.getElementById("tutorialSecondarySpotlight");
+    const tutorialTargetBlocker = document.getElementById("tutorialTargetBlocker");
+    const tutorialCard = document.getElementById("tutorialCard");
+    const tutorialProgress = document.getElementById("tutorialProgress");
+    const tutorialTitle = document.getElementById("tutorialTitle");
+    const tutorialText = document.getElementById("tutorialText");
+    const tutorialNextBtn = document.getElementById("tutorialNextBtn");
+    const tutorialSkipBtn = document.getElementById("tutorialSkipBtn");
+    const tutorialActionNote = document.getElementById("tutorialActionNote");
+    const tutorialReplayNotice = document.getElementById("tutorialReplayNotice");
+    const tutorialReplayNoticeClose = document.getElementById("tutorialReplayNoticeClose");
+    const tutorialBlockers = Object.fromEntries(
+      [...document.querySelectorAll("[data-tutorial-blocker]")].map(node => [node.dataset.tutorialBlocker, node])
+    );
+
+    function tutorialOwnedUnits() {
+      return ownedSlots().map(slot => slot.unit).filter(unit => unit.name === tutorialState.dragonName);
+    }
+
+    function tutorialBoardCellRect(row, col) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = rect.width / canvas.width;
+      const scaleY = rect.height / canvas.height;
+      return {
+        left: rect.left + cellLeft(col) * scaleX,
+        top: rect.top + row * CELL_H * scaleY,
+        right: rect.left + (cellLeft(col) + CELL_W) * scaleX,
+        bottom: rect.top + (row + 1) * CELL_H * scaleY,
+        width: CELL_W * scaleX,
+        height: CELL_H * scaleY,
+      };
+    }
+
+    function tutorialMergeCards() {
+      return state.shop
+        .map((unit, index) => unit?.name === tutorialState.dragonName ? document.querySelector(`[data-shop="${index}"]`) : null)
+        .filter(Boolean);
+    }
+
+    function tutorialMergeCard() {
+      return tutorialMergeCards()[0] || null;
+    }
+
+    function tutorialMergeSecondCard() {
+      return tutorialMergeCards()[1] || null;
+    }
+
+    function tutorialMergeInteractionRect() {
+      const rects = tutorialMergeCards().map(card => card.getBoundingClientRect());
+      if (!rects.length) return null;
+      const left = Math.min(...rects.map(rect => rect.left));
+      const top = Math.min(...rects.map(rect => rect.top));
+      const right = Math.max(...rects.map(rect => rect.right));
+      const bottom = Math.max(...rects.map(rect => rect.bottom));
+      return { left, top, right, bottom, width: right - left, height: bottom - top };
+    }
+
+    function tutorialMergeEventAllowed(event) {
+      if (!["pointerdown", "pointerup", "mousedown", "mouseup", "touchstart", "click", "dblclick"].includes(event.type)) return false;
+      const eventElement = event.target instanceof Element ? event.target : null;
+      return tutorialMergeCards().some(card => card.contains(eventElement));
+    }
+
+    function tutorialBoardCapRect() {
+      const cap = document.getElementById("capText");
+      const label = cap?.previousElementSibling;
+      if (!cap) return null;
+      const capRect = cap.getBoundingClientRect();
+      const labelRect = label?.getBoundingClientRect() || capRect;
+      const left = Math.min(capRect.left, labelRect.left);
+      const top = Math.min(capRect.top, labelRect.top);
+      const right = Math.max(capRect.right, labelRect.right);
+      const bottom = Math.max(capRect.bottom, labelRect.bottom);
+      return { left, top, right, bottom, width: right - left, height: bottom - top };
+    }
+
+    function tutorialLevelDetailPages() {
+      return [
+        {
+          title: "Level và XP",
+          text: () => `Keeper hiện ở <strong>Level ${state.keeperLevel}</strong>. Thanh Next Level đang có <strong>${state.keeperXp}/${xpNeededForCurrentLevel()} XP</strong>; Buy XP hoặc hoàn thành Wave để tiến tới cấp tiếp theo.`,
+          target: () => document.querySelector(".keeper-pill"),
+        },
+        {
+          title: "Giới hạn rồng trên sân",
+          text: () => `Chỉ số Board hiện là <strong>${state.dragons.length}/${boardCapForLevel()}</strong>. Số bên phải là lượng rồng tối đa được đặt trên sân ở Level hiện tại.`,
+          target: tutorialBoardCapRect,
+          placement: "below",
+        },
+        {
+          title: "Drop Rates của Shop",
+          text: () => "Hàng được Highlight trong Drop Rates cho biết tỉ lệ xuất hiện rồng theo giá ở Level hiện tại. Level càng cao, cơ hội gặp rồng hiếm càng lớn.",
+          target: () => document.querySelector(".drop-rate-panel"),
+        },
+      ];
+    }
+
+    function tutorialPlaceSource() {
+      return [...document.querySelectorAll(".bench-slot.filled")].find(slot => {
+        const index = Number(slot.dataset.bench);
+        return state.bench[index]?.name === tutorialState.dragonName;
+      }) || document.querySelector(".bench-slot.filled");
+    }
+
+    function tutorialPlaceInteractionRect() {
+      const source = tutorialPlaceSource()?.getBoundingClientRect();
+      const target = tutorialBoardCellRect(tutorialState.targetCell.row, tutorialState.targetCell.col);
+      if (!source) return target;
+      const left = Math.min(source.left, target.left);
+      const top = Math.min(source.top, target.top);
+      const right = Math.max(source.right, target.right);
+      const bottom = Math.max(source.bottom, target.bottom);
+      return { left, top, right, bottom, width: right - left, height: bottom - top };
+    }
+
+    function tutorialPointInsideRect(x, y, rect) {
+      if (!rect) return false;
+      const right = rect.right ?? rect.left + rect.width;
+      const bottom = rect.bottom ?? rect.top + rect.height;
+      return x >= rect.left && x <= right && y >= rect.top && y <= bottom;
+    }
+
+    function tutorialPlaceEventAllowed(event) {
+      const source = tutorialPlaceSource();
+      const target = tutorialBoardCellRect(tutorialState.targetCell.row, tutorialState.targetCell.col);
+      const interaction = tutorialPlaceInteractionRect();
+      const eventElement = event.target instanceof Element ? event.target : null;
+      const x = Number.isFinite(event.clientX) ? event.clientX : -1;
+      const y = Number.isFinite(event.clientY) ? event.clientY : -1;
+      if (["pointermove", "mousemove", "touchmove", "dragover"].includes(event.type)) {
+        return tutorialPointInsideRect(x, y, interaction);
+      }
+      if (event.type === "dragstart") return !!source?.contains(eventElement);
+      if (event.type === "drop") return eventElement === canvas && tutorialPointInsideRect(x, y, target);
+      return !!source?.contains(eventElement) || (eventElement === canvas && tutorialPointInsideRect(x, y, target));
+    }
+
+    function tutorialSteps() {
+      return [
+        {
+          id: "gold",
+          title: "Gold và tài nguyên",
+          text: "Đây là số <strong>Gold</strong> hiện có. Mua rồng, Reroll và Buy XP đều tiêu Gold, vì vậy hãy luôn kiểm tra con số này trước khi thao tác.",
+          target: () => document.querySelector(".gold-pill"),
+        },
+        {
+          id: "shop",
+          title: "Shop rồng",
+          text: "Shop có 5 lựa chọn. Mỗi thẻ hiển thị <strong>tên, hệ và giá</strong> của rồng. Shop có thể mở hoặc đóng bằng nút Shop phía trên Bench.",
+          target: () => document.getElementById("shopDrawer"),
+        },
+        {
+          id: "buy",
+          title: "Mua rồng",
+          text: "Bấm vào thẻ rồng được đánh sáng để mua. Rồng sẽ chuyển xuống <strong>Bench</strong> và Gold sẽ bị trừ theo giá trên thẻ.",
+          target: () => document.querySelector('[data-shop="0"]'),
+          action: true,
+          done: () => tutorialOwnedUnits().length >= 1,
+        },
+        {
+          id: "select-bench",
+          title: "Chọn rồng ở Bench",
+          text: "Bench là nơi tạm giữ rồng chưa ra sân. Bấm vào rồng đang được đánh sáng để chọn nó.",
+          target: () => document.querySelector(".bench-slot.filled"),
+          action: true,
+          done: () => state.selected?.source === "bench",
+        },
+        {
+          id: "place",
+          title: "Đặt rồng lên Board",
+          text: () => isTouchUi()
+            ? "Trên Android/iOS: <strong>bấm vào rồng rồi bấm vào Slot</strong> để đặt. Bạn cũng có thể giữ và kéo rồng vào đúng ô mình muốn."
+            : "<strong>Giữ và kéo rồng từ Bench vào Slot màu xanh</strong>. Bạn cũng có thể bấm vào rồng rồi bấm vào Board để đặt rồng vào ô mình muốn.",
+          target: () => tutorialBoardCellRect(tutorialState.targetCell.row, tutorialState.targetCell.col),
+          interactionRect: tutorialPlaceInteractionRect,
+          secondaryTarget: tutorialPlaceSource,
+          allowedEvent: tutorialPlaceEventAllowed,
+          action: true,
+          done: () => state.dragons.some(unit => unit.name === tutorialState.dragonName),
+        },
+        {
+          id: "traits",
+          title: "Hệ rồng và Traits",
+          text: "Mỗi rồng có một hoặc nhiều <strong>hệ</strong>. Các rồng khác tên nhưng cùng hệ sẽ cộng mốc 2/4/6/8 trong bảng Traits và mở thêm hiệu ứng chiến đấu.",
+          target: () => document.querySelector("[data-trait]") || document.getElementById("traitPanel"),
+        },
+        {
+          id: "merge",
+          title: "Merge lên 2 sao",
+          text: "Mua thêm <strong>2 bản sao cùng tên và cùng cấp sao</strong>. Ba rồng giống nhau sẽ tự Merge thành một rồng 2 sao mạnh hơn.",
+          target: tutorialMergeCard,
+          interactionRect: tutorialMergeInteractionRect,
+          secondaryTarget: tutorialMergeSecondCard,
+          allowedEvent: tutorialMergeEventAllowed,
+          action: true,
+          done: () => tutorialOwnedUnits().some(unit => (unit.star || 1) >= 2),
+        },
+        {
+          id: "xp",
+          title: "Nâng Level",
+          text: "Bấm <strong>Buy XP</strong>. Level cao hơn tăng giới hạn rồng trên Board và thay đổi tỉ lệ xuất hiện rồng hiếm trong Drop Rates.",
+          target: () => document.getElementById("buyXpBtn"),
+          action: true,
+          done: () => state.keeperLevel >= 2,
+        },
+        {
+          id: "level-glow",
+          title: "Hiệu ứng Level Up",
+          text: "Khi lên cấp, <strong>toàn bộ Board phát sáng</strong> và khu vực Level nháy sáng. Đây là tín hiệu trực quan để bạn biết giới hạn đội hình và tỉ lệ Shop vừa thay đổi.",
+          target: () => canvas,
+        },
+        {
+          id: "level-details",
+          title: () => tutorialLevelDetailPages()[tutorialState.levelDetailPage].title,
+          text: () => tutorialLevelDetailPages()[tutorialState.levelDetailPage].text(),
+          target: () => tutorialLevelDetailPages()[tutorialState.levelDetailPage].target(),
+          placement: () => tutorialLevelDetailPages()[tutorialState.levelDetailPage].placement,
+        },
+        {
+          id: "reroll",
+          title: "Reroll Shop",
+          text: "Reroll tiêu Gold để đổi toàn bộ lựa chọn trong Shop. Hãy dùng khi đội hình hiện tại không tìm được rồng phù hợp.",
+          target: () => document.getElementById("rerollBtn"),
+          action: true,
+          done: () => tutorialState.rerolls > 0,
+        },
+        {
+          id: "lock",
+          title: "Khóa Shop",
+          text: "Bấm nút Lock/Unlock để giữ nguyên Shop qua Wave tiếp theo. Tính năng này hữu ích khi chưa đủ Gold mua rồng cần thiết.",
+          target: () => document.getElementById("lockShopBtn"),
+          action: true,
+          done: () => state.shopLocked,
+        },
+        {
+          id: "start-wave",
+          title: "Sẵn sàng chiến đấu",
+          text: "Bạn đã biết các thao tác chính. Bấm <strong>Start Wave</strong> để bắt đầu chiến đấu và hoàn thành Tutorial.",
+          target: () => document.getElementById("spawnBtn"),
+          action: true,
+          done: () => state.waveRunning,
+        },
+      ];
+    }
+
+    function tutorialCurrentStep() {
+      return tutorialSteps()[tutorialState.index] || null;
+    }
+
+    function tutorialTargetRect(step) {
+      const target = step?.target?.();
+      if (!target) return null;
+      const rect = target instanceof Element ? target.getBoundingClientRect() : target;
+      const left = Math.max(4, Math.min(window.innerWidth - 4, rect.left));
+      const top = Math.max(4, Math.min(window.innerHeight - 4, rect.top));
+      const right = Math.max(left + 1, Math.min(window.innerWidth - 4, rect.right ?? rect.left + rect.width));
+      const bottom = Math.max(top + 1, Math.min(window.innerHeight - 4, rect.bottom ?? rect.top + rect.height));
+      return { left, top, right, bottom, width: right - left, height: bottom - top };
+    }
+
+    function setTutorialBox(element, left, top, width, height) {
+      element.style.left = `${Math.max(0, left)}px`;
+      element.style.top = `${Math.max(0, top)}px`;
+      element.style.width = `${Math.max(0, width)}px`;
+      element.style.height = `${Math.max(0, height)}px`;
+    }
+
+    function positionTutorial() {
+      if (!tutorialState.active) return;
+      const step = tutorialCurrentStep();
+      const rect = tutorialTargetRect(step);
+      if (!rect || rect.width < 2 || rect.height < 2) {
+        clearTimeout(positionTutorial.retryTimer);
+        positionTutorial.retryTimer = setTimeout(positionTutorial, 100);
+        return;
+      }
+      const gap = 7;
+      const interactionRect = step.interactionRect
+        ? tutorialTargetRect({ target: step.interactionRect }) || rect
+        : rect;
+      const hole = {
+        left: Math.max(0, interactionRect.left - gap),
+        top: Math.max(0, interactionRect.top - gap),
+        right: Math.min(window.innerWidth, interactionRect.right + gap),
+        bottom: Math.min(window.innerHeight, interactionRect.bottom + gap),
+      };
+      const visualHole = {
+        left: Math.max(0, rect.left - gap),
+        top: Math.max(0, rect.top - gap),
+        right: Math.min(window.innerWidth, rect.right + gap),
+        bottom: Math.min(window.innerHeight, rect.bottom + gap),
+      };
+      setTutorialBox(tutorialBlockers.top, 0, 0, window.innerWidth, hole.top);
+      setTutorialBox(tutorialBlockers.bottom, 0, hole.bottom, window.innerWidth, window.innerHeight - hole.bottom);
+      setTutorialBox(tutorialBlockers.left, 0, hole.top, hole.left, hole.bottom - hole.top);
+      setTutorialBox(tutorialBlockers.right, hole.right, hole.top, window.innerWidth - hole.right, hole.bottom - hole.top);
+      setTutorialBox(tutorialSpotlight, visualHole.left, visualHole.top, visualHole.right - visualHole.left, visualHole.bottom - visualHole.top);
+      const secondaryRect = step.secondaryTarget
+        ? tutorialTargetRect({ target: step.secondaryTarget })
+        : null;
+      tutorialSecondarySpotlight.hidden = !secondaryRect;
+      if (secondaryRect) {
+        setTutorialBox(
+          tutorialSecondarySpotlight,
+          secondaryRect.left - gap,
+          secondaryRect.top - gap,
+          secondaryRect.width + gap * 2,
+          secondaryRect.height + gap * 2
+        );
+      }
+      tutorialTargetBlocker.hidden = !!step.action;
+      if (!step.action) setTutorialBox(tutorialTargetBlocker, visualHole.left, visualHole.top, visualHole.right - visualHole.left, visualHole.bottom - visualHole.top);
+
+      tutorialCard.style.left = "12px";
+      tutorialCard.style.top = "12px";
+      const cardRect = tutorialCard.getBoundingClientRect();
+      const margin = 14;
+      const placement = typeof step.placement === "function" ? step.placement() : step.placement;
+      let left;
+      let top;
+      if (placement === "below") {
+        left = Math.max(margin, Math.min(window.innerWidth - cardRect.width - margin, rect.left + rect.width / 2 - cardRect.width / 2));
+        top = rect.bottom + margin;
+        if (top + cardRect.height > window.innerHeight - margin) top = rect.top - cardRect.height - margin;
+      } else {
+        left = rect.right + margin;
+        top = Math.max(margin, Math.min(window.innerHeight - cardRect.height - margin, rect.top + rect.height / 2 - cardRect.height / 2));
+        if (left + cardRect.width > window.innerWidth - margin) left = rect.left - cardRect.width - margin;
+        if (left < margin) {
+          left = Math.max(margin, Math.min(window.innerWidth - cardRect.width - margin, rect.left + rect.width / 2 - cardRect.width / 2));
+          top = rect.bottom + margin;
+          if (top + cardRect.height > window.innerHeight - margin) top = rect.top - cardRect.height - margin;
+        }
+      }
+      tutorialCard.style.left = `${Math.max(margin, left)}px`;
+      tutorialCard.style.top = `${Math.max(margin, Math.min(window.innerHeight - cardRect.height - margin, top))}px`;
+    }
+
+    function stabilizeTutorialPosition(duration = 650) {
+      cancelAnimationFrame(tutorialState.positioningFrame);
+      const endAt = performance.now() + duration;
+      const updatePosition = () => {
+        if (!tutorialState.active) return;
+        positionTutorial();
+        if (performance.now() < endAt) {
+          tutorialState.positioningFrame = requestAnimationFrame(updatePosition);
+        }
+      };
+      tutorialState.positioningFrame = requestAnimationFrame(updatePosition);
+    }
+
+    function renderTutorialStep() {
+      if (!tutorialState.active) return;
+      const steps = tutorialSteps();
+      const step = steps[tutorialState.index];
+      if (!step) return completeTutorial();
+      const shopRelatedSteps = new Set(["shop", "buy", "merge", "reroll", "lock"]);
+      setShopTrayOpen(shopRelatedSteps.has(step.id));
+      if (step.id === "place" && !tutorialState.placePrepared) {
+        tutorialState.placePrepared = true;
+        if (!isTouchUi()) {
+          clearTouchSelection();
+          renderUi();
+        }
+      }
+      tutorialOverlay.hidden = false;
+      tutorialProgress.textContent = `Hướng dẫn ${tutorialState.index + 1} / ${steps.length}`;
+      tutorialTitle.textContent = typeof step.title === "function" ? step.title() : step.title;
+      tutorialText.innerHTML = typeof step.text === "function" ? step.text() : step.text;
+      tutorialNextBtn.hidden = !!step.action;
+      tutorialActionNote.hidden = !step.action;
+      tutorialActionNote.textContent = step.id === "place"
+        ? (isTouchUi() ? "Bấm rồng rồi bấm Slot" : "Kéo rồng từ Bench vào Slot")
+        : "Thực hiện thao tác được đánh sáng";
+      tutorialTargetBlocker.hidden = !!step.action;
+      document.body.classList.toggle("tutorial-level-focus", step.id === "level-glow");
+      if (step.id === "level-glow" && !tutorialState.levelEffectShown) {
+        tutorialState.levelEffectShown = true;
+        window.setTimeout(triggerKeeperLevelUpEffect, 80);
+      }
+      stabilizeTutorialPosition();
+    }
+
+    function advanceTutorial() {
+      if (!tutorialState.active) return;
+      const currentStep = tutorialCurrentStep();
+      if (currentStep?.id === "level-details" && tutorialState.levelDetailPage < tutorialLevelDetailPages().length - 1) {
+        tutorialState.levelDetailPage += 1;
+        renderTutorialStep();
+        return;
+      }
+      if (currentStep?.id === "level-details") tutorialState.levelDetailPage = 0;
+      tutorialState.index += 1;
+      if (tutorialState.index >= tutorialSteps().length) completeTutorial();
+      else renderTutorialStep();
+    }
+
+    function tutorialAfterRender() {
+      if (!tutorialState.active) return;
+      cancelAnimationFrame(tutorialState.positioningFrame);
+      tutorialState.positioningFrame = requestAnimationFrame(() => {
+        const step = tutorialCurrentStep();
+        if (step?.action && step.done?.()) advanceTutorial();
+        else stabilizeTutorialPosition(320);
+      });
+    }
+
+    function setTutorialCompleted() {
+      try { localStorage.setItem(TUTORIAL_STORAGE_KEY, "1"); } catch {}
+    }
+
+    function hideTutorial() {
+      tutorialState.active = false;
+      tutorialOverlay.hidden = true;
+      tutorialSecondarySpotlight.hidden = true;
+      document.body.classList.remove("tutorial-running");
+      document.body.classList.remove("tutorial-level-focus");
+      cancelAnimationFrame(tutorialState.positioningFrame);
+    }
+
+    function hideTutorialReplayNotice() {
+      tutorialReplayNotice.hidden = true;
+      document.getElementById("tutorialReplayBtn")?.classList.remove("attention");
+    }
+
+    function showTutorialReplayNotice() {
+      tutorialReplayNotice.hidden = false;
+      document.getElementById("tutorialReplayBtn")?.classList.add("attention");
+    }
+
+    function completeTutorial() {
+      setTutorialCompleted();
+      hideTutorial();
+      showTutorialReplayNotice();
+      log("Tutorial complete. Use the ? Guide button beside SFX whenever you want to review it.");
+    }
+
+    function skipTutorial() {
+      setTutorialCompleted();
+      hideTutorial();
+      resetGame();
+      log("Tutorial skipped. A normal game is ready.");
+    }
+
+    function setupTutorialScenario() {
+      const tutorialDragon = dragonPool.find(unit => unit.cost === 1) || dragonPool[0];
+      const fillers = dragonPool.filter(unit => unit.name !== tutorialDragon.name).slice(0, 2);
+      tutorialState.dragonName = tutorialDragon.name;
+      tutorialState.rerolls = 0;
+      tutorialState.levelEffectShown = false;
+      tutorialState.levelDetailPage = 0;
+      tutorialState.placePrepared = false;
+      state.shop = [tutorialDragon, tutorialDragon, tutorialDragon, fillers[0] || tutorialDragon, fillers[1] || tutorialDragon];
+      state.shopLocked = false;
+      shopTrayOpen = true;
+      state.selected = null;
+      state.dragging = null;
+      state.suppressCanvasClick = false;
+      state.hoverCell = null;
+      state.pendingMerge = null;
+      state.bench = Array(10).fill(null);
+      state.dragons = [];
+      state.enemies = [];
+      state.projectiles = [];
+      state.enemyProjectiles = [];
+      state.effects = [];
+      state.portalLanePulses = Array(ROWS).fill(0);
+      state.bossPortalPulse = 0;
+      state.hp = MAX_CASTLE_HP;
+      state.gold = 30;
+      state.keeperLevel = 1;
+      state.keeperXp = 0;
+      state.wave = 1;
+      state.nextId = 1;
+      state.lastTs = performance.now();
+      state.spawnTimer = 0;
+      state.enemiesSpawned = 0;
+      state.enemiesToSpawn = 0;
+      state.waveReward = 0;
+      state.planningTimer = 0;
+      state.gameSpeed = 1;
+      state.waveRunning = false;
+      state.gameOver = false;
+      state.gameResult = null;
+      clearDragGhost();
+      renderUi();
+      log(`Tutorial ready: buy, place and merge ${displayDragonName(tutorialDragon)}.`);
+    }
+
+    function startTutorial(force = false) {
+      if (bossPlaytestMode || (!force && tutorialState.active)) return;
+      hideTutorialReplayNotice();
+      hideTutorial();
+      tutorialState.active = true;
+      tutorialState.index = 0;
+      document.body.classList.add("tutorial-running");
+      setupTutorialScenario();
+      renderTutorialStep();
+    }
+
+    function maybeStartTutorial() {
+      if (bossPlaytestMode) return;
+      let completed = false;
+      try { completed = localStorage.getItem(TUTORIAL_STORAGE_KEY) === "1"; } catch {}
+      if (pageParams.has("tutorial") || !completed) startTutorial(true);
+    }
+
+    tutorialNextBtn.addEventListener("click", advanceTutorial);
+    tutorialSkipBtn.addEventListener("click", skipTutorial);
+    tutorialReplayNoticeClose.addEventListener("click", hideTutorialReplayNotice);
+    document.getElementById("guideCenterClose").addEventListener("click", closeGuideCenter);
+    document.getElementById("openTutorialPracticeBtn").addEventListener("click", openTutorialPractice);
+    document.getElementById("mobileGuideBtn").addEventListener("click", () => openGuideCenter("tutorial"));
+    document.getElementById("dragonGuideSearch").addEventListener("input", event => renderDragonGuide(event.currentTarget.value));
+    document.getElementById("dragonFiltersClear").addEventListener("click", clearDragonGuideFilters);
+    document.querySelectorAll("[data-guide-tab]").forEach(button => {
+      button.addEventListener("click", () => setGuideTab(button.dataset.guideTab));
+    });
+    document.getElementById("guideCenter").addEventListener("click", event => {
+      if (event.target.id === "guideCenter") closeGuideCenter();
+    });
+    document.addEventListener("keydown", event => {
+      const guide = document.getElementById("guideCenter");
+      if (event.key === "Escape" && !guide.hidden) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        closeGuideCenter();
+      }
+    }, true);
+    window.addEventListener("resize", () => stabilizeTutorialPosition(320));
+
+    function blockTutorialEvent(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+    }
+
+    function tutorialEventIsAllowed(event) {
+      if (!tutorialState.active) return true;
+      const eventElement = event.target instanceof Element ? event.target : null;
+      const tutorialButton = eventElement?.closest("#tutorialSkipBtn, #tutorialNextBtn");
+      if (tutorialButton) return true;
+
+      const step = tutorialCurrentStep();
+      if (!step?.action) return false;
+      if (typeof step.allowedEvent === "function") return step.allowedEvent(event);
+      const target = step.target?.();
+      if (!target) return false;
+      if (target instanceof Element) return target.contains(eventElement);
+      const x = Number.isFinite(event.clientX) ? event.clientX : -1;
+      const y = Number.isFinite(event.clientY) ? event.clientY : -1;
+      const right = target.right ?? target.left + target.width;
+      const bottom = target.bottom ?? target.top + target.height;
+      return x >= target.left && x <= right && y >= target.top && y <= bottom;
+    }
+
+    function guardTutorialPointerEvent(event) {
+      if (!tutorialState.active) return;
+      if (["contextmenu", "wheel"].includes(event.type)) {
+        blockTutorialEvent(event);
+        return;
+      }
+      if (["pointermove", "touchmove", "mousemove", "dragstart", "dragover", "drop"].includes(event.type)) {
+        const step = tutorialCurrentStep();
+        if (typeof step?.allowedEvent === "function" && tutorialEventIsAllowed(event)) return;
+        blockTutorialEvent(event);
+        return;
+      }
+      if (!tutorialEventIsAllowed(event)) blockTutorialEvent(event);
+    }
+
+    function guardTutorialKeyboard(event) {
+      if (!tutorialState.active) return;
+      const eventElement = event.target instanceof Element ? event.target : null;
+      if (eventElement?.closest("#tutorialSkipBtn, #tutorialNextBtn")) return;
+      const step = tutorialCurrentStep();
+      const target = step?.target?.();
+      const isTargetControl = step?.action && target instanceof Element && target.contains(document.activeElement);
+      if (isTargetControl && ["Enter", " "].includes(event.key)) return;
+      blockTutorialEvent(event);
+    }
+
+    ["pointerdown", "pointerup", "pointermove", "mousedown", "mouseup", "mousemove", "touchstart", "touchmove", "click", "dblclick", "contextmenu", "dragstart", "dragover", "drop", "wheel"].forEach(type => {
+      document.addEventListener(type, guardTutorialPointerEvent, { capture: true, passive: false });
+    });
+    document.addEventListener("keydown", guardTutorialKeyboard, true);
+    document.addEventListener("keyup", guardTutorialKeyboard, true);
 
     function setShopTrayOpen(open) {
       shopTrayOpen = !!open && !state.gameOver;
@@ -3450,6 +5503,35 @@
 
     function enableTouchPointerDrag(element, sourceFactory) {
       element.addEventListener("pointerdown", ev => startTouchPointerDrag(ev, sourceFactory()));
+    }
+
+    function enableDragonInfoLongPress(element, unitFactory) {
+      let timer = null;
+      let startX = 0;
+      let startY = 0;
+      const cancel = () => {
+        clearTimeout(timer);
+        timer = null;
+      };
+      element.addEventListener("pointerdown", event => {
+        if (event.pointerType === "mouse" || tutorialState.active) return;
+        startX = event.clientX;
+        startY = event.clientY;
+        cancel();
+        timer = setTimeout(() => {
+          const unit = unitFactory();
+          if (!unit) return;
+          touchPointerDrag = null;
+          suppressTouchClickUntil = performance.now() + 650;
+          showStats(unit, startX, startY);
+          timer = null;
+        }, 560);
+      });
+      element.addEventListener("pointermove", event => {
+        if (Math.hypot(event.clientX - startX, event.clientY - startY) > 8) cancel();
+      });
+      element.addEventListener("pointerup", cancel);
+      element.addEventListener("pointercancel", cancel);
     }
 
     function isPointerOverSellZone(x, y) {
@@ -3759,8 +5841,7 @@
     }
 
     function bossPrepEnemyCount(wave = state.wave) {
-      if (wave === 10) return 14;
-      if (wave === 20) return 22;
+      if (wave === 10 || wave === 20) return 0;
       return 0;
     }
 
@@ -3844,7 +5925,7 @@
       state.waveReward = waveClearReward();
       playSfx("wave");
       log(giantBossTypes[state.wave]
-        ? `${auto ? "Planning time ended. " : ""}Boss wave ${state.wave} started: clear ${bossPrepEnemyCount()} monsters before the boss appears.`
+        ? `${auto ? "Planning time ended. " : ""}BOSS INCOMING — prepare for Wave ${state.wave}.`
         : `${auto ? "Planning time ended. " : ""}Wave ${state.wave} started: ${state.enemiesToSpawn} monsters incoming.`);
       renderUi();
     }
@@ -3883,6 +5964,81 @@
       state.gameResult = null;
       clearDragGhost();
       rollShop(true);
+      renderUi();
+    }
+
+    function completeBossEncounter(boss) {
+      state.enemies = [];
+      state.projectiles = [];
+      state.enemyProjectiles = [];
+      state.effects.push({ type: "bossDefeat", x: boss.x - 80, y: boss.y, life: 1, maxLife: 1 });
+      playSfx("merge");
+      log(`Boss Wave ${state.wave} defeated!`);
+      if (bossPlaytestMode) {
+        completeRun("won");
+      } else {
+        finishWave();
+      }
+    }
+
+    function startBossPlaytest(wave) {
+      const bossType = giantBossTypes[wave];
+      if (!bossType) return;
+      state.shop = Array(5).fill(null);
+      state.shopLocked = false;
+      state.selected = null;
+      state.dragging = null;
+      state.suppressCanvasClick = false;
+      state.hoverCell = null;
+      state.pendingMerge = null;
+      state.bench = Array(10).fill(null);
+      state.dragons = [];
+      state.enemies = [];
+      state.projectiles = [];
+      state.enemyProjectiles = [];
+      state.effects = [];
+      state.portalLanePulses = Array(ROWS).fill(0);
+      state.bossPortalPulse = 0;
+      state.hp = MAX_CASTLE_HP;
+      state.gold = 100;
+      state.keeperLevel = MAX_KEEPER_LEVEL;
+      state.keeperXp = 0;
+      state.wave = wave;
+      state.nextId = 1;
+      state.lastTs = performance.now();
+      state.spawnTimer = 0;
+      state.enemiesSpawned = 1;
+      state.enemiesToSpawn = 1;
+      state.waveReward = waveClearReward(wave);
+      state.planningTimer = 0;
+      state.gameSpeed = 1;
+      state.waveRunning = true;
+      state.gameOver = false;
+      state.gameResult = null;
+
+      const positions = [[0, 3], [1, 4], [2, 3], [2, 5], [3, 4], [4, 3]];
+      const testDragons = dragonPool.filter(unit => unit.cost === 5).slice(0, positions.length);
+      testDragons.forEach((template, index) => {
+        const [row, col] = positions[index];
+        const ownedUnit = makeOwnedUnit({ ...template, star: 2 });
+        const dragon = {
+          ...ownedUnit,
+          id: state.nextId++,
+          row,
+          col,
+          x: cellCenterX(col),
+          y: cellCenterY(row),
+          cooldown: 1 / statsFor(ownedUnit).attackSpeed,
+        };
+        syncDragonHp(dragon, false);
+        state.dragons.push(dragon);
+      });
+
+      spawnEnemy(null, bossType);
+      staggerDragonCooldownsForBoss();
+      setShopTrayOpen(false);
+      clearDragGhost();
+      log(`Boss Playtest: Wave ${wave}, six 5-Gold 2-star dragons versus the boss.`);
       renderUi();
     }
 
@@ -4309,9 +6465,11 @@
         const mergeStars = mergeReady ? Array.from({ length: mergeInfo.finalStar }, () => "<span></span>").join("") : "";
         const mergeClass = mergeInfo?.finalStar === 3 ? "gold" : "silver";
         const selected = state.selected?.source === "shop" && state.selected.index === i;
-        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""} ${selected ? "selected" : ""}" data-shop="${i}" draggable="false">
+        const ownedCount = ownedDragonLocations(d.name).length;
+        return `<div class="card ${tierClass(d.cost)} ${unaffordable ? "unaffordable" : ""} ${mergeReady ? "merge-ready" : ""} ${selected ? "selected" : ""}" data-shop="${i}" data-dragon-key="${encodeURIComponent(d.name)}" draggable="false">
           <div class="card-title">${displayDragonName(d)}</div>
           ${state.shopLocked ? `<img class="shop-lock-badge" src="${icon.lock}" alt="Locked" title="Shop locked" />` : ""}
+          ${ownedCount ? `<div class="owned-copy-badge">Owned ${ownedCount}</div>` : ""}
           <div class="elements elements-count-${d.elements.length}">${d.elements.map(e => `<span class="element-tag" style="color:${elements[e].color}"><img class="element-dot" src="${elements[e].icon}" title="${e}" alt="" />${e}</span>`).join("")}</div>
           <img class="dragon-img" src="${d.baby}" alt="" />
           <div class="cost"><img class="icon" src="${icon.gold}" alt="" /> ${d.cost}</div>
@@ -4324,13 +6482,17 @@
           const index = Number(card.dataset.shop);
           return { source: "shop", index, unit: state.shop[index] };
         });
+        enableDragonInfoLongPress(card, () => state.shop[Number(card.dataset.shop)]);
         card.addEventListener("click", ev => {
           if (state.gameOver) return;
           ev.stopPropagation();
           const index = Number(card.dataset.shop);
           const unit = state.shop[index];
           if (!unit) return;
-          if (isTouchUi()) {
+          clearHoverTrackedDragon(unit.name);
+          if (tutorialState.active) {
+            buyToBench(index);
+          } else if (isTouchUi()) {
             if (state.selected?.source === "shop" && state.selected.index === index) {
               state.selected = null;
               buyToBench(index);
@@ -4378,6 +6540,16 @@
           const unit = state.shop[Number(card.dataset.shop)];
           if (unit) showStats(unit, ev.clientX, ev.clientY);
         });
+        card.addEventListener("mouseenter", () => {
+          if (tutorialState.active) return;
+          const unit = state.shop[Number(card.dataset.shop)];
+          if (unit) setTrackedDragon(unit.name);
+        });
+        card.addEventListener("mouseleave", () => {
+          if (tutorialState.active) return;
+          const unit = state.shop[Number(card.dataset.shop)];
+          if (unit) clearHoverTrackedDragon(unit.name);
+        });
       });
       const rerollBtn = document.getElementById("rerollBtn");
       rerollBtn.innerHTML = `Reroll ${goldCostHtml(REROLL_COST)}`;
@@ -4385,6 +6557,7 @@
       rerollBtn.onclick = () => {
         playSfx("ui");
         setShopTrayOpen(true);
+        if (tutorialState.active) tutorialState.rerolls += 1;
         rollShop();
       };
       const lockShopBtn = document.getElementById("lockShopBtn");
@@ -4428,6 +6601,9 @@
         renderUi();
       };
       document.getElementById("orientationBtn").onclick = requestLandscapeMode;
+      const tutorialReplayBtn = document.getElementById("tutorialReplayBtn");
+      tutorialReplayBtn.hidden = false;
+      tutorialReplayBtn.onclick = () => openGuideCenter("tutorial");
       const endScreen = document.getElementById("endScreen");
       const playAgainBtn = document.getElementById("playAgainBtn");
       endScreen.classList.toggle("visible", state.gameOver);
@@ -4436,12 +6612,12 @@
       document.getElementById("endScreenSummary").textContent = state.gameResult === "won"
         ? `The Dragon Keep survived all ${state.wave} waves.`
         : `The Keep fell during Wave ${state.wave}.`;
-      playAgainBtn.onclick = resetGame;
+      playAgainBtn.onclick = bossPlaytestMode ? () => startBossPlaytest(state.wave === 20 ? 20 : 10) : resetGame;
 
       const bench = document.getElementById("bench");
       bench.innerHTML = state.bench.map((d, i) => {
         const selected = state.selected?.source === "bench" && state.selected.index === i;
-        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""} ${selected ? "selected" : ""}" data-bench="${i}" ${d ? "draggable=\"false\"" : ""}>
+        return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""} ${selected ? "selected" : ""}" data-bench="${i}" ${d ? `data-dragon-key="${encodeURIComponent(d.name)}" draggable="false"` : ""}>
           ${d ? `<img src="${assetForUnit(d)}" alt="" title="${displayDragonName(d)}" /><div class="bench-elements">${d.elements.map(name => `<img src="${elements[name].icon}" alt="${name}" title="${name}" />`).join("")}</div><div class="bench-name" title="${displayDragonName(d)}">${rankIconHtml(d.star)}<span>${displayDragonName(d)}</span></div>` : ""}
         </div>`;
       }).join("");
@@ -4451,11 +6627,13 @@
           const index = Number(slot.dataset.bench);
           return { source: "bench", index, unit: state.bench[index] };
         });
+        enableDragonInfoLongPress(slot, () => state.bench[Number(slot.dataset.bench)]);
         slot.addEventListener("click", ev => {
           if (state.gameOver) return;
           ev.stopPropagation();
           const index = Number(slot.dataset.bench);
           const unit = state.bench[index];
+          if (unit) clearHoverTrackedDragon(unit.name);
           const selection = selectedDrag();
           if (!selection) {
             if (unit) selectForTouch({ source: "bench", index, unit });
@@ -4514,6 +6692,16 @@
           ev.preventDefault();
           showStats(unit, ev.clientX, ev.clientY);
         });
+        slot.addEventListener("mouseenter", () => {
+          if (tutorialState.active) return;
+          const unit = state.bench[Number(slot.dataset.bench)];
+          if (unit) setTrackedDragon(unit.name);
+        });
+        slot.addEventListener("mouseleave", () => {
+          if (tutorialState.active) return;
+          const unit = state.bench[Number(slot.dataset.bench)];
+          if (unit) clearHoverTrackedDragon(unit.name);
+        });
       });
 
       const sellZone = document.getElementById("sellZone");
@@ -4541,6 +6729,8 @@
         sellZone.classList.remove("drag-over");
         sellDraggedDragon();
       };
+      updateTrackedDragonDom();
+      tutorialAfterRender();
       requestAnimationFrame(fitCanvasToScreen);
     }
 
@@ -4555,26 +6745,45 @@
       const nextAttack = 1 / s.attackSpeed;
       const costClass = `drop-tier-${unit.cost}`;
       const refund = refundFor(unit);
+      const template = dragonPool.find(candidate => candidate.name === unit.name) || unit;
+      const locations = ownedDragonLocations(unit.name);
+      setTrackedDragon(unit.name, 6500);
+      popover.classList.add("dragon-detail-popover");
       popover.innerHTML = `
         <h3>${displayDragonName(unit)}<span class="stat-title-meta">${rankIconHtml(unit.star)}<span class="${costClass}">${goldCostHtml(unit.cost)}</span></span></h3>
+        <div class="dragon-form-compare">
+          <div class="dragon-form"><img src="${template.baby}" alt="${displayDragonName(unit)} Baby" /><span>Baby · 1★</span></div>
+          <div class="dragon-form"><img src="${template.adult}" alt="${displayDragonName(unit)} Adult" /><span>Adult · 2★/3★</span></div>
+        </div>
         <div class="stat-line"><img src="${icon.damage}" alt="" /> Damage <strong>${s.damage}</strong></div>
         <div class="stat-line"><img src="${icon.attackSpeed}" alt="" /> Next Attack <strong>${nextAttack.toFixed(2)}s</strong></div>
         <div class="stat-line"><img src="${icon.hp}" alt="" /> HP <strong>${s.hp}</strong></div>
         <div class="stat-line"><img src="${icon.gold}" alt="" /> Cost <strong>${unit.cost}</strong></div>
         <div class="stat-line"><span class="stat-elements">${unit.elements.map(name => `<span class="stat-element-item" style="color:${elements[name].color}"><img src="${elements[name].icon}" alt="${name}" title="${name}" /><b>${name}</b></span>`).join("")}</span></div>
+        <div class="dragon-owned-summary">
+          <strong>Owned: ${locations.length}</strong>
+          <div class="dragon-location-list">
+            ${locations.length
+              ? locations.map(location => `<button class="dragon-location-item" type="button" data-locate-dragon="${encodeURIComponent(unit.name)}">${location.label} · ${location.unit.star || 1}★</button>`).join("")
+              : `<span class="trait-empty">No owned copy on Board or Bench.</span>`}
+          </div>
+        </div>
         <div class="stat-line sell-value-line">Sell for <strong>${goldCostHtml(refund)}</strong></div>
       `;
       popover.style.width = "";
       popover.style.maxHeight = "";
       popover.style.overflowY = "";
       popover.style.display = "block";
+      popover.querySelectorAll("[data-locate-dragon]").forEach(button => {
+        button.addEventListener("click", () => setTrackedDragon(unit.name, 6500));
+      });
       const popoverRect = popover.getBoundingClientRect();
       const left = Math.max(8, Math.min(window.innerWidth - popoverRect.width - 8, x + 12));
       const top = Math.max(8, Math.min(window.innerHeight - popoverRect.height - 8, y + 12));
       popover.style.left = `${left}px`;
       popover.style.top = `${top}px`;
       clearTimeout(showStats.hideTimer);
-      showStats.hideTimer = setTimeout(() => popover.style.display = "none", 3600);
+      showStats.hideTimer = setTimeout(() => popover.style.display = "none", 6500);
     }
 
     function speedButtonLabel() {
@@ -4633,6 +6842,7 @@
 
     function showTraitNote(name, x = null, y = null) {
       const popover = document.getElementById("statPopover");
+      popover.classList.remove("dragon-detail-popover");
       const note = traitNotes[name];
       const stacks = traitStacks()[name] || 0;
       const tier = activeTier(stacks);
@@ -4948,11 +7158,14 @@
       const hpScale = type.boss ? 1 : 1 + state.wave * 0.16;
       const maxHp = Math.round(type.hp * hpScale);
       const isWideBoss = !!type.wideBoss;
+      const bossSize = type.size || 820;
+      const bossAnchorX = canvas.width;
+      const bossStartX = canvas.width + bossSize * 0.58;
       state.enemies.push({
         id: state.nextId++,
         ...type,
         row: isWideBoss ? Math.floor(ROWS / 2) : row,
-        x: isWideBoss ? FIELD_RIGHT + 260 : FIELD_RIGHT + 50,
+        x: isWideBoss ? bossStartX : FIELD_RIGHT + 50,
         y: isWideBoss ? canvas.height * 0.49 : row * CELL_H + CELL_H * 0.6,
         maxHp,
         hp: maxHp,
@@ -4960,10 +7173,31 @@
         burrowCooldown: type.ability === "burrow" ? 0.35 + Math.random() * 0.75 : 0,
         burrowUsed: false,
         burrowed: 0,
+        bossRangedCooldown: type.boss ? 2.2 : 0,
+        bossCastTimer: 0,
+        bossCastTargetId: null,
+        bossCastSkill: null,
+        bossSkillIndex: 0,
+        bossLastTargetId: null,
+        bossPhase: isWideBoss ? "warning" : "active",
+        bossWarningTimer: isWideBoss ? 5 : 0,
+        bossWarningDuration: isWideBoss ? 5 : 0,
+        bossPortalTimer: isWideBoss ? 1 : 0,
+        bossPortalDuration: isWideBoss ? 1 : 0,
+        bossIntroTimer: isWideBoss ? 3 : 0,
+        bossIntroDuration: isWideBoss ? 3 : 0,
+        bossIntroStartX: isWideBoss ? bossStartX : 0,
+        bossAnchorX: isWideBoss ? bossAnchorX : 0,
+        bossActive: !isWideBoss,
+        bossSummonAnim: 0,
+        bossRecoil: 0,
+        bossRecoilDuration: .32,
+        bossCastDuration: 0,
+        bossLastCastSkill: null,
+        summonsTriggered: [],
       });
       if (isWideBoss) {
-        state.bossPortalPulse = Math.max(state.bossPortalPulse || 0, 1.32);
-        state.effects.push({ type: "spawn", x: FIELD_RIGHT + 32, y: canvas.height * 0.5, life: .55 });
+        state.bossPortalPulse = 0;
       } else {
         state.portalLanePulses[row] = Math.max(state.portalLanePulses[row] || 0, 1.08);
         state.effects.push({ type: "spawn", x: FIELD_RIGHT + 32, y: row * CELL_H + CELL_H * 0.55, life: .45 });
@@ -4974,7 +7208,7 @@
       const rangeLimit = dragon.rangeDebuff > 0 ? CELL_W * 3.1 : Infinity;
       return state.enemies
         .filter(e => {
-          if (e.enteringTower || e.burrowed || (!e.wideBoss && e.row !== dragon.row)) return false;
+          if (e.enteringTower || e.burrowed || (e.boss && !e.bossActive) || (!e.wideBoss && e.row !== dragon.row)) return false;
           const dx = e.x - dragon.x;
           const inFrontOrTouching = dx >= -CELL_W * 0.5;
           return inFrontOrTouching && dx <= rangeLimit;
@@ -4988,7 +7222,10 @@
         .sort((a, b) => b.x - a.x)[0] || null;
     }
 
-    function enemyAttackDamage(enemy) {
+    function enemyAttackDamage(enemy, targetDragon = null) {
+      if (enemy.boss && targetDragon?.maxHp && enemy.meleeDamageRatio) {
+        return Math.max(1, Math.round(targetDragon.maxHp * enemy.meleeDamageRatio));
+      }
       return Math.max(8, Math.round(enemy.maxHp * 0.045 + state.wave * 2));
     }
 
@@ -5040,6 +7277,152 @@
         life: 1.6,
       });
       state.effects.push({ type: "enemyCast", x: enemy.x - 18, y: enemy.y - 46, life: .25 });
+    }
+
+    function bossSummonPool() {
+      const pool = availableEnemyTypes().filter(type => !type.special && !type.boss && type.hp <= 260);
+      return pool.length ? pool : enemyTypes.slice(0, 4);
+    }
+
+    function summonBossMinions(boss, phaseIndex) {
+      const pool = bossSummonPool();
+      const firstRows = [0, 2, 4];
+      const secondRows = [1, 3, 2];
+      const rows = phaseIndex % 2 ? secondRows : firstRows;
+      for (let i = 0; i < (boss.summonCount || 3); i++) {
+        const row = rows[i % rows.length];
+        const type = pool[(phaseIndex * 3 + i) % pool.length];
+        spawnEnemy(row, type);
+        const minion = state.enemies[state.enemies.length - 1];
+        minion.x = Math.max(FIELD_X + CELL_W * 2.2, boss.x - CELL_W * (0.72 + (i % 2) * 0.16));
+        minion.y = cellCenterY(row);
+      }
+      state.bossPortalPulse = Math.max(state.bossPortalPulse, 1.15);
+      state.effects.push({ type: "bossSummon", x: boss.x - 40, y: boss.y, life: .75, maxLife: .75 });
+      boss.bossSummonAnim = .75;
+      playSfx("wave");
+      log(`${boss.name} summoned ${boss.summonCount || 3} reinforcements!`);
+    }
+
+    function activateBoss(boss) {
+      boss.x = boss.bossAnchorX;
+      boss.bossIntroTimer = 0;
+      boss.bossPhase = "active";
+      boss.bossActive = true;
+      boss.bossRangedCooldown = 1.8;
+      summonBossMinions(boss, 0);
+      state.effects.push({ type: "bossArrival", x: boss.x - 80, y: boss.y, life: .8, maxLife: .8 });
+      log(`Boss Wave ${state.wave} has begun — defeat the boss to win!`);
+    }
+
+    function bossGridDistance(a, b) {
+      const rowDistance = Math.abs((a.row ?? 0) - (b.row ?? 0));
+      const colDistance = Math.abs((a.col ?? 0) - (b.col ?? 0));
+      return Math.hypot(rowDistance, colDistance);
+    }
+
+    function densestDragonTarget() {
+      return state.dragons
+        .map(dragon => ({
+          dragon,
+          nearby: state.dragons.filter(other => bossGridDistance(dragon, other) <= 2).length,
+        }))
+        .sort((a, b) => b.nearby - a.nearby)[0]?.dragon || null;
+    }
+
+    function beginBossRangedCast(boss) {
+      if (!state.dragons.length) return;
+      const cycle = boss.skillCycle?.length ? boss.skillCycle : ["fire", "stun"];
+      const skill = cycle[boss.bossSkillIndex % cycle.length];
+      boss.bossSkillIndex += 1;
+      const candidates = state.dragons.filter(dragon => dragon.id !== boss.bossLastTargetId);
+      const target = skill === "blast" ? densestDragonTarget() : rand(candidates.length ? candidates : state.dragons);
+      if (!target) return;
+      boss.bossCastTargetId = target.id;
+      boss.bossLastTargetId = target.id;
+      boss.bossCastSkill = skill;
+      boss.bossCastTimer = skill === "blast" ? 1 : 0.8;
+      boss.bossCastDuration = boss.bossCastTimer;
+      state.effects.push({
+        type: skill === "blast" ? "bossAreaWarning" : "bossWarning",
+        skill,
+        targetId: target.id,
+        x: target.x,
+        y: target.y,
+        radiusCells: skill === "blast" ? (boss.blastRadiusCells || 2) : 0,
+        life: skill === "blast" ? 1.02 : 0.82,
+        maxLife: skill === "blast" ? 1.02 : 0.82,
+      });
+    }
+
+    function shootBossProjectile(boss, targetDragon) {
+      if (!targetDragon) return;
+      const skill = boss.bossCastSkill || "fire";
+      const type = skill === "stun" ? "bossWhiteOrb" : skill === "blast" ? "bossBlastOrb" : "bossFireOrb";
+      const damageRatio = skill === "stun"
+        ? (boss.stunDamageRatio || .08)
+        : skill === "blast"
+          ? (boss.blastDamageRatio || .14)
+          : (boss.fireDamageRatio || .10);
+      state.enemyProjectiles.push({
+        id: state.nextId++,
+        type,
+        skill,
+        x: boss.x - Math.min(180, (boss.size || 820) * 0.22),
+        y: boss.y - 72,
+        targetId: targetDragon.id,
+        targetX: targetDragon.x,
+        targetY: targetDragon.y - 34,
+        speed: 270,
+        damageRatio,
+        damage: Math.max(1, Math.round(targetDragon.maxHp * damageRatio)),
+        burnRatio: skill === "fire" ? (boss.fireBurnRatio || .015) : 0,
+        burnDuration: skill === "fire" ? 3 : 0,
+        stunDuration: skill === "stun" ? 1 : 0,
+        splashRadiusCells: skill === "blast" ? (boss.blastRadiusCells || 2) : 0,
+        rangeDebuff: 0,
+        trail: [],
+        life: 3.2,
+      });
+      state.effects.push({ type: "bossCast", skill, x: boss.x - 80, y: boss.y - 72, life: .42 });
+      boss.bossLastCastSkill = skill;
+      boss.bossRecoil = boss.bossRecoilDuration || .32;
+      boss.bossCastSkill = null;
+      playSfx("wave");
+    }
+
+    function applyBossProjectileHit(projectile, primaryTarget) {
+      const impactRow = primaryTarget?.row ?? Math.max(0, Math.min(ROWS - 1, Math.round(projectile.targetY / CELL_H)));
+      const impactCol = primaryTarget?.col ?? Math.max(0, Math.min(COLS - 1, Math.round((projectile.targetX - FIELD_X) / CELL_W)));
+      const targets = projectile.type === "bossBlastOrb"
+        ? state.dragons.filter(dragon => Math.hypot(dragon.row - impactRow, dragon.col - impactCol) <= (projectile.splashRadiusCells || 2))
+        : primaryTarget ? [primaryTarget] : [];
+
+      for (const dragon of targets) {
+        dragon.hp -= Math.max(1, Math.round(dragon.maxHp * (projectile.damageRatio || 0)));
+        dragon.damageFlash = .32;
+        if (projectile.burnDuration) {
+          dragon.burnDuration = Math.max(dragon.burnDuration || 0, projectile.burnDuration);
+          dragon.burnRatio = Math.max(dragon.burnRatio || 0, projectile.burnRatio || .015);
+        }
+        if (projectile.stunDuration) {
+          dragon.stunDuration = Math.max(dragon.stunDuration || 0, projectile.stunDuration);
+        }
+      }
+
+      const effectType = projectile.type === "bossWhiteOrb"
+        ? "bossStunImpact"
+        : projectile.type === "bossBlastOrb"
+          ? "bossBlastImpact"
+          : "bossFireImpact";
+      state.effects.push({
+        type: effectType,
+        x: primaryTarget?.x ?? projectile.targetX,
+        y: (primaryTarget?.y ?? projectile.targetY) - 24,
+        life: projectile.type === "bossBlastOrb" ? .7 : .55,
+        maxLife: projectile.type === "bossBlastOrb" ? .7 : .55,
+        radiusCells: projectile.splashRadiusCells || 0,
+      });
     }
 
     function shoot(dragon, target) {
@@ -5103,7 +7486,6 @@
     }
 
     function applyTrait(projectile, enemy) {
-      if (enemy.boss) return;
       const bonuses = traitBonuses();
       const tier = bonuses.tier[projectile.type] || 0;
       const roll = Math.random();
@@ -5115,7 +7497,7 @@
       }
       if (projectile.type === "Earth" && roll < ({2:.12,4:.24,6:.38,8:.55}[tier] || 0)) {
         const push = ({2:32,4:48,6:64,8:80}[tier] || 0);
-        enemy.x = Math.min(canvas.width + 110, enemy.x + push);
+        if (!enemy.boss) enemy.x = Math.min(canvas.width + 110, enemy.x + push);
         state.effects.push({ type: "Earth", x: enemy.x, y: enemy.y, life: .24, knockback: true });
       }
       if (projectile.type === "Energy" && roll < ({2:.15,4:.30,6:.50,8:.70}[tier] || 0)) {
@@ -5166,6 +7548,16 @@
         if (d.rangeDebuff) d.rangeDebuff = Math.max(0, d.rangeDebuff - dt);
         if (d.damageFlash) d.damageFlash = Math.max(0, d.damageFlash - dt);
         if (d.attackAnim) d.attackAnim = Math.max(0, d.attackAnim - dt);
+        if (d.burnDuration > 0) {
+          d.hp -= d.maxHp * (d.burnRatio || .015) * dt;
+          d.burnDuration = Math.max(0, d.burnDuration - dt);
+          d.damageFlash = Math.max(d.damageFlash || 0, .08);
+        }
+        if (d.stunDuration > 0) {
+          d.stunDuration = Math.max(0, d.stunDuration - dt);
+          continue;
+        }
+        if (d.hp <= 0) continue;
         const s = statsFor(d);
         const target = laneTarget(d);
         if (!target) {
@@ -5180,11 +7572,72 @@
       }
 
       for (const e of state.enemies) {
-        if (e.burn) { e.hp -= e.maxHp * 0.015 * dt; e.burn -= dt; }
+        if (e.burn) {
+          e.hp -= e.maxHp * (e.boss ? 0.0045 : 0.015) * dt;
+          e.burn -= dt;
+        }
         if (e.slow) e.slow -= dt;
         if (e.stun) e.stun -= dt;
         if (e.damageFlash) e.damageFlash = Math.max(0, e.damageFlash - dt);
         e.attackCooldown = Math.max(0, (e.attackCooldown || 0) - dt);
+        if (e.bossSummonAnim > 0) e.bossSummonAnim = Math.max(0, e.bossSummonAnim - dt);
+        if (e.bossRecoil > 0) e.bossRecoil = Math.max(0, e.bossRecoil - dt);
+        if (e.boss && !e.enteringTower) {
+          if (!e.bossActive) {
+            if (e.bossPhase === "warning") {
+              e.bossWarningTimer = Math.max(0, e.bossWarningTimer - realDt);
+              state.bossPortalPulse = 0;
+              if (e.bossWarningTimer <= 0) {
+                e.bossPhase = "portal";
+                state.bossPortalPulse = 1.32;
+                state.effects.push({ type: "bossArrival", x: FIELD_RIGHT + 30, y: canvas.height * .5, life: .8, maxLife: .8 });
+                playSfx("wave");
+              }
+              continue;
+            }
+            if (e.bossPhase === "portal") {
+              e.bossPortalTimer = Math.max(0, e.bossPortalTimer - realDt);
+              state.bossPortalPulse = Math.max(state.bossPortalPulse, 1.22);
+              if (e.bossPortalTimer <= 0) e.bossPhase = "entering";
+              continue;
+            }
+            e.bossIntroTimer = Math.max(0, e.bossIntroTimer - realDt);
+            const duration = Math.max(.01, e.bossIntroDuration || 3);
+            const progress = 1 - e.bossIntroTimer / duration;
+            const clamped = Math.max(0, Math.min(1, progress));
+            const eased = clamped * clamped * (3 - 2 * clamped);
+            e.x = e.bossIntroStartX + (e.bossAnchorX - e.bossIntroStartX) * eased;
+            state.bossPortalPulse = Math.max(state.bossPortalPulse, 1.12);
+            if (e.bossIntroTimer <= 0) activateBoss(e);
+            continue;
+          }
+
+          const hpRatio = Math.max(0, e.hp / e.maxHp);
+          (e.summonThresholds || []).forEach((threshold, index) => {
+            if (hpRatio <= threshold && !e.summonsTriggered.includes(index)) {
+              e.summonsTriggered.push(index);
+              summonBossMinions(e, index + 1);
+            }
+          });
+
+          if (e.bossCastTimer > 0) {
+            e.bossCastTimer -= dt;
+            if (e.bossCastTimer <= 0) {
+              const target = state.dragons.find(dragon => dragon.id === e.bossCastTargetId) || rand(state.dragons);
+              shootBossProjectile(e, target);
+              e.bossCastTargetId = null;
+              e.bossRangedCooldown = e.rangedInterval || 4.5;
+            }
+            continue;
+          }
+
+          e.bossRangedCooldown = Math.max(0, (e.bossRangedCooldown || 0) - dt);
+          if (e.bossRangedCooldown <= 0 && state.dragons.length) {
+            beginBossRangedCast(e);
+            continue;
+          }
+          continue;
+        }
         if (e.enteringTower) {
           const target = e.towerTarget || currentTowerEntryPoint();
           e.towerTarget = target;
@@ -5239,9 +7692,9 @@
         const blocker = dragonBlockingEnemy(e);
         if (blocker && !(e.stun > 0)) {
           if (e.attackCooldown <= 0) {
-            blocker.hp -= enemyAttackDamage(e);
+            blocker.hp -= enemyAttackDamage(e, blocker);
             blocker.damageFlash = 0.28;
-            e.attackCooldown = 0.85;
+            e.attackCooldown = e.boss ? (e.meleeInterval || 1.2) : 0.85;
             state.effects.push({ type: "hitDragon", x: blocker.x, y: blocker.y - 34, life: .22 });
           }
           continue;
@@ -5294,21 +7747,15 @@
         if (enemy) {
           enemy.hp -= p.damage;
           if (enemy.wideBoss) {
-            const size = enemy.size || 860;
-            const profileColor = projectileProfile(p.type).color;
-            for (let i = 0; i < 12; i++) {
-              state.effects.push({
-                type: "bossImpact",
-                elementType: p.type,
-                color: profileColor,
-                x: enemy.x + (Math.random() * 2 - 1) * size * 0.28,
-                y: enemy.y + (Math.random() * 2 - 1) * size * 0.38,
-                life: 0.28 + Math.random() * 0.14,
-                delay: Math.random() * 0.1,
-                size: 4 + Math.random() * 5,
-                crit: p.crit,
-              });
-            }
+            enemy.damageFlash = .1;
+            state.effects.push({
+              type: p.hitEffect || p.type,
+              elementType: p.type,
+              x: p.x,
+              y: p.y,
+              life: .34,
+              crit: p.crit,
+            });
           } else {
             enemy.damageFlash = 0.16;
             state.effects.push({ type: p.hitEffect || p.type, elementType: p.type, x: enemy.x, y: enemy.y, life: .38, crit: p.crit });
@@ -5333,7 +7780,9 @@
         const step = p.speed * dt;
         if (dist <= step + 12) {
           const hitDragon = target || state.dragons.find(d => d.row === Math.max(0, Math.min(ROWS - 1, Math.floor(p.y / CELL_H))) && Math.hypot(d.x - p.targetX, d.y - p.targetY) < 76);
-          if (hitDragon) {
+          if (p.type === "bossFireOrb" || p.type === "bossWhiteOrb" || p.type === "bossBlastOrb") {
+            applyBossProjectileHit(p, hitDragon);
+          } else if (hitDragon) {
             hitDragon.hp -= p.damage;
             hitDragon.damageFlash = 0.28;
             if (p.rangeDebuff) hitDragon.rangeDebuff = p.rangeDebuff;
@@ -5346,6 +7795,12 @@
         }
       }
       state.enemyProjectiles = state.enemyProjectiles.filter(p => !p.hit && p.life > 0);
+
+      const defeatedBoss = state.enemies.find(enemy => enemy.boss && enemy.hp <= 0);
+      if (defeatedBoss) {
+        completeBossEncounter(defeatedBoss);
+        return;
+      }
 
       const towerBreachX = cellLeft(1);
       const towerTarget = currentTowerEntryPoint();
@@ -5443,15 +7898,43 @@
       const t = performance.now() / 1000;
       const bossPulse = state.bossPortalPulse || 0;
       if (bossPulse > 0) {
-        const alpha = Math.min(1, bossPulse);
+        const boss = state.enemies.find(enemy => enemy.boss && !enemy.bossActive);
+        const isOpening = boss?.bossPhase === "portal";
+        const openingDuration = Math.max(.01, boss?.bossPortalDuration || 1);
+        const openingProgress = isOpening
+          ? Math.max(0, Math.min(1, 1 - boss.bossPortalTimer / openingDuration))
+          : 1;
+        const backC1 = 1.70158;
+        const backC3 = backC1 + 1;
+        const shifted = openingProgress - 1;
+        const popEase = isOpening
+          ? 1 + backC3 * shifted * shifted * shifted + backC1 * shifted * shifted
+          : 1;
+        const alpha = isOpening
+          ? Math.max(0, Math.min(1, openingProgress * 2.6))
+          : Math.min(1, bossPulse);
         const x = FIELD_RIGHT + PORTAL_W * 0.5;
         const y = canvas.height * 0.5;
-        const scale = 0.95 + alpha * 0.18 + Math.sin(t * 4) * 0.018;
+        const scale = isOpening
+          ? Math.max(.04, .06 + popEase * 1.1)
+          : 0.95 + alpha * 0.18 + Math.sin(t * 4) * 0.018;
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.translate(x, y);
         ctx.scale(scale, scale);
         ctx.globalCompositeOperation = "lighter";
+
+        if (isOpening) {
+          const ringAlpha = Math.sin(openingProgress * Math.PI);
+          ctx.strokeStyle = `rgba(225, 252, 255, ${ringAlpha * .9})`;
+          ctx.lineWidth = 12 - openingProgress * 5;
+          ctx.shadowColor = "#9eefff";
+          ctx.shadowBlur = 34;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 76 + openingProgress * 26, CELL_H * (1.9 + openingProgress * .48), 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
 
         const glow = ctx.createRadialGradient(0, 0, 12, 0, 0, CELL_H * 2.55);
         glow.addColorStop(0, "rgba(220, 248, 255, .95)");
@@ -5865,6 +8348,20 @@
       const visualY = d.row === 0 ? Math.max(d.y, size / 2 + 30) : d.y;
       let drawn = { width: size, height: size };
       const rarityColor = tierColor(d.cost);
+      if (trackedDragonName && d.name === trackedDragonName) {
+        const pulse = .55 + Math.sin(performance.now() / 170) * .18;
+        ctx.save();
+        ctx.strokeStyle = `rgba(255, 231, 103, ${Math.max(.35, pulse)})`;
+        ctx.fillStyle = `rgba(95, 240, 178, ${Math.max(.08, pulse * .16)})`;
+        ctx.lineWidth = 5;
+        ctx.shadowColor = "#70f0b6";
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.ellipse(d.x, visualY, size * .62, size * .55, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       ctx.save();
@@ -5897,6 +8394,44 @@
       const clusterX = d.x - (rankWidth + gap + hpWidth) / 2;
       drawRankIcon(clusterX + rankWidth / 2, topIconY, d.star || 1);
       drawDragonHealthBar(d, clusterX + rankWidth + gap, topIconY - 4);
+      if (d.burnDuration > 0) {
+        const t = performance.now() / 1000;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < 5; i++) {
+          const x = d.x + Math.sin(t * 6 + i * 1.7) * (18 + i * 3);
+          const y = visualY + 30 - ((t * 42 + i * 19) % 48);
+          const radius = 5 + (i % 2) * 3;
+          const flame = ctx.createRadialGradient(x, y, 1, x, y, radius * 2.4);
+          flame.addColorStop(0, "#fff3a0");
+          flame.addColorStop(.35, "#ff8a2a");
+          flame.addColorStop(1, "rgba(255,45,10,0)");
+          ctx.fillStyle = flame;
+          ctx.beginPath();
+          ctx.arc(x, y, radius * 2.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      if (d.stunDuration > 0) {
+        const t = performance.now() / 180;
+        ctx.save();
+        ctx.strokeStyle = "rgba(245, 250, 255, .95)";
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "#d9f2ff";
+        ctx.shadowBlur = 14;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(d.x, visualY - size * .45, 34, 11, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        for (let i = 0; i < 3; i++) {
+          const angle = t + i * Math.PI * 2 / 3;
+          ctx.beginPath();
+          ctx.arc(d.x + Math.cos(angle) * 30, visualY - size * .45 + Math.sin(angle) * 9, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
       const dragonCellLeft = cellLeft(d.col);
       const labelPad = 7;
       const labelW = CELL_W - 8;
@@ -5951,9 +8486,28 @@
     function drawEnemy(e) {
       const image = img(e.img);
       const size = Math.round(e.size || (e.boss ? 138 : e.maxHp > 700 ? 110 : e.maxHp > 300 ? 96 : 82));
-      ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = !!e.boss;
+      if (e.boss) ctx.imageSmoothingQuality = "high";
       ctx.save();
-      ctx.translate(Math.round(e.x), Math.round(e.y));
+      ctx.translate(e.boss ? e.x : Math.round(e.x), e.boss ? e.y : Math.round(e.y));
+      if (e.boss) {
+        const idleScale = 1 + Math.sin(performance.now() / 240) * .012;
+        const castDuration = Math.max(.01, e.bossCastDuration || .8);
+        const castProgress = 1 - Math.max(0, e.bossCastTimer) / castDuration;
+        const castCurve = e.bossCastTimer > 0 ? Math.sin(Math.max(0, Math.min(1, castProgress)) * Math.PI) : 0;
+        const summonPulse = e.bossSummonAnim > 0 ? Math.sin((1 - e.bossSummonAnim / .75) * Math.PI) : 0;
+        const recoilDuration = Math.max(.01, e.bossRecoilDuration || .32);
+        const recoilProgress = 1 - Math.max(0, e.bossRecoil) / recoilDuration;
+        const recoilCurve = e.bossRecoil > 0 ? Math.sin(Math.max(0, Math.min(1, recoilProgress)) * Math.PI) : 0;
+        ctx.translate(-18 * castCurve + 15 * recoilCurve, -summonPulse * 16);
+        ctx.scale(idleScale + castCurve * .028 + summonPulse * .045, idleScale - castCurve * .012 + summonPulse * .025);
+        const visualSkill = e.bossCastSkill || e.bossLastCastSkill;
+        const skillColor = visualSkill === "stun" ? "#eaf8ff" : visualSkill === "blast" ? "#ff4b5f" : "#ff7b32";
+        if (castCurve > 0 || recoilCurve > 0 || e.bossSummonAnim > 0) {
+          ctx.shadowColor = e.bossSummonAnim > 0 ? "#b875ff" : skillColor;
+          ctx.shadowBlur = e.bossSummonAnim > 0 ? 42 : 12 + Math.max(castCurve, recoilCurve) * 22;
+        }
+      }
       if (e.flying || e.ability === "flying") {
         ctx.translate(0, Math.sin(performance.now() / 130 + e.id) * 5 - 8);
       }
@@ -6027,6 +8581,7 @@
         ctx.arc(e.x + size * .22, e.y - size * .32, 6 + Math.sin(performance.now() / 90) * 2, 0, Math.PI * 2);
         ctx.fill();
       }
+      if (e.boss && !e.bossActive) return;
       ctx.fillStyle = "#260c0c";
       const barW = e.wideBoss ? 520 : e.boss ? 96 : 72;
       const barH = e.wideBoss ? 14 : 8;
@@ -6245,6 +8800,8 @@
 
     function drawEnemyProjectile(p) {
       ctx.save();
+      const isBossProjectile = p.type === "bossFireOrb" || p.type === "bossWhiteOrb" || p.type === "bossBlastOrb";
+      const bossColor = p.type === "bossWhiteOrb" ? "rgba(225, 248, 255, .82)" : p.type === "bossBlastOrb" ? "rgba(255, 45, 78, .78)" : "rgba(255, 91, 45, .72)";
       if (p.trail?.length) {
         ctx.lineCap = "round";
         for (let i = 1; i < p.trail.length; i++) {
@@ -6252,8 +8809,8 @@
           const b = p.trail[i];
           const ratio = i / p.trail.length;
           ctx.globalAlpha = ratio * .46;
-          ctx.strokeStyle = p.type === "hexBolt" ? "rgba(167, 139, 250, .72)" : "rgba(255, 92, 92, .6)";
-          ctx.lineWidth = 12 * ratio;
+          ctx.strokeStyle = isBossProjectile ? bossColor : p.type === "hexBolt" ? "rgba(167, 139, 250, .72)" : "rgba(255, 92, 92, .6)";
+          ctx.lineWidth = (isBossProjectile ? p.type === "bossBlastOrb" ? 26 : 20 : 12) * ratio;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -6262,9 +8819,57 @@
         ctx.globalAlpha = 1;
       }
       ctx.translate(p.x, p.y);
-      ctx.shadowColor = p.type === "hexBolt" ? "#a78bfa" : "#ff6b6b";
-      ctx.shadowBlur = 18;
-      if (p.type === "hexBolt") {
+      ctx.shadowColor = p.type === "bossWhiteOrb" ? "#e7f8ff" : p.type === "bossBlastOrb" ? "#ff2d55" : p.type === "bossFireOrb" ? "#ff9b42" : p.type === "hexBolt" ? "#a78bfa" : "#ff6b6b";
+      ctx.shadowBlur = isBossProjectile ? 28 : 18;
+      if (p.type === "bossFireOrb") {
+        const pulse = 1 + Math.sin(performance.now() / 85) * .08;
+        const g = ctx.createRadialGradient(-6, -7, 2, 0, 0, 30 * pulse);
+        g.addColorStop(0, "#fff7c2");
+        g.addColorStop(.28, "#ffbf4a");
+        g.addColorStop(.64, "#ef4a2f");
+        g.addColorStop(1, "rgba(105, 10, 20, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 30 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 239, 158, .9)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 18 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === "bossWhiteOrb") {
+        const pulse = 1 + Math.sin(performance.now() / 70) * .1;
+        const g = ctx.createRadialGradient(-5, -6, 1, 0, 0, 28 * pulse);
+        g.addColorStop(0, "#ffffff");
+        g.addColorStop(.38, "#e9fbff");
+        g.addColorStop(.7, "rgba(151, 220, 255, .72)");
+        g.addColorStop(1, "rgba(190, 235, 255, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 28 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.95)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 18 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === "bossBlastOrb") {
+        const pulse = 1 + Math.sin(performance.now() / 75) * .09;
+        const g = ctx.createRadialGradient(-7, -8, 2, 0, 0, 36 * pulse);
+        g.addColorStop(0, "#fff0c2");
+        g.addColorStop(.25, "#ff6a4a");
+        g.addColorStop(.62, "#dc1849");
+        g.addColorStop(1, "rgba(75, 0, 32, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 36 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 220, 170, .9)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 23 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === "hexBolt") {
         const g = ctx.createRadialGradient(0, 0, 2, 0, 0, 18);
         g.addColorStop(0, "#f5efff");
         g.addColorStop(.4, "#a78bfa");
@@ -6325,6 +8930,62 @@
           ctx.restore();
           continue;
         }
+        if (fx.type === "bossWarning" || fx.type === "bossAreaWarning") {
+          const target = state.dragons.find(dragon => dragon.id === fx.targetId);
+          const x = target?.x ?? fx.x;
+          const y = target?.y ?? fx.y;
+          const maxLife = fx.maxLife || .82;
+          const remaining = Math.max(0, fx.life / maxLife);
+          const pulse = 1 + Math.sin(performance.now() / 70) * .12;
+          const isArea = fx.type === "bossAreaWarning";
+          const warningColor = fx.skill === "stun" ? "#e8f8ff" : isArea ? "#ff294d" : "#ff6b32";
+          ctx.save();
+          ctx.globalAlpha = .4 + remaining * .6;
+          ctx.strokeStyle = warningColor;
+          ctx.fillStyle = isArea ? "rgba(255, 25, 65, .16)" : fx.skill === "stun" ? "rgba(220, 247, 255, .16)" : "rgba(255, 85, 35, .14)";
+          ctx.shadowColor = warningColor;
+          ctx.shadowBlur = 18;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          if (isArea) {
+            const radius = fx.radiusCells || 2;
+            ctx.ellipse(x, y, CELL_W * radius * pulse, CELL_H * radius * pulse, 0, 0, Math.PI * 2);
+          } else {
+            ctx.arc(x, y, (38 + 18 * (1 - remaining)) * pulse, 0, Math.PI * 2);
+          }
+          ctx.fill();
+          ctx.stroke();
+          ctx.font = "900 28px Arial";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#fff2c4";
+          ctx.fillText("!", x, y - 55);
+          ctx.restore();
+          continue;
+        }
+        if (fx.type === "bossFireImpact" || fx.type === "bossStunImpact" || fx.type === "bossBlastImpact") {
+          const maxLife = fx.maxLife || .55;
+          const alpha = Math.max(0, Math.min(1, fx.life / maxLife));
+          const progress = 1 - alpha;
+          const isStun = fx.type === "bossStunImpact";
+          const isBlast = fx.type === "bossBlastImpact";
+          const color = isStun ? "#eafaff" : isBlast ? "#ff294d" : "#ff7435";
+          const radiusX = isBlast ? CELL_W * (fx.radiusCells || 2) * progress : 35 + 48 * progress;
+          const radiusY = isBlast ? CELL_H * (fx.radiusCells || 2) * progress : radiusX;
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = color;
+          ctx.fillStyle = isStun ? "rgba(225,248,255,.18)" : isBlast ? "rgba(255,25,65,.17)" : "rgba(255,105,35,.2)";
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 24;
+          ctx.lineWidth = isBlast ? 7 : 5;
+          ctx.beginPath();
+          ctx.ellipse(fx.x, fx.y, Math.max(8, radiusX), Math.max(8, radiusY), 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+          continue;
+        }
         if (fx.type === "bossImpact") {
           const maxLife = fx.maxLife || 0.42;
           const alpha = Math.max(0, Math.min(1, fx.life / maxLife));
@@ -6364,6 +9025,10 @@
           enemyCast: "#a78bfa",
           hexImpact: "#a78bfa",
           enemyImpact: "#ff6b6b",
+          bossCast: "#ffb347",
+          bossSummon: "#d58aff",
+          bossArrival: "#ffcf67",
+          bossDefeat: "#fff08a",
           splitter: "#74ff8d",
           fireBurst: "#ff6a2a",
           iceFreeze: "#8ce7ff",
@@ -6588,6 +9253,37 @@
       ctx.restore();
     }
 
+    function drawBossIncoming() {
+      const boss = state.enemies.find(enemy => enemy.boss && !enemy.bossActive);
+      if (!boss || boss.bossPhase !== "warning") return;
+      const duration = Math.max(.01, boss.bossWarningDuration || 5);
+      const remaining = Math.max(0, boss.bossWarningTimer / duration);
+      const elapsed = duration - boss.bossWarningTimer;
+      const flash = .5 + .5 * Math.sin(elapsed * Math.PI * 4);
+      const pulse = .55 + flash * .4;
+      const seconds = Math.max(1, Math.ceil(boss.bossWarningTimer));
+      ctx.save();
+      ctx.fillStyle = `rgba(110, 0, 12, ${.10 + flash * .26})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = `rgba(255, 52, 52, ${pulse})`;
+      ctx.lineWidth = 12;
+      ctx.shadowColor = "#ff2020";
+      ctx.shadowBlur = 28;
+      ctx.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "900 62px Arial";
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = "rgba(65, 0, 0, .9)";
+      ctx.fillStyle = "#ff5b4f";
+      ctx.strokeText("WARNING", canvas.width / 2, 92);
+      ctx.fillText("WARNING", canvas.width / 2, 92);
+      ctx.font = "900 20px Arial";
+      ctx.fillStyle = "#fff0cf";
+      ctx.fillText(`BOSS WAVE INCOMING  •  ${seconds}`, canvas.width / 2, 138);
+      ctx.restore();
+    }
+
     function safelyDraw(layer, drawCall) {
       try {
         drawCall();
@@ -6610,6 +9306,7 @@
       for (const p of state.projectiles) safelyDraw("projectile", () => drawProjectile(p));
       for (const p of state.enemyProjectiles) safelyDraw("enemy projectile", () => drawEnemyProjectile(p));
       safelyDraw("effects", drawEffects);
+      safelyDraw("boss incoming", drawBossIncoming);
       safelyDraw("planning countdown", drawPlanningCountdown);
       safelyDraw("game over", drawGameOver);
     }
@@ -6619,7 +9316,7 @@
       const dt = Math.min(0.05, (ts - state.lastTs) / 1000 || 0);
       state.lastTs = ts;
       try {
-        update(dt * state.gameSpeed, dt);
+        if (!guideCenterOpen) update(dt * state.gameSpeed, dt);
         draw();
         document.getElementById("hpText").textContent = state.hp;
         document.getElementById("waveText").textContent = state.wave;
@@ -6642,6 +9339,37 @@
         ev.stopImmediatePropagation();
       }
     }, true);
+
+    let boardInfoPressTimer = null;
+    let boardInfoPressStart = null;
+    canvas.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" || tutorialState.active) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width * canvas.width;
+      const y = (event.clientY - rect.top) / rect.height * canvas.height;
+      const dragon = dragonAtPoint(x, y);
+      if (!dragon) return;
+      boardInfoPressStart = { x: event.clientX, y: event.clientY };
+      clearTimeout(boardInfoPressTimer);
+      boardInfoPressTimer = setTimeout(() => {
+        suppressTouchClickUntil = performance.now() + 650;
+        showStats(dragon, event.clientX, event.clientY);
+        boardInfoPressTimer = null;
+      }, 560);
+    });
+    canvas.addEventListener("pointermove", event => {
+      if (!boardInfoPressStart) return;
+      if (Math.hypot(event.clientX - boardInfoPressStart.x, event.clientY - boardInfoPressStart.y) > 8) {
+        clearTimeout(boardInfoPressTimer);
+        boardInfoPressTimer = null;
+        boardInfoPressStart = null;
+      }
+    });
+    ["pointerup", "pointercancel"].forEach(type => canvas.addEventListener(type, () => {
+      clearTimeout(boardInfoPressTimer);
+      boardInfoPressTimer = null;
+      boardInfoPressStart = null;
+    }));
 
     canvas.addEventListener("click", ev => {
       if (state.gameOver) return;
@@ -6838,8 +9566,14 @@
     screen.orientation?.addEventListener?.("change", () => requestAnimationFrame(fitCanvasToScreen));
     coarsePointer.addEventListener?.("change", () => renderUi());
 
-    rollShop(true);
-    renderUi();
+    if (bossPlaytestMode) {
+      document.getElementById("testBoss10Btn").addEventListener("click", () => startBossPlaytest(10));
+      document.getElementById("testBoss20Btn").addEventListener("click", () => startBossPlaytest(20));
+      startBossPlaytest(initialBossPlaytestWave);
+    } else {
+      rollShop(true);
+      renderUi();
+    }
     requestAnimationFrame(loop);
   </script>
 </body>
