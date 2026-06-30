@@ -5,12 +5,12 @@
 - Battlefield grid: **5 lanes x 9 columns**.
 - Dragons defend from left to right.
 - Monsters spawn from the right and move left.
-- A tower/objective sits on the far-left side.
-- The first playable column is reserved for the tower/breach zone and cannot hold dragons.
+- A Dragon Egg objective sits on the far-left side and uses `Resource Asset/Tower.png`.
+- The first playable column is reserved for the Dragon Egg/breach zone and cannot hold dragons.
 - Dragons can be placed into empty valid board cells up to the current Keeper board cap.
 - Each cell can contain only 1 dragon.
-- The tower has **10 HP**.
-- Every enemy that crosses the tower breach line walks into the tower objective, removes **1 HP**, then is removed.
+- The Dragon Egg has **10 HP**.
+- Every enemy that crosses the breach line walks into the Dragon Egg, removes **1 HP**, then is removed.
 - At 0 HP, the game immediately ends with **You Lost**.
 
 ## Match Flow
@@ -19,6 +19,7 @@
 - Wave 1 does not auto-count down. The player starts it manually after placing at least one dragon.
 - From wave 2 onward, the preparation phase has a **30-second planning timer**.
 - A 10-second center-screen warning appears near the end of planning time.
+- The Planning HUD uses 10 progress dots per wave set. Wave 1-10 fills the first set, wave 11 resets to dot 1 for the wave 11-20 set, and dot 10 is always red to mark a boss wave.
 - The player can press **Start Wave** to begin early.
 - Once a wave starts, it cannot be stopped.
 - When a wave ends:
@@ -32,7 +33,7 @@
 | Resource | Current Use |
 | --- | --- |
 | Gold | Buy dragons, reroll shop, buy XP. |
-| Tower HP | Player life, fixed at 10 segments. |
+| Dragon Egg HP | Player life, fixed at 10 segments. |
 | Bench Slots | 10 reserve slots for unplaced dragons. |
 | Keeper XP | Levels up Keeper and increases board cap/shop odds. |
 
@@ -76,8 +77,12 @@ Resource UI uses shared icons from `Resource Asset`:
 - Bench dragons show:
   - Dragon image.
   - Name label.
-  - Tier-colored border.
-  - Star icon.
+  - Element icons and names.
+  - Tier-colored border and background matching the shop.
+  - Large star icon at the upper-right.
+- Dragging a bench dragon only moves the dragon image with the pointer; its nameplate, elements, and star indicator remain visible in the slot.
+- An injured dragon heals to full after spending one completed wave on the bench.
+- During post-wave Planning, an injured-dragon reminder appears centered in the row between the Bench label and Shop button.
 - Board dragons show a tier-colored nameplate border for rarity readability.
 - Right-clicking a dragon shows its current stats and **Sell for** refund value with Gold icon.
 - Bench dragons can be dragged into **Sell Dragon** to sell.
@@ -149,9 +154,11 @@ XP rules:
 - If a player has 2 copies on bench and buys/drags the third, it merges automatically.
 - Merge is allowed even when the board is already at cap, because merging reduces or preserves total unit count.
 - Star visuals:
-  - 1-star: bronze star with number 1.
-  - 2-star: silver star with number 2.
-  - 3-star: gold star with number 3 and a glow around the dragon asset.
+  - 1-star: bronze star without a number.
+  - 2-star: silver star without a number.
+  - 3-star: gold star without a number.
+  - Board and bench use matching bordered star visuals.
+  - A 3-star dragon has a silhouette-following edge glow, not a circular aura.
 
 ## Stats
 
@@ -182,10 +189,10 @@ Attack Speed means time/frequency for the next attack, not projectile travel spe
 - Dragons prioritize the nearest valid monster in their lane.
 - Dragon projectiles disappear on hit.
 - Projectiles that travel off-screen disappear.
-- Monsters face left and move toward the tower.
+- Monsters face left and move toward the Dragon Egg.
 - Monsters can damage and kill dragons.
 - Dead dragons are removed from the board.
-- When a monster crosses the breach line, it walks into the tower objective and tower HP decreases by 1.
+- When a monster crosses the breach line, it walks into the Dragon Egg objective and Dragon Egg HP decreases by 1.
 - Game stops all actions on win or loss.
 - Boss waves occur on wave 10 and wave 20.
 - Bosses use one large shared body/hitbox, so dragons in all 5 lanes can target and damage them.
@@ -253,9 +260,10 @@ Projectile travel speed is intentionally different by element. Energy is the fas
 
 ## Required UI
 
-- Top bar: Wave, planning timer, Tower HP, Gold, Keeper Level/XP, Board Cap.
+- Top bar: Wave, 10-dot wave-set tracker, planning timer, Dragon Egg HP, Gold, Keeper Level/XP, and Dragon Limit.
+- Gold is displayed as `current Gold (+wave clear reward)`.
 - Left layout: active Trait panel and Drop Rate panel.
-- Board: 5 lanes x 9 columns, map background, tower on left, lane portals on normal spawns, and one large portal for boss spawns.
+- Board: 5 lanes x 9 columns, map background, Dragon Egg on the left, lane portals on normal spawns, and one large portal for boss spawns.
 - Bench: 10 visible slots.
 - Shop: 5 visible slots with tier colors, dragon image, elements, and Gold price.
 - Right/control layout: Reroll, Lock, Start Wave, Speed Up, Buy XP, Sell Dragon.

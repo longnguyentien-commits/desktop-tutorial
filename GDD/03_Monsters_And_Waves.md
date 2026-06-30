@@ -141,14 +141,14 @@ Current implementation:
 
 Wave clear also grants **+2 XP** and a free shop reroll if the shop is not locked.
 
-## Castle/Tower Damage
+## Dragon Egg Damage
 
-- Player starts with 10 Tower HP.
-- Every escaped enemy walks into the tower objective and removes 1 HP.
-- Enemies are removed after entering the tower.
-- Damage numbers appear near the tower.
-- Below 50% HP, smoke rises from the tower.
-- Below 20% HP, fire appears on the tower but is clipped to the asset area.
+- Player starts with 10 Dragon Egg HP.
+- Every escaped enemy walks into the Dragon Egg objective and removes 1 HP.
+- Enemies are removed after entering the Dragon Egg.
+- Damage numbers appear near the Dragon Egg.
+- Below 50% HP, smoke rises from the Dragon Egg.
+- Below 20% HP, fire appears on the Dragon Egg but is clipped to the asset area.
 - At 0 HP, the game stops and displays **You Lost**.
 
 ## Portal Behavior

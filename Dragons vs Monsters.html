@@ -528,12 +528,12 @@
     }
     .bench-slot.filled { cursor: grab; border-style: solid; border-width: 3px; background: #203026; }
     .bench-slot.filled { touch-action: none; }
-    .bench-slot.filled.tier-1 { border-color: #858b91; }
-    .bench-slot.filled.tier-2 { border-color: #4ec06a; }
-    .bench-slot.filled.tier-3 { border-color: #4aa3ff; }
-    .bench-slot.filled.tier-4 { border-color: #a46cff; }
-    .bench-slot.filled.tier-5 { border-color: #f3c94f; }
-    .bench-slot.dragging img {
+    .bench-slot.filled.tier-1 { border-color: #858b91; background: #252b2e; }
+    .bench-slot.filled.tier-2 { border-color: #4ec06a; background: #193323; }
+    .bench-slot.filled.tier-3 { border-color: #4aa3ff; background: #172d42; }
+    .bench-slot.filled.tier-4 { border-color: #a46cff; background: #302342; }
+    .bench-slot.filled.tier-5 { border-color: #f3c94f; background: #3e3518; }
+    .bench-slot.dragging > img {
       opacity: 0;
     }
     .bench-slot.drag-over { outline: 3px solid #f3c94f; }
@@ -598,30 +598,45 @@
     .rank-1 {
       width: 15px;
       height: 15px;
-      background: linear-gradient(135deg, #d7954a, #8d4f22);
+      background: #b57735;
       clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
-      filter: drop-shadow(0 1px 1px rgba(0,0,0,.7)) drop-shadow(0 0 4px rgba(181,119,53,.45));
+      filter:
+        drop-shadow(1px 0 0 #5f3517)
+        drop-shadow(-1px 0 0 #5f3517)
+        drop-shadow(0 1px 0 #5f3517)
+        drop-shadow(0 -1px 0 #5f3517)
+        drop-shadow(0 0 4px rgba(181,119,53,.55));
       color: #2b1608;
     }
-    .rank-1::after { content: "1"; }
+    .rank-1::after { content: ""; }
     .rank-2 {
       width: 15px;
       height: 15px;
-      background: linear-gradient(135deg, #f5f7ff, #9aa7bb);
+      background: #dfe7f5;
       clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
-      filter: drop-shadow(0 0 6px rgba(220,230,255,.7));
+      filter:
+        drop-shadow(1px 0 0 #8290a6)
+        drop-shadow(-1px 0 0 #8290a6)
+        drop-shadow(0 1px 0 #8290a6)
+        drop-shadow(0 -1px 0 #8290a6)
+        drop-shadow(0 0 6px rgba(220,230,255,.8));
       color: #26313f;
     }
-    .rank-2::after { content: "2"; }
+    .rank-2::after { content: ""; }
     .rank-3 {
       width: 15px;
       height: 15px;
       background: #ffe65a;
       clip-path: polygon(50% 0%, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
-      filter: drop-shadow(0 0 6px #fff1a8) drop-shadow(0 0 10px #ffd33f);
+      filter:
+        drop-shadow(1px 0 0 #fff6b8)
+        drop-shadow(-1px 0 0 #fff6b8)
+        drop-shadow(0 1px 0 #fff6b8)
+        drop-shadow(0 -1px 0 #fff6b8)
+        drop-shadow(0 0 7px #ffd33f);
       color: #5a4200;
     }
-    .rank-3::after { content: "3"; }
+    .rank-3::after { content: ""; }
     .sell-zone {
       min-height: 68px;
       margin-top: 0;
@@ -1043,7 +1058,9 @@
       font-size: 15px;
       white-space: nowrap;
     }
-    .hp-pill, .gold-pill { flex: 0 1 118px; }
+    .hp-pill { flex: 0 0 150px; }
+    .gold-pill { flex: 0 1 118px; }
+    .hp-pill #hpText { flex: 0 0 auto; margin-left: auto; }
     .keeper-pill { flex: 0 1 150px; }
     .stage-hud {
       position: relative;
@@ -1096,8 +1113,9 @@
       box-shadow: inset 0 0 0 4px #493b1c, 0 0 9px rgba(243, 201, 79, .42);
     }
     .wave-preview-dot.special {
-      border-color: #ad7fdf;
-      background: #7444a2;
+      border-color: #ff8a78;
+      background: #b92f2f;
+      box-shadow: inset 0 0 0 3px #4b1111, 0 0 10px rgba(255, 70, 58, .72);
     }
     .stage-meta {
       grid-column: 2 / 4;
@@ -1544,13 +1562,14 @@
         right: 0;
         bottom: 0;
         min-height: 29px;
-        padding: 7px 42px 5px 7px;
+        padding: 7px 42px 5px;
         overflow: hidden;
         background: #101613;
         color: #fff4c7;
         font-family: Georgia, serif;
         font-size: 12px;
         line-height: 17px;
+        text-align: center;
         white-space: nowrap;
         text-overflow: ellipsis;
       }
@@ -2049,9 +2068,9 @@
       overflow: visible;
       color: #e9fff7 !important;
       font-family: Arial, Helvetica, sans-serif;
-      font-size: 9px !important;
+      font-size: 11px !important;
       font-weight: 900;
-      line-height: 10px;
+      line-height: 12px;
       letter-spacing: 0;
       text-align: left;
       text-shadow: 0 1px 2px #000;
@@ -2263,9 +2282,10 @@
       }
       .battle-stage {
         grid-template-columns:
-          clamp(230px, 18vw, 280px)
-          minmax(0, 1fr)
-          clamp(125px, 11.5vw, 145px);
+          minmax(230px, 1.35fr)
+          minmax(0, auto)
+          minmax(125px, .75fr);
+        column-gap: 0;
         min-height: 0;
         height: calc(100% - 120px);
         overflow: hidden;
@@ -2383,32 +2403,95 @@
       .shop-drawer .shop-title { margin-bottom: 5px; font-size: 15px; line-height: 18px; letter-spacing: .08em; }
       .shop-drawer .log { display: none; }
       .bottom-tray .bench { grid-area: auto; width: 100%; height: 66px; padding: 0; }
-      .bottom-tray .bench-heal-hint { top: -39px; }
+      .tray-bar { position: relative; }
+      .tray-bar .bench-heal-hint {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 28;
+        display: none;
+        width: min(560px, 52vw);
+        min-height: 26px;
+        margin: 0;
+        padding: 4px 10px;
+        border-color: rgba(142, 228, 131, .82);
+        background: rgba(30, 91, 43, .94);
+        color: #e7ffe3;
+        font-size: 14px;
+        line-height: 17px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.45), 0 0 12px rgba(89, 196, 102, .18);
+        transform: translate(-50%, -50%);
+      }
+      .tray-bar .bench-heal-hint.visible {
+        display: block;
+        transform: translate(-50%, -50%);
+      }
 
       body {
         -webkit-font-smoothing: antialiased;
         text-rendering: geometricPrecision;
       }
-      .prototype-topbar .pill span, .stage-heading { font-size: 11px; }
+      .hud-resources {
+        grid-template-columns: 170px minmax(145px, 1fr);
+        width: min(100%, 335px);
+      }
+      .hp-pill #hpText {
+        min-width: 22px;
+        margin-left: 0;
+        overflow: visible;
+        text-overflow: clip;
+      }
+      .gold-pill {
+        gap: 5px;
+        padding-right: 8px;
+        padding-left: 8px;
+      }
+      .gold-pill #goldText {
+        flex: 0 0 auto;
+        min-width: 64px;
+        overflow: visible;
+        font-size: 14px;
+        text-overflow: clip;
+      }
+      .prototype-topbar .pill span { font-size: 11px; }
+      .stage-heading { font-size: 13px; }
+      .wave-preview {
+        gap: 5px;
+        min-width: 265px;
+      }
+      .wave-preview-dot {
+        width: 22px;
+        height: 22px;
+        box-shadow: inset 0 0 0 3px #0c130f;
+      }
       .prototype-topbar .pill strong { font-size: 16px; }
-      .stage-meta { font-size: 12px; }
+      .stage-meta {
+        gap: 9px;
+        font-size: 14px;
+        font-weight: 800;
+      }
       .battle-stage .left-panel > h2,
       .battle-stage .control-panel > h2 { font-size: 18px; line-height: 21px; }
-      .battle-stage .trait { font-size: 15px; }
+      .battle-stage .trait { font-size: 16px; }
       .battle-stage .trait img { width: 30px; height: 30px; }
       .battle-stage .trait b,
-      .battle-stage .trait span { font-size: 13px; }
-      .battle-stage .trait-stack { min-width: 21px; font-size: 11px !important; }
+      .battle-stage .trait span { font-size: 15px; }
+      .battle-stage .trait-stack {
+        min-width: 27px;
+        padding: 3px 5px;
+        font-size: 14px !important;
+        line-height: 16px;
+      }
       .battle-stage .drop-rate-panel h2 { font-size: 16px; letter-spacing: .05em; }
       .battle-stage .drop-rate-table {
         gap: 2px;
-        font-size: 12px;
+        font-size: 14px;
         font-weight: 700;
         line-height: 1.2;
         text-rendering: geometricPrecision;
       }
       .battle-stage .drop-rate-row {
-        min-height: 22px;
+        min-height: 24px;
         padding: 2px 1px;
         border-bottom-color: rgba(255,255,255,.11);
       }
@@ -2419,8 +2502,21 @@
       }
       .battle-stage .drop-rate-row.header .gold-cost img { width: 18px; height: 18px; flex-basis: 18px; }
       .side-actions button, .sell-zone { font-size: 13px; }
-      .bench-name { height: 17px; min-height: 17px; font-size: 11px; line-height: 16px; }
-      .card-title { font-size: 13px; line-height: 17px; }
+      .bench-name {
+        position: relative;
+        z-index: 7;
+        height: 17px;
+        min-height: 17px;
+        font-size: 12px;
+        line-height: 16px;
+      }
+      .card-title {
+        padding-right: 42px;
+        padding-left: 42px;
+        font-size: 14px;
+        line-height: 17px;
+        text-align: center;
+      }
       .cost { font-size: 12px; }
       .card .elements {
         position: absolute;
@@ -2444,7 +2540,7 @@
         height: 24px;
         padding-top: 1px;
         padding-bottom: 1px;
-        font-size: 11px;
+        font-size: 12px;
         line-height: 18px;
       }
       .card .elements-count-3 .element-dot {
@@ -2462,7 +2558,7 @@
         border: 1px solid rgba(255,255,255,.18);
         border-radius: 14px;
         background: rgba(5, 10, 8, .82);
-        font-size: 12px;
+        font-size: 13px;
         line-height: 21px;
         text-shadow: 0 1px 2px #000;
       }
@@ -2471,22 +2567,79 @@
       .bench-elements {
         position: absolute;
         top: 3px;
-        right: 3px;
+        left: 3px;
         z-index: 5;
         display: flex;
         flex-direction: column;
-        gap: 1px;
-        padding: 2px;
-        border-radius: 8px;
-        background: rgba(5, 10, 8, .72);
+        align-items: flex-start;
+        gap: 2px;
+        max-width: calc(100% - 32px);
         pointer-events: none;
       }
-      .bench-elements img {
-        width: 19px !important;
-        height: 19px !important;
+      .bench-element-tag {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        max-width: 100%;
+        height: 18px;
+        padding: 1px 5px 1px 2px;
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 10px;
+        background: rgba(5, 10, 8, .82);
+        font-size: 10px;
+        font-weight: 900;
+        line-height: 14px;
+        text-shadow: 0 1px 2px #000;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .bench-elements .bench-element-tag img {
+        width: 15px !important;
+        height: 15px !important;
+        flex: 0 0 15px;
         object-fit: contain;
         image-rendering: auto !important;
         transform: none !important;
+      }
+      .bench-elements-count-3 {
+        top: 2px;
+        gap: 1px;
+      }
+      .bench-elements-count-3 .bench-element-tag {
+        height: 14px;
+        padding-top: 0;
+        padding-bottom: 0;
+        font-size: 9px;
+        line-height: 12px;
+      }
+      .bench-elements-count-3 .bench-element-tag img {
+        width: 12px !important;
+        height: 12px !important;
+        flex-basis: 12px;
+      }
+      .bench-rank {
+        position: absolute;
+        top: 4px;
+        right: 5px;
+        z-index: 6;
+        display: grid;
+        place-items: center;
+        width: 24px;
+        height: 24px;
+        pointer-events: none;
+      }
+      .bench-rank .rank-icon,
+      .bench-rank .rank-1,
+      .bench-rank .rank-2,
+      .bench-rank .rank-3 {
+        width: 21px;
+        height: 21px;
+        font-size: 0;
+        line-height: 21px;
+      }
+      .card .dragon-img {
+        top: 3px;
       }
       #lockShopBtn, #spawnBtn, #speedBtn, #rerollBtn {
         font-size: 15px;
@@ -2512,7 +2665,7 @@
 
     @media (min-width: 801px) and (max-width: 1080px) and (pointer: fine) {
       .battle-stage {
-        grid-template-columns: clamp(205px, 21vw, 230px) minmax(0, 1fr) clamp(118px, 12vw, 132px);
+        grid-template-columns: minmax(205px, 1.3fr) minmax(0, auto) minmax(118px, .75fr);
       }
       .card { height: 118px; min-height: 118px; }
       .dragon-img, .card .dragon-img { width: 90px; height: 90px; }
@@ -3737,7 +3890,7 @@
   <div class="app">
     <div class="topbar prototype-topbar">
       <div class="hud-cluster hud-resources">
-        <div class="pill hp-pill"><img class="icon" src="Resource Asset/Health_Icon.png" alt="" /><span>Castle</span><strong id="hpText">10</strong></div>
+        <div class="pill hp-pill"><img class="icon" src="Resource Asset/Health_Icon.png" alt="" /><span>Dragon Egg</span><strong id="hpText">10</strong></div>
         <div class="pill gold-pill"><img class="icon" src="Resource Asset/Gold_Icon.png" alt="" /><span>Gold</span><strong id="goldText">10</strong></div>
       </div>
 
@@ -3747,7 +3900,7 @@
         <div class="stage-meta">
           <span id="phaseText" class="phase-text">Planning</span>
           <strong id="waveTimerText" class="wave-timer"></strong>
-          <span>Board</span><strong id="capText">0 / 3</strong>
+          <span>Dragon Limit</span><strong id="capText">0 / 3</strong>
         </div>
       </div>
 
@@ -3792,7 +3945,7 @@
               <h2>Controls</h2>
               <div class="side-actions">
                 <div class="sell-zone" id="sellZone">
-                  <img src="Resource Asset/Gold_Icon.png" alt="" /> Sell Dragon
+                  Sell Dragon
                 </div>
                 <button id="buyXpBtn" class="xp-button">Buy XP</button>
                 <button id="rerollBtn">Reroll</button>
@@ -3819,11 +3972,11 @@
             </div>
             <div class="tray-bar">
               <div class="bench-title">Bench</div>
+              <div class="bench-heal-hint" id="benchHealHint">Put your injured dragon on the bench to heal</div>
               <button class="shop-drawer-toggle" id="shopDrawerToggle" type="button" aria-expanded="false" aria-controls="shopDrawer">
                 <span>Shop</span><strong>Open</strong>
               </button>
             </div>
-            <div class="bench-heal-hint" id="benchHealHint">Put your injured dragon on the bench to heal</div>
             <div class="bench" id="bench"></div>
           </div>
         </div>
@@ -4208,7 +4361,7 @@
       lock: "Resource Asset/Lock_Icon.png",
       unlock: "Resource Asset/Unlock_Icon.png",
       battleMap: "Resource Asset/Map đấu.png",
-      tower: "Resource Asset/Tower-cutout.png",
+      tower: "Resource Asset/Tower.png",
     };
 
     const elements = {
@@ -6095,7 +6248,7 @@
         if (!unit.maxHp || !unit.hp) continue;
         syncDragonHp(unit, true);
         if (unit.hp >= unit.maxHp) continue;
-        unit.hp = Math.min(unit.maxHp, Math.ceil(unit.hp + unit.maxHp * 0.5));
+        unit.hp = unit.maxHp;
         healed += 1;
       }
       return healed;
@@ -6399,6 +6552,12 @@
       document.getElementById("waveTimerText").textContent = waveTimerText();
       document.getElementById("hpText").textContent = state.hp;
       document.getElementById("goldText").textContent = UNLIMITED_GOLD ? "∞" : state.gold;
+      const projectedGoldReward = state.gameOver
+        ? 0
+        : state.waveRunning ? state.waveReward : waveClearReward();
+      document.getElementById("goldText").textContent = UNLIMITED_GOLD
+        ? "Unlimited"
+        : `${state.gold}${projectedGoldReward > 0 ? ` (+${projectedGoldReward})` : ""}`;
       const xpNeed = xpNeededForCurrentLevel();
       const keeperMaxed = state.keeperLevel >= MAX_KEEPER_LEVEL;
       document.getElementById("levelText").textContent = `Level ${state.keeperLevel}`;
@@ -6407,16 +6566,16 @@
         : `Next Level ${state.keeperXp} / ${xpNeed} XP`;
       document.getElementById("keeperXpFill").style.width = `${keeperMaxed ? 100 : Math.min(100, state.keeperXp / xpNeed * 100)}%`;
       document.getElementById("capText").textContent = `${state.dragons.length} / ${boardCapForLevel()}`;
-      const previewStrength = Math.min(5, Math.max(1, Math.ceil(state.wave / 3)));
-      document.getElementById("wavePreview").innerHTML = Array.from({ length: 5 }, (_, index) =>
-        `<span class="wave-preview-dot ${index < previewStrength ? "active" : ""} ${giantBossTypes[state.wave] && index === 4 ? "special" : ""}"></span>`
+      const waveInSet = ((Math.max(1, state.wave) - 1) % 10) + 1;
+      document.getElementById("wavePreview").innerHTML = Array.from({ length: 10 }, (_, index) =>
+        `<span class="wave-preview-dot ${index < waveInSet ? "active" : ""} ${index === 9 ? "special" : ""}" title="Wave ${Math.floor((Math.max(1, state.wave) - 1) / 10) * 10 + index + 1}"></span>`
       ).join("");
       const activeSelection = selectedDrag();
       const selectedUnit = state.dragging?.unit || activeSelection?.unit;
       document.getElementById("selectedText").textContent = state.pendingMerge
         ? "Choose merge"
         : selectedUnit ? displayDragonName(selectedUnit) : (isTouchUi() ? "Tap a dragon" : "Shop to board");
-      document.getElementById("benchHealHint").classList.toggle("visible", !state.waveRunning && !state.gameOver && hasInjuredBoardDragon());
+      document.getElementById("benchHealHint").classList.toggle("visible", planningTimerActive() && hasInjuredBoardDragon());
 
       const stacks = traitStacks();
       const activeTraits = Object.entries(elements)
@@ -6618,7 +6777,7 @@
       bench.innerHTML = state.bench.map((d, i) => {
         const selected = state.selected?.source === "bench" && state.selected.index === i;
         return `<div class="bench-slot ${d ? `filled ${tierClass(d.cost)} ${isOwnedMergeReadyBlink(d) ? "merge-ready" : ""}` : ""} ${selected ? "selected" : ""}" data-bench="${i}" ${d ? `data-dragon-key="${encodeURIComponent(d.name)}" draggable="false"` : ""}>
-          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${displayDragonName(d)}" /><div class="bench-elements">${d.elements.map(name => `<img src="${elements[name].icon}" alt="${name}" title="${name}" />`).join("")}</div><div class="bench-name" title="${displayDragonName(d)}">${rankIconHtml(d.star)}<span>${displayDragonName(d)}</span></div>` : ""}
+          ${d ? `<img src="${assetForUnit(d)}" alt="" title="${displayDragonName(d)}" /><div class="bench-elements bench-elements-count-${d.elements.length}">${d.elements.map(name => `<span class="bench-element-tag" style="color:${elements[name].color}"><img src="${elements[name].icon}" alt="" />${name}</span>`).join("")}</div><div class="bench-rank" title="${d.star}-star">${rankIconHtml(d.star)}</div><div class="bench-name" title="${displayDragonName(d)}"><span>${displayDragonName(d)}</span></div>` : ""}
         </div>`;
       }).join("");
 
@@ -8103,15 +8262,6 @@
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = star === 1 ? "#2b1608" : star === 2 ? "#26313f" : "#5a4200";
-      ctx.strokeStyle = "rgba(255,255,255,.45)";
-      ctx.lineWidth = 2;
-      ctx.font = "900 13px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.strokeText(String(Math.min(3, Math.max(1, star))), 0, 1);
-      ctx.fillText(String(Math.min(3, Math.max(1, star))), 0, 1);
       ctx.restore();
     }
 
@@ -8369,16 +8519,14 @@
       ctx.translate(d.x, visualY);
       ctx.scale(-1, 1);
       if (d.star === 3) {
-        const glow = ctx.createRadialGradient(0, 0, size * 0.12, 0, 0, size * 0.64);
-        glow.addColorStop(0, "rgba(255, 246, 138, .48)");
-        glow.addColorStop(.52, "rgba(255, 216, 64, .2)");
-        glow.addColorStop(1, "rgba(255, 216, 64, 0)");
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(0, 0, size * 0.64, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.shadowColor = "rgba(255, 220, 72, .95)";
+        ctx.shadowBlur = 14;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
       }
       drawn = drawDragonImage(d, size);
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
       if (d.damageFlash > 0) {
         const flashAlpha = Math.min(.78, d.damageFlash / .28);
         ctx.globalCompositeOperation = "source-atop";
@@ -9257,7 +9405,6 @@
       const boss = state.enemies.find(enemy => enemy.boss && !enemy.bossActive);
       if (!boss || boss.bossPhase !== "warning") return;
       const duration = Math.max(.01, boss.bossWarningDuration || 5);
-      const remaining = Math.max(0, boss.bossWarningTimer / duration);
       const elapsed = duration - boss.bossWarningTimer;
       const flash = .5 + .5 * Math.sin(elapsed * Math.PI * 4);
       const pulse = .55 + flash * .4;
