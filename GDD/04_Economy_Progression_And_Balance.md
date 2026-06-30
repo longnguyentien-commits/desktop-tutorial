@@ -17,7 +17,7 @@ Gold must use `Resource Asset/Gold_Icon.png` in UI.
 | Starting Gold | 10 |
 | Starting Keeper Level | 1 |
 | Starting Board Cap | 3 |
-| Tower HP | 10 |
+| Dragon Egg HP | 10 |
 | Bench Slots | 10 |
 | Shop Slots | 5 |
 | Max Keeper Level | 8 |
@@ -58,6 +58,8 @@ Every completed wave also grants:
 
 - +2 Keeper XP.
 - Free shop reroll unless locked.
+
+There is currently no banked-Gold interest system. The Gold HUD displays `current Gold (+wave clear reward)` so the player can see the exact payout for completing the current wave.
 
 ## Keeper Level And XP
 
@@ -109,10 +111,16 @@ Current design target:
 | Unit State | Refund Rule |
 | --- | --- |
 | 1-star | 100% of unit cost |
-| 2-star | Refund based on merged value, reduced from full combined cost |
-| 3-star | Refund based on merged value, reduced from full combined cost |
+| 2-star | `floor(cost x 3 x 0.8)` Gold |
+| 3-star | `floor(cost x 9 x 0.7)` Gold |
 
-Prototype should keep selling readable first. Exact refund tuning can be adjusted after economy testing.
+Right-clicking a dragon displays its exact current sell value.
+
+## Bench Recovery
+
+- Injured dragons recover to full HP after spending one completed wave on the bench.
+- The post-wave Planning row displays `Put your injured dragon on the bench to heal` when an injured board dragon exists.
+- The reminder is hidden during combat, before wave 1, and when no board dragon is injured.
 
 ## Dragon Base Stats
 

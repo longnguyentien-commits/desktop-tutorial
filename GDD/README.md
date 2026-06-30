@@ -16,15 +16,15 @@ The current build uses a 5-lane battlefield, a TFT-style shop, a 10-slot bench, 
 
 **Dragon vs Monsters: Hatchery Defense**
 
-Tagline: **Buy dragons, merge stars, and protect the tower.**
+Tagline: **Buy dragons, merge stars, and protect the Dragon Egg.**
 
 ## Current Prototype Scope
 
-- HTML5 canvas prototype in `prototype.html`.
+- HTML5 canvas prototype in `Dragons vs Monsters.html`.
 - 5 lanes x 9 battlefield columns.
-- Left side has a tower objective and a 10-segment HP bar.
-- Column 1 is reserved for the tower/breach zone; dragons are placed from column 2 onward.
-- Monsters spawn from the right, move left, and damage the tower if they pass the defense line.
+- Left side has a Dragon Egg objective and a 10-segment HP bar.
+- Column 1 is reserved for the Dragon Egg/breach zone; dragons are placed from column 2 onward.
+- Monsters spawn from the right, move left, and damage the Dragon Egg if they pass the defense line.
 - Player starts with 10 HP and loses immediately at 0 HP.
 - 8 dragon elements: Fire, Water, Ice, Wind, Plant, Earth, Energy, Metal.
 - 40 dragons total: 8 elements x 5 costs.
@@ -40,11 +40,11 @@ Tagline: **Buy dragons, merge stars, and protect the tower.**
 
 - The game no longer uses the `Enemy Portal.mp4` asset. Portal visuals are generated in canvas; normal monsters use lane portals and boss spawns use one large portal.
 - `Resource Asset/Map đấu.png` is the current battlefield background.
-- `Resource Asset/Tower.webp` is the current tower/objective asset.
+- `Resource Asset/Tower.png` is the current Dragon Egg/objective asset.
 - `Resource Asset/Boss 1.png` and `Resource Asset/Boss 2.png` are used by the Big Bad Boss encounters on waves 10 and 20.
 - `Asset DML Attack Spritesheets/` contains generated attack animations for the dragon roster.
-- Tower damage feedback:
-  - Below 50% HP: smoke rises from the tower/egg.
-  - Below 20% HP: fire appears on the tower/egg, clipped so it stays on the asset.
+- Dragon Egg damage feedback:
+  - Below 50% HP: smoke rises from the Dragon Egg.
+  - Below 20% HP: fire appears on the Dragon Egg, clipped so it stays on the asset.
 - GitHub Pages target URL format:
   - `https://longnguyentien-commits.github.io/desktop-tutorial/`

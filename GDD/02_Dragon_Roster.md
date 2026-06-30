@@ -16,7 +16,7 @@ The current prototype uses only the **Asset DML** dragon roster. Basic Dragon, S
   - 5 Gold: 3 elements.
 - Shop-bought dragons use Baby assets at 1-star.
 - 2-star dragons use Adult assets.
-- 3-star dragons use Adult assets with a glow.
+- 3-star dragons use Adult assets with a silhouette-following edge glow.
 - In combat, dragons use generated attack spritesheets from `Asset DML Attack Spritesheets/` when available. The static Asset DML image remains the fallback.
 
 ## Element Effects
@@ -61,9 +61,9 @@ Trait stacks count unique dragon names currently on the board. Duplicate copies 
 
 | Star Level | Visual | Stat Scaling |
 | ---: | --- | --- |
-| 1 | Baby asset, bronze star icon with number 1 | 100% HP, 100% Damage |
-| 2 | Adult asset, silver star icon with number 2 | 180% HP, 170% Damage |
-| 3 | Adult asset with glow, gold star icon with number 3 | 320% HP, 300% Damage |
+| 1 | Baby asset, bordered bronze star icon without a number | 100% HP, 100% Damage |
+| 2 | Adult asset, bordered silver star icon without a number | 180% HP, 170% Damage |
+| 3 | Adult asset with edge glow, bordered gold star icon without a number | 320% HP, 300% Damage |
 
 ## Fire Primary Dragons
 
