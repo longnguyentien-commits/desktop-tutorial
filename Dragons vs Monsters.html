@@ -3314,22 +3314,38 @@
       10: {
         name: "Big Bad Boss",
         img: "Resource Asset/Boss 1.png",
-        hp: 20800,
-        speed: 7.5,
+        hp: 24000,
+        speed: 5.2,
         boss: true,
         wideBoss: true,
         faceLeft: true,
         size: 820,
+        rangedInterval: 4.5,
+        skillCycle: ["fire", "stun"],
+        fireDamageRatio: 0.10,
+        fireBurnRatio: 0.015,
+        stunDamageRatio: 0.08,
+        summonThresholds: [0.50],
+        summonCount: 3,
       },
       20: {
         name: "Big Bad Boss",
         img: "Resource Asset/Boss 2.png",
-        hp: 41600,
-        speed: 6.5,
+        hp: 46000,
+        speed: 4.5,
         boss: true,
         wideBoss: true,
         faceLeft: true,
         size: 900,
+        rangedInterval: 3.6,
+        skillCycle: ["fire", "stun", "blast"],
+        fireDamageRatio: 0.13,
+        fireBurnRatio: 0.02,
+        stunDamageRatio: 0.10,
+        blastDamageRatio: 0.14,
+        blastRadiusCells: 2,
+        summonThresholds: [0.70, 0.35],
+        summonCount: 3,
       },
     };
     const miniEnemyType = {
@@ -3912,8 +3928,7 @@
     }
 
     function bossPrepEnemyCount(wave = state.wave) {
-      if (wave === 10) return 14;
-      if (wave === 20) return 22;
+      if (wave === 10 || wave === 20) return 0;
       return 0;
     }
 
@@ -3997,7 +4012,7 @@
       state.waveReward = waveClearReward();
       playSfx("wave");
       log(giantBossTypes[state.wave]
-        ? `${auto ? "Planning time ended. " : ""}Boss wave ${state.wave} started: clear ${bossPrepEnemyCount()} monsters before the boss appears.`
+        ? `${auto ? "Planning time ended. " : ""}BOSS INCOMING — prepare for Wave ${state.wave}.`
         : `${auto ? "Planning time ended. " : ""}Wave ${state.wave} started: ${state.enemiesToSpawn} monsters incoming.`);
       renderUi();
     }
@@ -4037,6 +4052,16 @@
       clearDragGhost();
       rollShop(true);
       renderUi();
+    }
+
+    function completeBossEncounter(boss) {
+      state.enemies = [];
+      state.projectiles = [];
+      state.enemyProjectiles = [];
+      state.effects.push({ type: "bossDefeat", x: boss.x - 80, y: boss.y, life: 1, maxLife: 1 });
+      playSfx("merge");
+      log(`Boss Wave ${state.wave} defeated!`);
+      finishWave();
     }
 
     function removeMaxedDragonsFromShop() {
@@ -5107,11 +5132,14 @@
       const hpScale = type.boss ? 1 : 1 + state.wave * 0.16;
       const maxHp = Math.round(type.hp * hpScale);
       const isWideBoss = !!type.wideBoss;
+      const bossSize = type.size || 820;
+      const bossAnchorX = canvas.width;
+      const bossStartX = canvas.width + bossSize * 0.58;
       state.enemies.push({
         id: state.nextId++,
         ...type,
         row: isWideBoss ? Math.floor(ROWS / 2) : row,
-        x: isWideBoss ? FIELD_RIGHT + 260 : FIELD_RIGHT + 50,
+        x: isWideBoss ? bossStartX : FIELD_RIGHT + 50,
         y: isWideBoss ? canvas.height * 0.49 : row * CELL_H + CELL_H * 0.6,
         maxHp,
         hp: maxHp,
@@ -5119,10 +5147,31 @@
         burrowCooldown: type.ability === "burrow" ? 0.35 + Math.random() * 0.75 : 0,
         burrowUsed: false,
         burrowed: 0,
+        bossRangedCooldown: type.boss ? 2.2 : 0,
+        bossCastTimer: 0,
+        bossCastTargetId: null,
+        bossCastSkill: null,
+        bossSkillIndex: 0,
+        bossLastTargetId: null,
+        bossPhase: isWideBoss ? "warning" : "active",
+        bossWarningTimer: isWideBoss ? 5 : 0,
+        bossWarningDuration: isWideBoss ? 5 : 0,
+        bossPortalTimer: isWideBoss ? 1 : 0,
+        bossPortalDuration: isWideBoss ? 1 : 0,
+        bossIntroTimer: isWideBoss ? 3 : 0,
+        bossIntroDuration: isWideBoss ? 3 : 0,
+        bossIntroStartX: isWideBoss ? bossStartX : 0,
+        bossAnchorX: isWideBoss ? bossAnchorX : 0,
+        bossActive: !isWideBoss,
+        bossSummonAnim: 0,
+        bossRecoil: 0,
+        bossRecoilDuration: .32,
+        bossCastDuration: 0,
+        bossLastCastSkill: null,
+        summonsTriggered: [],
       });
       if (isWideBoss) {
-        state.bossPortalPulse = Math.max(state.bossPortalPulse || 0, 1.32);
-        state.effects.push({ type: "spawn", x: FIELD_RIGHT + 32, y: canvas.height * 0.5, life: .55 });
+        state.bossPortalPulse = 0;
       } else {
         state.portalLanePulses[row] = Math.max(state.portalLanePulses[row] || 0, 1.08);
         state.effects.push({ type: "spawn", x: FIELD_RIGHT + 32, y: row * CELL_H + CELL_H * 0.55, life: .45 });
@@ -5133,7 +5182,7 @@
       const rangeLimit = dragon.rangeDebuff > 0 ? CELL_W * 3.1 : Infinity;
       return state.enemies
         .filter(e => {
-          if (e.enteringTower || e.burrowed || (!e.wideBoss && e.row !== dragon.row)) return false;
+          if (e.enteringTower || e.burrowed || (e.boss && !e.bossActive) || (!e.wideBoss && e.row !== dragon.row)) return false;
           const dx = e.x - dragon.x;
           const inFrontOrTouching = dx >= -CELL_W * 0.5;
           return inFrontOrTouching && dx <= rangeLimit;
@@ -5147,7 +5196,10 @@
         .sort((a, b) => b.x - a.x)[0] || null;
     }
 
-    function enemyAttackDamage(enemy) {
+    function enemyAttackDamage(enemy, targetDragon = null) {
+      if (enemy.boss && targetDragon?.maxHp && enemy.meleeDamageRatio) {
+        return Math.max(1, Math.round(targetDragon.maxHp * enemy.meleeDamageRatio));
+      }
       return Math.max(8, Math.round(enemy.maxHp * 0.045 + state.wave * 2));
     }
 
@@ -5199,6 +5251,152 @@
         life: 1.6,
       });
       state.effects.push({ type: "enemyCast", x: enemy.x - 18, y: enemy.y - 46, life: .25 });
+    }
+
+    function bossSummonPool() {
+      const pool = availableEnemyTypes().filter(type => !type.special && !type.boss && type.hp <= 260);
+      return pool.length ? pool : enemyTypes.slice(0, 4);
+    }
+
+    function summonBossMinions(boss, phaseIndex) {
+      const pool = bossSummonPool();
+      const firstRows = [0, 2, 4];
+      const secondRows = [1, 3, 2];
+      const rows = phaseIndex % 2 ? secondRows : firstRows;
+      for (let i = 0; i < (boss.summonCount || 3); i++) {
+        const row = rows[i % rows.length];
+        const type = pool[(phaseIndex * 3 + i) % pool.length];
+        spawnEnemy(row, type);
+        const minion = state.enemies[state.enemies.length - 1];
+        minion.x = Math.max(FIELD_X + CELL_W * 2.2, boss.x - CELL_W * (0.72 + (i % 2) * 0.16));
+        minion.y = cellCenterY(row);
+      }
+      state.bossPortalPulse = Math.max(state.bossPortalPulse, 1.15);
+      state.effects.push({ type: "bossSummon", x: boss.x - 40, y: boss.y, life: .75, maxLife: .75 });
+      boss.bossSummonAnim = .75;
+      playSfx("wave");
+      log(`${boss.name} summoned ${boss.summonCount || 3} reinforcements!`);
+    }
+
+    function activateBoss(boss) {
+      boss.x = boss.bossAnchorX;
+      boss.bossIntroTimer = 0;
+      boss.bossPhase = "active";
+      boss.bossActive = true;
+      boss.bossRangedCooldown = 1.8;
+      summonBossMinions(boss, 0);
+      state.effects.push({ type: "bossArrival", x: boss.x - 80, y: boss.y, life: .8, maxLife: .8 });
+      log(`Boss Wave ${state.wave} has begun — defeat the boss to win!`);
+    }
+
+    function bossGridDistance(a, b) {
+      const rowDistance = Math.abs((a.row ?? 0) - (b.row ?? 0));
+      const colDistance = Math.abs((a.col ?? 0) - (b.col ?? 0));
+      return Math.hypot(rowDistance, colDistance);
+    }
+
+    function densestDragonTarget() {
+      return state.dragons
+        .map(dragon => ({
+          dragon,
+          nearby: state.dragons.filter(other => bossGridDistance(dragon, other) <= 2).length,
+        }))
+        .sort((a, b) => b.nearby - a.nearby)[0]?.dragon || null;
+    }
+
+    function beginBossRangedCast(boss) {
+      if (!state.dragons.length) return;
+      const cycle = boss.skillCycle?.length ? boss.skillCycle : ["fire", "stun"];
+      const skill = cycle[boss.bossSkillIndex % cycle.length];
+      boss.bossSkillIndex += 1;
+      const candidates = state.dragons.filter(dragon => dragon.id !== boss.bossLastTargetId);
+      const target = skill === "blast" ? densestDragonTarget() : rand(candidates.length ? candidates : state.dragons);
+      if (!target) return;
+      boss.bossCastTargetId = target.id;
+      boss.bossLastTargetId = target.id;
+      boss.bossCastSkill = skill;
+      boss.bossCastTimer = skill === "blast" ? 1 : 0.8;
+      boss.bossCastDuration = boss.bossCastTimer;
+      state.effects.push({
+        type: skill === "blast" ? "bossAreaWarning" : "bossWarning",
+        skill,
+        targetId: target.id,
+        x: target.x,
+        y: target.y,
+        radiusCells: skill === "blast" ? (boss.blastRadiusCells || 2) : 0,
+        life: skill === "blast" ? 1.02 : 0.82,
+        maxLife: skill === "blast" ? 1.02 : 0.82,
+      });
+    }
+
+    function shootBossProjectile(boss, targetDragon) {
+      if (!targetDragon) return;
+      const skill = boss.bossCastSkill || "fire";
+      const type = skill === "stun" ? "bossWhiteOrb" : skill === "blast" ? "bossBlastOrb" : "bossFireOrb";
+      const damageRatio = skill === "stun"
+        ? (boss.stunDamageRatio || .08)
+        : skill === "blast"
+          ? (boss.blastDamageRatio || .14)
+          : (boss.fireDamageRatio || .10);
+      state.enemyProjectiles.push({
+        id: state.nextId++,
+        type,
+        skill,
+        x: boss.x - Math.min(180, (boss.size || 820) * 0.22),
+        y: boss.y - 72,
+        targetId: targetDragon.id,
+        targetX: targetDragon.x,
+        targetY: targetDragon.y - 34,
+        speed: 270,
+        damageRatio,
+        damage: Math.max(1, Math.round(targetDragon.maxHp * damageRatio)),
+        burnRatio: skill === "fire" ? (boss.fireBurnRatio || .015) : 0,
+        burnDuration: skill === "fire" ? 3 : 0,
+        stunDuration: skill === "stun" ? 1 : 0,
+        splashRadiusCells: skill === "blast" ? (boss.blastRadiusCells || 2) : 0,
+        rangeDebuff: 0,
+        trail: [],
+        life: 3.2,
+      });
+      state.effects.push({ type: "bossCast", skill, x: boss.x - 80, y: boss.y - 72, life: .42 });
+      boss.bossLastCastSkill = skill;
+      boss.bossRecoil = boss.bossRecoilDuration || .32;
+      boss.bossCastSkill = null;
+      playSfx("wave");
+    }
+
+    function applyBossProjectileHit(projectile, primaryTarget) {
+      const impactRow = primaryTarget?.row ?? Math.max(0, Math.min(ROWS - 1, Math.round(projectile.targetY / CELL_H)));
+      const impactCol = primaryTarget?.col ?? Math.max(0, Math.min(COLS - 1, Math.round((projectile.targetX - FIELD_X) / CELL_W)));
+      const targets = projectile.type === "bossBlastOrb"
+        ? state.dragons.filter(dragon => Math.hypot(dragon.row - impactRow, dragon.col - impactCol) <= (projectile.splashRadiusCells || 2))
+        : primaryTarget ? [primaryTarget] : [];
+
+      for (const dragon of targets) {
+        dragon.hp -= Math.max(1, Math.round(dragon.maxHp * (projectile.damageRatio || 0)));
+        dragon.damageFlash = .32;
+        if (projectile.burnDuration) {
+          dragon.burnDuration = Math.max(dragon.burnDuration || 0, projectile.burnDuration);
+          dragon.burnRatio = Math.max(dragon.burnRatio || 0, projectile.burnRatio || .015);
+        }
+        if (projectile.stunDuration) {
+          dragon.stunDuration = Math.max(dragon.stunDuration || 0, projectile.stunDuration);
+        }
+      }
+
+      const effectType = projectile.type === "bossWhiteOrb"
+        ? "bossStunImpact"
+        : projectile.type === "bossBlastOrb"
+          ? "bossBlastImpact"
+          : "bossFireImpact";
+      state.effects.push({
+        type: effectType,
+        x: primaryTarget?.x ?? projectile.targetX,
+        y: (primaryTarget?.y ?? projectile.targetY) - 24,
+        life: projectile.type === "bossBlastOrb" ? .7 : .55,
+        maxLife: projectile.type === "bossBlastOrb" ? .7 : .55,
+        radiusCells: projectile.splashRadiusCells || 0,
+      });
     }
 
     function shoot(dragon, target) {
@@ -5262,7 +5460,6 @@
     }
 
     function applyTrait(projectile, enemy) {
-      if (enemy.boss) return;
       const bonuses = traitBonuses();
       const tier = bonuses.tier[projectile.type] || 0;
       const roll = Math.random();
@@ -5274,7 +5471,7 @@
       }
       if (projectile.type === "Earth" && roll < ({2:.12,4:.24,6:.38,8:.55}[tier] || 0)) {
         const push = ({2:32,4:48,6:64,8:80}[tier] || 0);
-        enemy.x = Math.min(canvas.width + 110, enemy.x + push);
+        if (!enemy.boss) enemy.x = Math.min(canvas.width + 110, enemy.x + push);
         state.effects.push({ type: "Earth", x: enemy.x, y: enemy.y, life: .24, knockback: true });
       }
       if (projectile.type === "Energy" && roll < ({2:.15,4:.30,6:.50,8:.70}[tier] || 0)) {
@@ -5325,6 +5522,16 @@
         if (d.rangeDebuff) d.rangeDebuff = Math.max(0, d.rangeDebuff - dt);
         if (d.damageFlash) d.damageFlash = Math.max(0, d.damageFlash - dt);
         if (d.attackAnim) d.attackAnim = Math.max(0, d.attackAnim - dt);
+        if (d.burnDuration > 0) {
+          d.hp -= d.maxHp * (d.burnRatio || .015) * dt;
+          d.burnDuration = Math.max(0, d.burnDuration - dt);
+          d.damageFlash = Math.max(d.damageFlash || 0, .08);
+        }
+        if (d.stunDuration > 0) {
+          d.stunDuration = Math.max(0, d.stunDuration - dt);
+          continue;
+        }
+        if (d.hp <= 0) continue;
         const s = statsFor(d);
         const target = laneTarget(d);
         if (!target) {
@@ -5339,11 +5546,72 @@
       }
 
       for (const e of state.enemies) {
-        if (e.burn) { e.hp -= e.maxHp * 0.015 * dt; e.burn -= dt; }
+        if (e.burn) {
+          e.hp -= e.maxHp * (e.boss ? 0.0045 : 0.015) * dt;
+          e.burn -= dt;
+        }
         if (e.slow) e.slow -= dt;
         if (e.stun) e.stun -= dt;
         if (e.damageFlash) e.damageFlash = Math.max(0, e.damageFlash - dt);
         e.attackCooldown = Math.max(0, (e.attackCooldown || 0) - dt);
+        if (e.bossSummonAnim > 0) e.bossSummonAnim = Math.max(0, e.bossSummonAnim - dt);
+        if (e.bossRecoil > 0) e.bossRecoil = Math.max(0, e.bossRecoil - dt);
+        if (e.boss && !e.enteringTower) {
+          if (!e.bossActive) {
+            if (e.bossPhase === "warning") {
+              e.bossWarningTimer = Math.max(0, e.bossWarningTimer - realDt);
+              state.bossPortalPulse = 0;
+              if (e.bossWarningTimer <= 0) {
+                e.bossPhase = "portal";
+                state.bossPortalPulse = 1.32;
+                state.effects.push({ type: "bossArrival", x: FIELD_RIGHT + 30, y: canvas.height * .5, life: .8, maxLife: .8 });
+                playSfx("wave");
+              }
+              continue;
+            }
+            if (e.bossPhase === "portal") {
+              e.bossPortalTimer = Math.max(0, e.bossPortalTimer - realDt);
+              state.bossPortalPulse = Math.max(state.bossPortalPulse, 1.22);
+              if (e.bossPortalTimer <= 0) e.bossPhase = "entering";
+              continue;
+            }
+            e.bossIntroTimer = Math.max(0, e.bossIntroTimer - realDt);
+            const duration = Math.max(.01, e.bossIntroDuration || 3);
+            const progress = 1 - e.bossIntroTimer / duration;
+            const clamped = Math.max(0, Math.min(1, progress));
+            const eased = clamped * clamped * (3 - 2 * clamped);
+            e.x = e.bossIntroStartX + (e.bossAnchorX - e.bossIntroStartX) * eased;
+            state.bossPortalPulse = Math.max(state.bossPortalPulse, 1.12);
+            if (e.bossIntroTimer <= 0) activateBoss(e);
+            continue;
+          }
+
+          const hpRatio = Math.max(0, e.hp / e.maxHp);
+          (e.summonThresholds || []).forEach((threshold, index) => {
+            if (hpRatio <= threshold && !e.summonsTriggered.includes(index)) {
+              e.summonsTriggered.push(index);
+              summonBossMinions(e, index + 1);
+            }
+          });
+
+          if (e.bossCastTimer > 0) {
+            e.bossCastTimer -= dt;
+            if (e.bossCastTimer <= 0) {
+              const target = state.dragons.find(dragon => dragon.id === e.bossCastTargetId) || rand(state.dragons);
+              shootBossProjectile(e, target);
+              e.bossCastTargetId = null;
+              e.bossRangedCooldown = e.rangedInterval || 4.5;
+            }
+            continue;
+          }
+
+          e.bossRangedCooldown = Math.max(0, (e.bossRangedCooldown || 0) - dt);
+          if (e.bossRangedCooldown <= 0 && state.dragons.length) {
+            beginBossRangedCast(e);
+            continue;
+          }
+          continue;
+        }
         if (e.enteringTower) {
           const target = e.towerTarget || currentTowerEntryPoint();
           e.towerTarget = target;
@@ -5398,9 +5666,9 @@
         const blocker = dragonBlockingEnemy(e);
         if (blocker && !(e.stun > 0)) {
           if (e.attackCooldown <= 0) {
-            blocker.hp -= enemyAttackDamage(e);
+            blocker.hp -= enemyAttackDamage(e, blocker);
             blocker.damageFlash = 0.28;
-            e.attackCooldown = 0.85;
+            e.attackCooldown = e.boss ? (e.meleeInterval || 1.2) : 0.85;
             state.effects.push({ type: "hitDragon", x: blocker.x, y: blocker.y - 34, life: .22 });
           }
           continue;
@@ -5453,21 +5721,15 @@
         if (enemy) {
           enemy.hp -= p.damage;
           if (enemy.wideBoss) {
-            const size = enemy.size || 860;
-            const profileColor = projectileProfile(p.type).color;
-            for (let i = 0; i < 12; i++) {
-              state.effects.push({
-                type: "bossImpact",
-                elementType: p.type,
-                color: profileColor,
-                x: enemy.x + (Math.random() * 2 - 1) * size * 0.28,
-                y: enemy.y + (Math.random() * 2 - 1) * size * 0.38,
-                life: 0.28 + Math.random() * 0.14,
-                delay: Math.random() * 0.1,
-                size: 4 + Math.random() * 5,
-                crit: p.crit,
-              });
-            }
+            enemy.damageFlash = .1;
+            state.effects.push({
+              type: p.hitEffect || p.type,
+              elementType: p.type,
+              x: p.x,
+              y: p.y,
+              life: .34,
+              crit: p.crit,
+            });
           } else {
             enemy.damageFlash = 0.16;
             state.effects.push({ type: p.hitEffect || p.type, elementType: p.type, x: enemy.x, y: enemy.y, life: .38, crit: p.crit });
@@ -5492,7 +5754,9 @@
         const step = p.speed * dt;
         if (dist <= step + 12) {
           const hitDragon = target || state.dragons.find(d => d.row === Math.max(0, Math.min(ROWS - 1, Math.floor(p.y / CELL_H))) && Math.hypot(d.x - p.targetX, d.y - p.targetY) < 76);
-          if (hitDragon) {
+          if (p.type === "bossFireOrb" || p.type === "bossWhiteOrb" || p.type === "bossBlastOrb") {
+            applyBossProjectileHit(p, hitDragon);
+          } else if (hitDragon) {
             hitDragon.hp -= p.damage;
             hitDragon.damageFlash = 0.28;
             if (p.rangeDebuff) hitDragon.rangeDebuff = p.rangeDebuff;
@@ -5505,6 +5769,12 @@
         }
       }
       state.enemyProjectiles = state.enemyProjectiles.filter(p => !p.hit && p.life > 0);
+
+      const defeatedBoss = state.enemies.find(enemy => enemy.boss && enemy.hp <= 0);
+      if (defeatedBoss) {
+        completeBossEncounter(defeatedBoss);
+        return;
+      }
 
       const towerBreachX = cellLeft(1);
       const towerTarget = currentTowerEntryPoint();
@@ -5602,15 +5872,43 @@
       const t = performance.now() / 1000;
       const bossPulse = state.bossPortalPulse || 0;
       if (bossPulse > 0) {
-        const alpha = Math.min(1, bossPulse);
+        const boss = state.enemies.find(enemy => enemy.boss && !enemy.bossActive);
+        const isOpening = boss?.bossPhase === "portal";
+        const openingDuration = Math.max(.01, boss?.bossPortalDuration || 1);
+        const openingProgress = isOpening
+          ? Math.max(0, Math.min(1, 1 - boss.bossPortalTimer / openingDuration))
+          : 1;
+        const backC1 = 1.70158;
+        const backC3 = backC1 + 1;
+        const shifted = openingProgress - 1;
+        const popEase = isOpening
+          ? 1 + backC3 * shifted * shifted * shifted + backC1 * shifted * shifted
+          : 1;
+        const alpha = isOpening
+          ? Math.max(0, Math.min(1, openingProgress * 2.6))
+          : Math.min(1, bossPulse);
         const x = FIELD_RIGHT + PORTAL_W * 0.5;
         const y = canvas.height * 0.5;
-        const scale = 0.95 + alpha * 0.18 + Math.sin(t * 4) * 0.018;
+        const scale = isOpening
+          ? Math.max(.04, .06 + popEase * 1.1)
+          : 0.95 + alpha * 0.18 + Math.sin(t * 4) * 0.018;
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.translate(x, y);
         ctx.scale(scale, scale);
         ctx.globalCompositeOperation = "lighter";
+
+        if (isOpening) {
+          const ringAlpha = Math.sin(openingProgress * Math.PI);
+          ctx.strokeStyle = `rgba(225, 252, 255, ${ringAlpha * .9})`;
+          ctx.lineWidth = 12 - openingProgress * 5;
+          ctx.shadowColor = "#9eefff";
+          ctx.shadowBlur = 34;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 76 + openingProgress * 26, CELL_H * (1.9 + openingProgress * .48), 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
 
         const glow = ctx.createRadialGradient(0, 0, 12, 0, 0, CELL_H * 2.55);
         glow.addColorStop(0, "rgba(220, 248, 255, .95)");
@@ -6045,6 +6343,44 @@
       const clusterX = d.x - (rankWidth + gap + hpWidth) / 2;
       drawRankIcon(clusterX + rankWidth / 2, topIconY, d.star || 1);
       drawDragonHealthBar(d, clusterX + rankWidth + gap, topIconY - 4);
+      if (d.burnDuration > 0) {
+        const t = performance.now() / 1000;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (let i = 0; i < 5; i++) {
+          const x = d.x + Math.sin(t * 6 + i * 1.7) * (18 + i * 3);
+          const y = visualY + 30 - ((t * 42 + i * 19) % 48);
+          const radius = 5 + (i % 2) * 3;
+          const flame = ctx.createRadialGradient(x, y, 1, x, y, radius * 2.4);
+          flame.addColorStop(0, "#fff3a0");
+          flame.addColorStop(.35, "#ff8a2a");
+          flame.addColorStop(1, "rgba(255,45,10,0)");
+          ctx.fillStyle = flame;
+          ctx.beginPath();
+          ctx.arc(x, y, radius * 2.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      if (d.stunDuration > 0) {
+        const t = performance.now() / 180;
+        ctx.save();
+        ctx.strokeStyle = "rgba(245, 250, 255, .95)";
+        ctx.fillStyle = "#ffffff";
+        ctx.shadowColor = "#d9f2ff";
+        ctx.shadowBlur = 14;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.ellipse(d.x, visualY - size * .45, 34, 11, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        for (let i = 0; i < 3; i++) {
+          const angle = t + i * Math.PI * 2 / 3;
+          ctx.beginPath();
+          ctx.arc(d.x + Math.cos(angle) * 30, visualY - size * .45 + Math.sin(angle) * 9, 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
       const dragonCellLeft = cellLeft(d.col);
       const labelPad = 7;
       const labelW = CELL_W - 8;
@@ -6099,9 +6435,28 @@
     function drawEnemy(e) {
       const image = img(e.img);
       const size = Math.round(e.size || (e.boss ? 138 : e.maxHp > 700 ? 110 : e.maxHp > 300 ? 96 : 82));
-      ctx.imageSmoothingEnabled = false;
+      ctx.imageSmoothingEnabled = !!e.boss;
+      if (e.boss) ctx.imageSmoothingQuality = "high";
       ctx.save();
-      ctx.translate(Math.round(e.x), Math.round(e.y));
+      ctx.translate(e.boss ? e.x : Math.round(e.x), e.boss ? e.y : Math.round(e.y));
+      if (e.boss) {
+        const idleScale = 1 + Math.sin(performance.now() / 240) * .012;
+        const castDuration = Math.max(.01, e.bossCastDuration || .8);
+        const castProgress = 1 - Math.max(0, e.bossCastTimer) / castDuration;
+        const castCurve = e.bossCastTimer > 0 ? Math.sin(Math.max(0, Math.min(1, castProgress)) * Math.PI) : 0;
+        const summonPulse = e.bossSummonAnim > 0 ? Math.sin((1 - e.bossSummonAnim / .75) * Math.PI) : 0;
+        const recoilDuration = Math.max(.01, e.bossRecoilDuration || .32);
+        const recoilProgress = 1 - Math.max(0, e.bossRecoil) / recoilDuration;
+        const recoilCurve = e.bossRecoil > 0 ? Math.sin(Math.max(0, Math.min(1, recoilProgress)) * Math.PI) : 0;
+        ctx.translate(-18 * castCurve + 15 * recoilCurve, -summonPulse * 16);
+        ctx.scale(idleScale + castCurve * .028 + summonPulse * .045, idleScale - castCurve * .012 + summonPulse * .025);
+        const visualSkill = e.bossCastSkill || e.bossLastCastSkill;
+        const skillColor = visualSkill === "stun" ? "#eaf8ff" : visualSkill === "blast" ? "#ff4b5f" : "#ff7b32";
+        if (castCurve > 0 || recoilCurve > 0 || e.bossSummonAnim > 0) {
+          ctx.shadowColor = e.bossSummonAnim > 0 ? "#b875ff" : skillColor;
+          ctx.shadowBlur = e.bossSummonAnim > 0 ? 42 : 12 + Math.max(castCurve, recoilCurve) * 22;
+        }
+      }
       if (e.flying || e.ability === "flying") {
         ctx.translate(0, Math.sin(performance.now() / 130 + e.id) * 5 - 8);
       }
@@ -6175,6 +6530,7 @@
         ctx.arc(e.x + size * .22, e.y - size * .32, 6 + Math.sin(performance.now() / 90) * 2, 0, Math.PI * 2);
         ctx.fill();
       }
+      if (e.boss && !e.bossActive) return;
       ctx.fillStyle = "#260c0c";
       const barW = e.wideBoss ? 520 : e.boss ? 96 : 72;
       const barH = e.wideBoss ? 14 : 8;
@@ -6393,6 +6749,8 @@
 
     function drawEnemyProjectile(p) {
       ctx.save();
+      const isBossProjectile = p.type === "bossFireOrb" || p.type === "bossWhiteOrb" || p.type === "bossBlastOrb";
+      const bossColor = p.type === "bossWhiteOrb" ? "rgba(225, 248, 255, .82)" : p.type === "bossBlastOrb" ? "rgba(255, 45, 78, .78)" : "rgba(255, 91, 45, .72)";
       if (p.trail?.length) {
         ctx.lineCap = "round";
         for (let i = 1; i < p.trail.length; i++) {
@@ -6400,8 +6758,8 @@
           const b = p.trail[i];
           const ratio = i / p.trail.length;
           ctx.globalAlpha = ratio * .46;
-          ctx.strokeStyle = p.type === "hexBolt" ? "rgba(167, 139, 250, .72)" : "rgba(255, 92, 92, .6)";
-          ctx.lineWidth = 12 * ratio;
+          ctx.strokeStyle = isBossProjectile ? bossColor : p.type === "hexBolt" ? "rgba(167, 139, 250, .72)" : "rgba(255, 92, 92, .6)";
+          ctx.lineWidth = (isBossProjectile ? p.type === "bossBlastOrb" ? 26 : 20 : 12) * ratio;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -6410,9 +6768,57 @@
         ctx.globalAlpha = 1;
       }
       ctx.translate(p.x, p.y);
-      ctx.shadowColor = p.type === "hexBolt" ? "#a78bfa" : "#ff6b6b";
-      ctx.shadowBlur = 18;
-      if (p.type === "hexBolt") {
+      ctx.shadowColor = p.type === "bossWhiteOrb" ? "#e7f8ff" : p.type === "bossBlastOrb" ? "#ff2d55" : p.type === "bossFireOrb" ? "#ff9b42" : p.type === "hexBolt" ? "#a78bfa" : "#ff6b6b";
+      ctx.shadowBlur = isBossProjectile ? 28 : 18;
+      if (p.type === "bossFireOrb") {
+        const pulse = 1 + Math.sin(performance.now() / 85) * .08;
+        const g = ctx.createRadialGradient(-6, -7, 2, 0, 0, 30 * pulse);
+        g.addColorStop(0, "#fff7c2");
+        g.addColorStop(.28, "#ffbf4a");
+        g.addColorStop(.64, "#ef4a2f");
+        g.addColorStop(1, "rgba(105, 10, 20, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 30 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 239, 158, .9)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 18 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === "bossWhiteOrb") {
+        const pulse = 1 + Math.sin(performance.now() / 70) * .1;
+        const g = ctx.createRadialGradient(-5, -6, 1, 0, 0, 28 * pulse);
+        g.addColorStop(0, "#ffffff");
+        g.addColorStop(.38, "#e9fbff");
+        g.addColorStop(.7, "rgba(151, 220, 255, .72)");
+        g.addColorStop(1, "rgba(190, 235, 255, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 28 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,.95)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 18 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === "bossBlastOrb") {
+        const pulse = 1 + Math.sin(performance.now() / 75) * .09;
+        const g = ctx.createRadialGradient(-7, -8, 2, 0, 0, 36 * pulse);
+        g.addColorStop(0, "#fff0c2");
+        g.addColorStop(.25, "#ff6a4a");
+        g.addColorStop(.62, "#dc1849");
+        g.addColorStop(1, "rgba(75, 0, 32, 0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(0, 0, 36 * pulse, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 220, 170, .9)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(0, 0, 23 * pulse, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === "hexBolt") {
         const g = ctx.createRadialGradient(0, 0, 2, 0, 0, 18);
         g.addColorStop(0, "#f5efff");
         g.addColorStop(.4, "#a78bfa");
@@ -6473,6 +6879,62 @@
           ctx.restore();
           continue;
         }
+        if (fx.type === "bossWarning" || fx.type === "bossAreaWarning") {
+          const target = state.dragons.find(dragon => dragon.id === fx.targetId);
+          const x = target?.x ?? fx.x;
+          const y = target?.y ?? fx.y;
+          const maxLife = fx.maxLife || .82;
+          const remaining = Math.max(0, fx.life / maxLife);
+          const pulse = 1 + Math.sin(performance.now() / 70) * .12;
+          const isArea = fx.type === "bossAreaWarning";
+          const warningColor = fx.skill === "stun" ? "#e8f8ff" : isArea ? "#ff294d" : "#ff6b32";
+          ctx.save();
+          ctx.globalAlpha = .4 + remaining * .6;
+          ctx.strokeStyle = warningColor;
+          ctx.fillStyle = isArea ? "rgba(255, 25, 65, .16)" : fx.skill === "stun" ? "rgba(220, 247, 255, .16)" : "rgba(255, 85, 35, .14)";
+          ctx.shadowColor = warningColor;
+          ctx.shadowBlur = 18;
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          if (isArea) {
+            const radius = fx.radiusCells || 2;
+            ctx.ellipse(x, y, CELL_W * radius * pulse, CELL_H * radius * pulse, 0, 0, Math.PI * 2);
+          } else {
+            ctx.arc(x, y, (38 + 18 * (1 - remaining)) * pulse, 0, Math.PI * 2);
+          }
+          ctx.fill();
+          ctx.stroke();
+          ctx.font = "900 28px Arial";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#fff2c4";
+          ctx.fillText("!", x, y - 55);
+          ctx.restore();
+          continue;
+        }
+        if (fx.type === "bossFireImpact" || fx.type === "bossStunImpact" || fx.type === "bossBlastImpact") {
+          const maxLife = fx.maxLife || .55;
+          const alpha = Math.max(0, Math.min(1, fx.life / maxLife));
+          const progress = 1 - alpha;
+          const isStun = fx.type === "bossStunImpact";
+          const isBlast = fx.type === "bossBlastImpact";
+          const color = isStun ? "#eafaff" : isBlast ? "#ff294d" : "#ff7435";
+          const radiusX = isBlast ? CELL_W * (fx.radiusCells || 2) * progress : 35 + 48 * progress;
+          const radiusY = isBlast ? CELL_H * (fx.radiusCells || 2) * progress : radiusX;
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = color;
+          ctx.fillStyle = isStun ? "rgba(225,248,255,.18)" : isBlast ? "rgba(255,25,65,.17)" : "rgba(255,105,35,.2)";
+          ctx.shadowColor = color;
+          ctx.shadowBlur = 24;
+          ctx.lineWidth = isBlast ? 7 : 5;
+          ctx.beginPath();
+          ctx.ellipse(fx.x, fx.y, Math.max(8, radiusX), Math.max(8, radiusY), 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+          continue;
+        }
         if (fx.type === "bossImpact") {
           const maxLife = fx.maxLife || 0.42;
           const alpha = Math.max(0, Math.min(1, fx.life / maxLife));
@@ -6512,6 +6974,10 @@
           enemyCast: "#a78bfa",
           hexImpact: "#a78bfa",
           enemyImpact: "#ff6b6b",
+          bossCast: "#ffb347",
+          bossSummon: "#d58aff",
+          bossArrival: "#ffcf67",
+          bossDefeat: "#fff08a",
           splitter: "#74ff8d",
           fireBurst: "#ff6a2a",
           iceFreeze: "#8ce7ff",
@@ -6736,6 +7202,36 @@
       ctx.restore();
     }
 
+    function drawBossIncoming() {
+      const boss = state.enemies.find(enemy => enemy.boss && !enemy.bossActive);
+      if (!boss || boss.bossPhase !== "warning") return;
+      const duration = Math.max(.01, boss.bossWarningDuration || 5);
+      const elapsed = duration - boss.bossWarningTimer;
+      const flash = .5 + .5 * Math.sin(elapsed * Math.PI * 4);
+      const pulse = .55 + flash * .4;
+      const seconds = Math.max(1, Math.ceil(boss.bossWarningTimer));
+      ctx.save();
+      ctx.fillStyle = `rgba(110, 0, 12, ${.10 + flash * .26})`;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = `rgba(255, 52, 52, ${pulse})`;
+      ctx.lineWidth = 12;
+      ctx.shadowColor = "#ff2020";
+      ctx.shadowBlur = 28;
+      ctx.strokeRect(8, 8, canvas.width - 16, canvas.height - 16);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "900 62px Arial";
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = "rgba(65, 0, 0, .9)";
+      ctx.fillStyle = "#ff5b4f";
+      ctx.strokeText("WARNING", canvas.width / 2, 92);
+      ctx.fillText("WARNING", canvas.width / 2, 92);
+      ctx.font = "900 20px Arial";
+      ctx.fillStyle = "#fff0cf";
+      ctx.fillText(`BOSS WAVE INCOMING  •  ${seconds}`, canvas.width / 2, 138);
+      ctx.restore();
+    }
+
     function safelyDraw(layer, drawCall) {
       try {
         drawCall();
@@ -6758,6 +7254,7 @@
       for (const p of state.projectiles) safelyDraw("projectile", () => drawProjectile(p));
       for (const p of state.enemyProjectiles) safelyDraw("enemy projectile", () => drawEnemyProjectile(p));
       safelyDraw("effects", drawEffects);
+      safelyDraw("boss incoming", drawBossIncoming);
       safelyDraw("planning countdown", drawPlanningCountdown);
       safelyDraw("game over", drawGameOver);
     }
