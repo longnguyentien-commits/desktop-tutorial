@@ -1,9 +1,10 @@
-const CACHE_NAME = 'dvm-mobile-demo-v2';
+const CACHE_NAME = 'dvm-mobile-demo-v7';
 const SHELL_FILES = [
   './',
   './Mobile%20Demo.html',
   './Dragons%20vs%20Monsters.html',
   './mobile-demo.webmanifest',
+  './mobile-game-patch.js',
   './Resource%20Asset/Health_Icon.png',
   './Resource%20Asset/Unlock_Icon.png'
 ];

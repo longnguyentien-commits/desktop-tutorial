@@ -165,6 +165,21 @@ try {
   } | Out-Null
   Start-Sleep -Milliseconds 400
 
+  $edgeToEdge = Invoke-JavaScript @'
+(() => {
+  const rect = document.getElementById('game').getBoundingClientRect();
+  return {
+    left: rect.left,
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom,
+    viewportWidth: innerWidth,
+    viewportHeight: innerHeight
+  };
+})()
+'@
+  Add-Result 'iOS-style edge-to-edge viewport' ([math]::Abs($edgeToEdge.left) -le 1 -and [math]::Abs($edgeToEdge.top) -le 1 -and [math]::Abs($edgeToEdge.right - $edgeToEdge.viewportWidth) -le 1 -and [math]::Abs($edgeToEdge.bottom - $edgeToEdge.viewportHeight) -le 1) "frame=$($edgeToEdge.left),$($edgeToEdge.top)-$($edgeToEdge.right),$($edgeToEdge.bottom); viewport=$($edgeToEdge.viewportWidth)x$($edgeToEdge.viewportHeight)"
+
   $button = Invoke-JavaScript @'
 (() => {
   const rect = document.getElementById('startButton').getBoundingClientRect();
@@ -239,6 +254,56 @@ try {
   Add-Result 'Battle transition function' ($battle.pregameHidden -and $battle.canvasVisible -and $battle.tutorialPresent) "pregameHidden=$($battle.pregameHidden), canvasVisible=$($battle.canvasVisible)"
   Add-Result 'Mobile battle media layout' ([bool]$battle.mobileLayout) "mobileLayout=$($battle.mobileLayout)"
   Add-Result 'Battle board centered and usable' ($battle.canvasCentered -and $battle.canvasCoverage -ge 0.7 -and $battle.leftPanelCompact -and $battle.controlsInside) "centered=$($battle.canvasCentered), coverage=$([math]::Round($battle.canvasCoverage, 2)), leftCompact=$($battle.leftPanelCompact), controlsInside=$($battle.controlsInside)"
+
+  Invoke-JavaScript @'
+(() => {
+  const doc = document.getElementById('game').contentDocument;
+  doc.getElementById('tutorialNextBtn').click();
+  doc.getElementById('tutorialNextBtn').click();
+  doc.querySelector('[data-shop="0"]').click();
+  return true;
+})()
+'@ | Out-Null
+  Start-Sleep -Milliseconds 500
+  $tutorialStep4 = Invoke-JavaScript @'
+(() => {
+  const doc = document.getElementById('game').contentDocument;
+  return {
+    progress: doc.getElementById('tutorialProgress').textContent,
+    benchReady: Boolean(doc.querySelector('.bench-slot.filled')),
+    patchLoaded: Boolean(doc.getElementById('dvmMobileGamePatch')),
+    fallbackState: {
+      hidden: doc.getElementById('tutorialNextBtn').hidden,
+      label: doc.getElementById('tutorialNextBtn').textContent,
+      marker: doc.getElementById('tutorialNextBtn').dataset.mobileBenchFallback || ''
+    }
+  };
+})()
+'@
+  Add-Result 'Tutorial reaches step 4' ($tutorialStep4.progress -match 'Tutorial 4 /' -and $tutorialStep4.benchReady -and $tutorialStep4.patchLoaded) "progress=$($tutorialStep4.progress), bench=$($tutorialStep4.benchReady), patch=$($tutorialStep4.patchLoaded), fallback=$($tutorialStep4.fallbackState | ConvertTo-Json -Compress)"
+
+  $benchFallback = Invoke-JavaScript @'
+(() => {
+  const frame = document.getElementById('game');
+  const doc = frame.contentDocument;
+  const button = doc.getElementById('tutorialNextBtn');
+  const ready = !button.hidden && button.dataset.mobileBenchFallback === 'true' && button.textContent === 'Select Dragon';
+  if (ready) button.click();
+  return ready;
+})()
+'@
+  Add-Result 'Tutorial 4 iOS fallback visible' ([bool]$benchFallback) "visible=$benchFallback"
+  Start-Sleep -Milliseconds 500
+  $tutorialStep5 = Invoke-JavaScript @'
+(() => {
+  const doc = document.getElementById('game').contentDocument;
+  return {
+    progress: doc.getElementById('tutorialProgress').textContent,
+    sourceHighlighted: !doc.getElementById('tutorialSecondarySpotlight').hidden
+  };
+})()
+'@
+  Add-Result 'iOS fallback advances Tutorial 4' ($tutorialStep5.progress -match 'Tutorial 5 /' -and $tutorialStep5.sourceHighlighted) "progress=$($tutorialStep5.progress), sourceHighlighted=$($tutorialStep5.sourceHighlighted)"
 
   $capture = Invoke-Cdp 'Page.captureScreenshot' @{ format = 'png'; fromSurface = $true; captureBeyondViewport = $false }
   $screenshotPath = Join-Path $env:TEMP ('dvm-mobile-smoke-' + [guid]::NewGuid().ToString('N') + '.png')

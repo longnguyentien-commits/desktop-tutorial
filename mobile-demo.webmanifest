@@ -3,7 +3,7 @@
   "short_name": "DVM Demo",
   "description": "Landscape mobile demo for Dragons vs Monsters.",
   "id": "./",
-  "start_url": "./",
+  "start_url": "./Mobile%20Demo.html",
   "scope": "./",
   "display": "fullscreen",
   "display_override": ["fullscreen", "standalone", "minimal-ui"],
