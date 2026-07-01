@@ -5244,6 +5244,22 @@
       updateTrackedDragonDom();
     }
 
+    function clearTrackedDragon() {
+      clearTimeout(trackedDragonTimer);
+      trackedDragonTimer = null;
+      trackedDragonName = "";
+      pinnedTrackedDragonName = "";
+      updateTrackedDragonDom();
+    }
+
+    function hideStatPopover() {
+      const popover = document.getElementById("statPopover");
+      popover.style.display = "none";
+      popover.classList.remove("dragon-detail-popover");
+      clearTimeout(showStats.hideTimer);
+      clearTrackedDragon();
+    }
+
     function dragonGuideTemplates() {
       return [...new Map(dragonPool.map(unit => [unit.name, unit])).values()]
         .sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name));
@@ -5342,7 +5358,7 @@
     function openGuideCenter(tab = "tutorial") {
       const guide = document.getElementById("guideCenter");
       hideTutorialReplayNotice();
-      document.getElementById("statPopover").style.display = "none";
+      hideStatPopover();
       guideCenterOpen = true;
       guide.hidden = false;
       guide.setAttribute("aria-hidden", "false");
@@ -7503,7 +7519,7 @@
       popover.style.left = `${left}px`;
       popover.style.top = `${top}px`;
       clearTimeout(showStats.hideTimer);
-      showStats.hideTimer = setTimeout(() => popover.style.display = "none", 6500);
+      showStats.hideTimer = setTimeout(hideStatPopover, 6500);
     }
 
     function speedButtonLabel() {
@@ -7562,6 +7578,7 @@
 
     function showTraitNote(name, x = null, y = null) {
       const popover = document.getElementById("statPopover");
+      clearTrackedDragon();
       popover.classList.remove("dragon-detail-popover");
       const note = traitNotes[name];
       const stacks = traitStacks()[name] || 0;
@@ -7583,7 +7600,7 @@
       }
       popover.style.display = "block";
       clearTimeout(showStats.hideTimer);
-      showStats.hideTimer = setTimeout(() => popover.style.display = "none", 6000);
+      showStats.hideTimer = setTimeout(hideStatPopover, 6000);
     }
 
     function dragonAtPoint(x, y) {
@@ -10237,8 +10254,10 @@
       }
     });
 
-    document.addEventListener("click", () => {
-      document.getElementById("statPopover").style.display = "none";
+    document.addEventListener("pointerdown", ev => {
+      const popover = document.getElementById("statPopover");
+      if (popover.style.display === "none" || popover.contains(ev.target)) return;
+      hideStatPopover();
     });
     document.getElementById("statPopover").addEventListener("click", ev => ev.stopPropagation());
     document.getElementById("statPopover").addEventListener("wheel", ev => ev.stopPropagation(), { passive: true });

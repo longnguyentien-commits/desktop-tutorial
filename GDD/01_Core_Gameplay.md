@@ -86,6 +86,7 @@ Resource UI uses shared icons from `Resource Asset`:
 - During post-wave Planning, an injured-dragon reminder appears centered in the row between the Bench label and Shop button.
 - Board dragons show a tier-colored nameplate border for rarity readability.
 - Right-clicking a dragon shows its current stats and **Sell for** refund value with Gold icon.
+- A right-clicked dragon is highlighted while its stat popup is open. Closing the popup, letting it time out, opening Guide Center, or starting any dragon drag immediately clears that highlight.
 - Bench dragons can be dragged into **Sell Dragon** to sell.
 
 ## Sell Dragon
