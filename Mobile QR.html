@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dragons vs Monsters - Mobile Demo QR</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      color: #edf4ff;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(62, 116, 207, 0.28), transparent 34%),
+        #05070d;
+    }
+
+    main {
+      width: min(760px, 96vw);
+      padding: 28px;
+      border: 1px solid rgba(157, 196, 255, 0.36);
+      border-radius: 24px;
+      background: rgba(12, 18, 34, 0.95);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #f7d98f;
+      font-size: clamp(26px, 4vw, 42px);
+    }
+
+    p { margin: 8px 0 18px; color: #c9d7ed; }
+
+    #qr {
+      width: min(420px, 76vw);
+      height: min(420px, 76vw);
+      padding: 10px;
+      border-radius: 18px;
+      background: white;
+    }
+
+    #url {
+      display: block;
+      margin: 16px auto;
+      color: #9dc9ff;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    a.button {
+      display: inline-grid;
+      place-items: center;
+      min-height: 48px;
+      padding: 10px 22px;
+      border: 1px solid #ffe09a;
+      border-radius: 12px;
+      color: #241708;
+      background: linear-gradient(#ffe6a9, #d99b34);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .note { margin-bottom: 0; color: #96a7c1; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Dragons vs Monsters</h1>
+    <p>Quét QR bằng điện thoại, sau đó xoay ngang để chơi Mobile Demo.</p>
+    <img id="qr" alt="QR mở Dragons vs Monsters Mobile Demo" />
+    <a id="url" target="_blank" rel="noopener"></a>
+    <a id="open" class="button" target="_blank" rel="noopener">MỞ LINK GAME</a>
+    <p class="note">Giữ laptop này kết nối Internet và không đóng cửa sổ tunnel trong lúc trình chiếu.</p>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const gameUrl = params.get('url');
+    const qr = document.getElementById('qr');
+    const url = document.getElementById('url');
+    const open = document.getElementById('open');
+
+    if (gameUrl && /^https:\/\//i.test(gameUrl)) {
+      qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=20&data=${encodeURIComponent(gameUrl)}`;
+      url.href = gameUrl;
+      url.textContent = gameUrl;
+      open.href = gameUrl;
+    } else {
+      qr.hidden = true;
+      url.textContent = 'Chưa có URL game. Hãy mở trang này với tham số ?url=https://...';
+      open.hidden = true;
+    }
+  </script>
+</body>
+</html>
