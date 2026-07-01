@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dvm-mobile-demo-v1';
+const CACHE_NAME = 'dvm-mobile-demo-v2';
 const SHELL_FILES = [
   './',
   './Mobile%20Demo.html',

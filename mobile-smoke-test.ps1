@@ -95,9 +95,10 @@ try {
   if (-not $target) { throw 'Chrome DevTools target was not available.' }
 
   $socket = [System.Net.WebSockets.ClientWebSocket]::new()
-  $socket.ConnectAsync([Uri]$target.webSocketDebuggerUrl, [Threading.CancellationToken]::None).GetAwaiter().GetResult()
+  $socket.ConnectAsync([Uri]$target.webSocketDebuggerUrl, [Threading.CancellationToken]::None).GetAwaiter().GetResult() | Out-Null
   Invoke-Cdp 'Runtime.enable' | Out-Null
   Invoke-Cdp 'Page.enable' | Out-Null
+  Invoke-Cdp 'Emulation.setTouchEmulationEnabled' @{ enabled = $true; maxTouchPoints = 5 } | Out-Null
 
   $loaded = $false
   for ($i = 0; $i -lt 40 -and -not $loaded; $i++) {
@@ -219,14 +220,30 @@ try {
 (() => {
   const doc = document.getElementById('game').contentDocument;
   const canvas = doc.getElementById('game');
+  const frameWidth = document.getElementById('game').contentWindow.innerWidth;
+  const canvasRect = canvas.getBoundingClientRect();
+  const leftPanelRect = doc.querySelector('.left-panel').getBoundingClientRect();
+  const controlPanelRect = doc.querySelector('.control-panel').getBoundingClientRect();
   return {
     pregameHidden: doc.getElementById('prototypePregame').hidden,
-    canvasVisible: canvas.getBoundingClientRect().width > 0 && canvas.getBoundingClientRect().height > 0,
-    tutorialPresent: Boolean(doc.getElementById('tutorialOverlay'))
+    canvasVisible: canvasRect.width > 0 && canvasRect.height > 0,
+    tutorialPresent: Boolean(doc.getElementById('tutorialOverlay')),
+    mobileLayout: document.getElementById('game').contentWindow.matchMedia('(max-width: 1180px) and (pointer: coarse) and (orientation: landscape)').matches,
+    canvasCentered: Math.abs((canvasRect.left + canvasRect.width / 2) - frameWidth / 2) < 3,
+    canvasCoverage: canvasRect.width / frameWidth,
+    leftPanelCompact: leftPanelRect.width / frameWidth <= 0.15,
+    controlsInside: controlPanelRect.right <= frameWidth
   };
 })()
 '@
   Add-Result 'Battle transition function' ($battle.pregameHidden -and $battle.canvasVisible -and $battle.tutorialPresent) "pregameHidden=$($battle.pregameHidden), canvasVisible=$($battle.canvasVisible)"
+  Add-Result 'Mobile battle media layout' ([bool]$battle.mobileLayout) "mobileLayout=$($battle.mobileLayout)"
+  Add-Result 'Battle board centered and usable' ($battle.canvasCentered -and $battle.canvasCoverage -ge 0.7 -and $battle.leftPanelCompact -and $battle.controlsInside) "centered=$($battle.canvasCentered), coverage=$([math]::Round($battle.canvasCoverage, 2)), leftCompact=$($battle.leftPanelCompact), controlsInside=$($battle.controlsInside)"
+
+  $capture = Invoke-Cdp 'Page.captureScreenshot' @{ format = 'png'; fromSurface = $true; captureBeyondViewport = $false }
+  $screenshotPath = Join-Path $env:TEMP ('dvm-mobile-smoke-' + [guid]::NewGuid().ToString('N') + '.png')
+  [System.IO.File]::WriteAllBytes($screenshotPath, [Convert]::FromBase64String($capture.data))
+  Write-Output "SMOKE_SCREENSHOT=$screenshotPath"
 
   $failed = @($results | Where-Object { -not $_.Passed })
   $results | Format-Table -AutoSize | Out-String | Write-Output

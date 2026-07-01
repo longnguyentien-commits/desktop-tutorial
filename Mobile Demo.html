@@ -52,8 +52,8 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 1280px;
-      height: 720px;
+      width: 1180px;
+      height: 664px;
       transform-origin: 0 0;
       background: #05070d;
       backface-visibility: hidden;
@@ -62,8 +62,8 @@
 
     #game {
       display: block;
-      width: 1280px;
-      height: 720px;
+      width: 1180px;
+      height: 664px;
       border: 0;
       background: #05070d;
       image-rendering: auto;
@@ -263,8 +263,10 @@
 
   <script>
     (() => {
-      const BASE_WIDTH = 1280;
-      const BASE_HEIGHT = 720;
+      // Keep the iframe at the game's mobile breakpoint so coarse-pointer
+      // devices receive the intended landscape battle layout.
+      const BASE_WIDTH = 1180;
+      const BASE_HEIGHT = 664;
       const viewport = document.getElementById('viewport');
       const stage = document.getElementById('stage');
       const startOverlay = document.getElementById('startOverlay');
