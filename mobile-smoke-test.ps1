@@ -255,10 +255,52 @@ try {
   Add-Result 'Mobile battle media layout' ([bool]$battle.mobileLayout) "mobileLayout=$($battle.mobileLayout)"
   Add-Result 'Battle board centered and usable' ($battle.canvasCentered -and $battle.canvasCoverage -ge 0.7 -and $battle.leftPanelCompact -and $battle.controlsInside) "centered=$($battle.canvasCentered), coverage=$([math]::Round($battle.canvasCoverage, 2)), leftCompact=$($battle.leftPanelCompact), controlsInside=$($battle.controlsInside)"
 
+  $shopAtStep1 = Invoke-JavaScript @'
+(() => {
+  const doc = document.getElementById('game').contentDocument;
+  return getComputedStyle(doc.getElementById('shopDrawer')).display;
+})()
+'@
+  Add-Result 'Tutorial step 1 closes Shop' ($shopAtStep1 -eq 'none') "display=$shopAtStep1"
+
   Invoke-JavaScript @'
 (() => {
   const doc = document.getElementById('game').contentDocument;
   doc.getElementById('tutorialNextBtn').click();
+  return true;
+})()
+'@ | Out-Null
+  Start-Sleep -Milliseconds 900
+  $shopAtStep2 = Invoke-JavaScript @'
+(() => {
+  const doc = document.getElementById('game').contentDocument;
+  const cards = [...doc.querySelectorAll('#shopRow .card:not(.empty)')];
+  const artInsideCards = cards.every(card => {
+    const cardRect = card.getBoundingClientRect();
+    const imageRect = card.querySelector('.dragon-img')?.getBoundingClientRect();
+    const image = card.querySelector('.dragon-img');
+    return image?.complete && image.naturalWidth > 0 && imageRect &&
+      imageRect.left >= cardRect.left - 1 && imageRect.top >= cardRect.top - 1 &&
+      imageRect.right <= cardRect.right + 1 && imageRect.bottom <= cardRect.bottom + 1;
+  });
+  return {
+    progress: doc.getElementById('tutorialProgress').textContent,
+    display: getComputedStyle(doc.getElementById('shopDrawer')).display,
+    cards: cards.length,
+    artInsideCards
+  };
+})()
+'@
+  Add-Result 'Tutorial step 2 opens Shop' ($shopAtStep2.progress -match 'Tutorial 2 /' -and $shopAtStep2.display -ne 'none' -and $shopAtStep2.cards -eq 5) "progress=$($shopAtStep2.progress), display=$($shopAtStep2.display), cards=$($shopAtStep2.cards)"
+  Add-Result 'Shop dragon art stays inside cards' ([bool]$shopAtStep2.artInsideCards) "inside=$($shopAtStep2.artInsideCards)"
+  $shopCapture = Invoke-Cdp 'Page.captureScreenshot' @{ format = 'png'; fromSurface = $true; captureBeyondViewport = $false }
+  $shopScreenshotPath = Join-Path $env:TEMP ('dvm-mobile-shop-' + [guid]::NewGuid().ToString('N') + '.png')
+  [System.IO.File]::WriteAllBytes($shopScreenshotPath, [Convert]::FromBase64String($shopCapture.data))
+  Write-Output "SHOP_SCREENSHOT=$shopScreenshotPath"
+
+  Invoke-JavaScript @'
+(() => {
+  const doc = document.getElementById('game').contentDocument;
   doc.getElementById('tutorialNextBtn').click();
   doc.querySelector('[data-shop="0"]').click();
   return true;
@@ -281,6 +323,8 @@ try {
 })()
 '@
   Add-Result 'Tutorial reaches step 4' ($tutorialStep4.progress -match 'Tutorial 4 /' -and $tutorialStep4.benchReady -and $tutorialStep4.patchLoaded) "progress=$($tutorialStep4.progress), bench=$($tutorialStep4.benchReady), patch=$($tutorialStep4.patchLoaded), fallback=$($tutorialStep4.fallbackState | ConvertTo-Json -Compress)"
+  $shopAtStep4 = Invoke-JavaScript "getComputedStyle(document.getElementById('game').contentDocument.getElementById('shopDrawer')).display"
+  Add-Result 'Tutorial step 4 closes Shop' ($shopAtStep4 -eq 'none') "display=$shopAtStep4"
 
   $benchFallback = Invoke-JavaScript @'
 (() => {

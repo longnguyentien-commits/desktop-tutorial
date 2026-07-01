@@ -2,6 +2,31 @@
   if (window.__dvmMobilePatchInstalled) return;
   window.__dvmMobilePatchInstalled = true;
 
+  const mobileStyle = document.createElement('style');
+  mobileStyle.id = 'dvmMobileGameStyle';
+  mobileStyle.textContent = `
+    @media (max-width: 1180px) and (pointer: coarse) and (orientation: landscape) {
+      body.tutorial-running .bottom-tray:not(.shop-open) #shopDrawer {
+        display: none !important;
+      }
+
+      .shop-row .card .dragon-img {
+        top: 12px !important;
+        right: 2px !important;
+        bottom: 4px !important;
+        left: auto !important;
+        width: 60% !important;
+        height: auto !important;
+        max-width: 78px !important;
+        max-height: calc(100% - 16px) !important;
+        object-fit: contain !important;
+        object-position: center !important;
+        transform: scaleX(-1) !important;
+      }
+    }
+  `;
+  document.head.appendChild(mobileStyle);
+
   function isBenchTutorialStep() {
     const overlay = document.getElementById('tutorialOverlay');
     const progress = document.getElementById('tutorialProgress')?.textContent || '';
