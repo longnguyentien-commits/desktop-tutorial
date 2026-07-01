@@ -54,7 +54,8 @@
       height: 720px;
       transform-origin: 0 0;
       background: #05070d;
-      will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     #game {
@@ -63,6 +64,9 @@
       height: 720px;
       border: 0;
       background: #05070d;
+      image-rendering: auto;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
     .overlay {
@@ -204,10 +208,11 @@
 
       function fitStage() {
         const rect = viewport.getBoundingClientRect();
-        const scale = Math.min(rect.width / BASE_WIDTH, rect.height / BASE_HEIGHT);
-        const left = Math.max(0, (rect.width - BASE_WIDTH * scale) / 2);
-        const top = Math.max(0, (rect.height - BASE_HEIGHT * scale) / 2);
-        stage.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+        const scale = Math.min(rect.width / BASE_WIDTH, rect.height / BASE_HEIGHT, 1);
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const left = Math.round(Math.max(0, (rect.width - BASE_WIDTH * scale) / 2) * dpr) / dpr;
+        const top = Math.round(Math.max(0, (rect.height - BASE_HEIGHT * scale) / 2) * dpr) / dpr;
+        stage.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${scale})`;
       }
 
       async function enterGame() {
