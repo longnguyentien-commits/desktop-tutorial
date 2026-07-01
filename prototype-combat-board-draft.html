@@ -2920,6 +2920,7 @@
       transform: scale(1.025);
       pointer-events: none;
     }
+    .prototype-pregame.is-leaving * { pointer-events: none !important; }
     .prototype-loading,
     .prototype-tycoon {
       position: absolute;
@@ -3915,6 +3916,302 @@
       .tycoon-event-tag.is-selected { transform: translateX(5px) scale(1.02); }
       .tycoon-event-panel { top: 72px; left: 10px; right: 10px; bottom: 10px; width: auto; }
     }
+
+    /* Prototype pre-game flow v2: exact 16:9 DML screenshots with percentage-based interaction layers. */
+    .prototype-pregame {
+      display: grid;
+      place-items: center;
+      padding: 0;
+      background: #050712;
+    }
+    .prototype-pregame[hidden] { display: none !important; }
+    .prototype-stage {
+      position: relative;
+      width: min(100vw, calc(100dvh * 16 / 9));
+      height: min(100dvh, calc(100vw * 9 / 16));
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #0b1530;
+      box-shadow: 0 0 80px rgba(0,0,0,.9);
+    }
+    .prototype-loading,
+    .prototype-tycoon { position: absolute; inset: 0; }
+    .prototype-loading {
+      background: url("Resource Asset/Loading Screen.jpg") center / 100% 100% no-repeat;
+    }
+    .prototype-loading::before { display: none; }
+    .prototype-loading::after {
+      z-index: 0;
+      background: linear-gradient(180deg, transparent 66%, rgba(3,8,24,.18) 78%, rgba(3,8,24,.78));
+    }
+    .prototype-loading-card {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: 3.6%;
+      width: min(52%, 820px);
+      transform: translateX(-50%);
+    }
+    .prototype-loading-emblem,
+    .prototype-loading-title { display: none; }
+    .prototype-loading-bar {
+      height: clamp(12px, 1.7vh, 20px);
+      margin: 0;
+      border-color: #fff4c0;
+      background: rgba(12,20,55,.84);
+    }
+    .prototype-loading-copy {
+      margin-top: clamp(7px, 1.1vh, 12px);
+      font-size: clamp(10px, 1.1vw, 17px);
+      text-shadow: 0 2px 5px #000;
+    }
+    .prototype-tycoon {
+      isolation: isolate;
+      background: #10152d;
+    }
+    .prototype-tycoon::before,
+    .prototype-tycoon::after { display: none; }
+    .prototype-scene {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: fill;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .34s ease;
+    }
+    .prototype-lobby-scene { opacity: 1; }
+    .prototype-tycoon.is-events-open .prototype-lobby-scene { opacity: 0; }
+    .prototype-tycoon.is-events-open .prototype-event-menu-scene { opacity: 1; }
+    .prototype-tycoon.has-event-selected .prototype-event-menu-scene { opacity: 0; }
+    .prototype-tycoon.has-event-selected .prototype-event-main-scene { opacity: 1; }
+    .tycoon-topbar { display: none; }
+    .lobby-events-hotspot {
+      left: .35%;
+      top: 21.7%;
+      width: 8.25%;
+      height: 14.2%;
+      border-radius: 18%;
+      background: rgba(73,238,255,.08);
+    }
+    .lobby-events-hotspot::after {
+      top: 50%;
+      left: calc(100% + 10px);
+      transform: translateY(-50%);
+      font-size: clamp(8px, .68vw, 12px);
+    }
+    .prototype-tycoon.is-events-open .tycoon-event-tag {
+      left: 3.55%;
+      top: 82.85%;
+      width: 21.4%;
+      height: 12.15%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 4.5% 1.15% 1.05%;
+      transform: none;
+      overflow: visible;
+      border: clamp(2px, .2vw, 4px) solid #ffe67a;
+      border-radius: 9% 13% 13% 9% / 24% 42% 42% 24%;
+      background:
+        linear-gradient(180deg, transparent 28%, rgba(18,18,62,.2) 46%, rgba(20,15,66,.94) 100%),
+        url("Resource Asset/Prototype Event/dvm-event-tag-bg-v3.jpg") center / cover no-repeat;
+      box-shadow: 0 5px 14px rgba(0,0,0,.52), inset 0 0 0 2px rgba(99,238,255,.22);
+    }
+    .tycoon-event-tag:hover,
+    .tycoon-event-tag:focus-visible,
+    .tycoon-event-tag.is-selected {
+      transform: translateX(1.8%) scale(1.025);
+      box-shadow: 0 0 0 clamp(2px,.28vw,5px) rgba(97,235,255,.55), 0 8px 18px rgba(0,0,0,.55);
+    }
+    .prototype-tycoon.is-events-open:not(.has-event-selected) .tycoon-event-tag { left: 1.35%; }
+    .prototype-tycoon.has-event-selected .tycoon-event-tag {
+      z-index: 7;
+      left: 3.55%;
+    }
+    .event-tag-crest { display: none; }
+    .event-tag-boss {
+      position: absolute;
+      z-index: 1;
+      right: -1.5%;
+      bottom: -2%;
+      width: 48%;
+      height: 98%;
+      object-fit: contain;
+      object-position: right center;
+      pointer-events: none;
+      filter: drop-shadow(0 3px 4px rgba(0,0,0,.62));
+    }
+    .tycoon-event-tag strong {
+      position: relative;
+      z-index: 2;
+      max-width: 62%;
+      overflow: hidden;
+      color: #fff8c8;
+      font: 1000 clamp(9px, 1.05vw, 20px)/1.02 Arial, sans-serif;
+      letter-spacing: .015em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tycoon-event-tag small {
+      position: relative;
+      z-index: 2;
+      margin-top: .45%;
+      color: #8ff4ff;
+      font-size: clamp(7px, .66vw, 12px);
+    }
+    .event-new-badge {
+      z-index: 3;
+      top: -9%;
+      right: 4%;
+      padding: .9% 2.5%;
+      font-size: clamp(7px, .62vw, 11px);
+    }
+    .tycoon-event-panel,
+    .tycoon-event-panel.is-open {
+      z-index: 4;
+      left: 23.1%;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      display: grid;
+      grid-template-rows: auto minmax(0,1fr) auto;
+      padding: clamp(12px, 2.2vw, 42px) clamp(14px, 3vw, 58px) clamp(14px, 2.1vw, 40px);
+      transform: translateX(5%);
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background:
+        linear-gradient(90deg, rgba(13,30,70,.9) 0%, rgba(12,24,61,.44) 32%, transparent 62%),
+        linear-gradient(0deg, rgba(8,14,40,.8) 0%, transparent 32%),
+        url("Resource Asset/Prototype Event/dvm-event-hub-bg-v3.jpg") center / cover no-repeat;
+      box-shadow: inset 0 0 0 clamp(2px,.2vw,4px) rgba(137,236,255,.42);
+      transition: opacity .26s ease, transform .34s cubic-bezier(.2,.88,.28,1);
+    }
+    .tycoon-event-panel.is-open { transform: translateX(0); }
+    .event-panel-header {
+      position: relative;
+      z-index: 2;
+      width: min(62%, 720px);
+      padding: 0;
+    }
+    .event-panel-kicker {
+      margin-bottom: clamp(3px,.45vw,8px);
+      font-size: clamp(8px, .86vw, 16px);
+    }
+    .event-panel-title {
+      color: #fff4a8;
+      font: 1000 clamp(22px, 3.15vw, 60px)/.92 Georgia, serif;
+      text-shadow: 0 3px 0 #4e2a78, 0 7px 20px rgba(0,0,0,.75);
+    }
+    .event-panel-header .event-panel-close { display: none; }
+    .event-panel-close {
+      position: absolute;
+      z-index: 8;
+      top: .3%;
+      right: .25%;
+      width: 7.05%;
+      height: 10.2%;
+      margin: 0;
+      padding: 0;
+      border: clamp(2px,.2vw,4px) solid #8d181b;
+      border-radius: 12% 12% 18% 18%;
+      background: linear-gradient(#ff8a7d, #df3c3a 58%, #b81620);
+      color: #fff;
+      font: 1000 clamp(24px,4.2vw,72px)/1 Arial, sans-serif;
+      text-shadow: 0 3px 0 #741217;
+      box-shadow: inset 0 3px rgba(255,255,255,.35), 0 4px 0 #7b1119, 0 8px 14px rgba(0,0,0,.35);
+    }
+    .event-panel-close:hover,
+    .event-panel-close:focus-visible {
+      background: linear-gradient(#ff9a8e, #eb4a46 58%, #c31c26);
+      filter: brightness(1.08);
+      outline: 4px solid rgba(255,240,118,.78);
+      outline-offset: -5px;
+    }
+    .event-hub-boss {
+      position: absolute;
+      z-index: 1;
+      top: 14.5%;
+      right: 1.2%;
+      width: 59%;
+      height: 68%;
+      object-fit: contain;
+      object-position: right center;
+      pointer-events: none;
+      filter: drop-shadow(0 14px 12px rgba(0,0,0,.48));
+    }
+    .event-banner-wrap {
+      align-self: end;
+      width: min(48%, 580px);
+      min-height: auto;
+      margin-bottom: 1.3%;
+      padding: clamp(8px, 1.05vw, 18px);
+      border: 1px solid rgba(166,235,255,.55);
+      border-radius: 12px;
+      background: rgba(10,25,64,.68);
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      backdrop-filter: blur(4px);
+    }
+    .event-banner-wrap img { display: none; }
+    .event-banner-copy {
+      position: static;
+      padding: 0;
+      background: none;
+      font-size: clamp(9px, 1vw, 17px);
+      line-height: 1.35;
+    }
+    .event-panel-footer {
+      position: relative;
+      z-index: 2;
+      grid-template-columns: minmax(150px,1fr) minmax(145px,31%);
+      gap: clamp(8px,1.2vw,20px);
+      padding-top: 0;
+    }
+    .event-status {
+      align-self: center;
+      font-size: clamp(8px,.82vw,14px);
+      text-shadow: 0 2px 4px #000;
+    }
+    .event-status strong { font-size: clamp(11px,1.2vw,21px); }
+    .event-battle-button {
+      min-height: clamp(42px, 7.2vh, 72px);
+      font-size: clamp(18px,2.35vw,38px);
+    }
+    .tycoon-hint {
+      bottom: 1.7%;
+      padding: .55% 1.2%;
+      font-size: clamp(8px,.72vw,13px);
+    }
+    .prototype-tycoon.has-event-selected .tycoon-hint { opacity: 0; }
+    .event-section-back {
+      top: 0;
+      right: 0;
+      width: 6.3%;
+      min-width: 0;
+      height: 10.5%;
+      min-height: 0;
+    }
+    .prototype-rotate-hint {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      inset: 0;
+      place-items: center;
+      padding: 24px;
+      background: rgba(5,8,22,.9);
+      color: #fff4b2;
+      text-align: center;
+      font: 900 18px/1.4 Arial, sans-serif;
+    }
+    @media (max-width: 620px) and (orientation: portrait) {
+      .prototype-rotate-hint { display: grid; }
+    }
     @media (prefers-reduced-motion: reduce) {
       .prototype-loading::before,
       .prototype-loading-bar i,
@@ -3924,16 +4221,18 @@
 </head>
 <body class="prototype-pregame-active">
   <div id="prototypePregame" class="prototype-pregame" aria-label="Dragons vs Monsters event lobby">
+    <div class="prototype-stage">
     <section id="prototypeLoading" class="prototype-loading" aria-label="Loading game">
       <div class="prototype-loading-card">
-        <div class="prototype-loading-emblem" aria-hidden="true">DML</div>
-        <h1 class="prototype-loading-title">Dragon Mania <span>Legends</span></h1>
         <div class="prototype-loading-bar" aria-hidden="true"><i></i></div>
         <p class="prototype-loading-copy">Loading Event Lobby…</p>
       </div>
     </section>
 
     <section id="prototypeTycoon" class="prototype-tycoon" aria-label="Dragon Mania Legends lobby and Events section">
+      <img class="prototype-scene prototype-lobby-scene" src="Resource Asset/Tycoon.jpg" alt="Dragon Mania Legends Tycoon lobby" />
+      <img class="prototype-scene prototype-event-menu-scene" src="Resource Asset/Event Menu.jpg" alt="Dragon Mania Legends Events menu" />
+      <img class="prototype-scene prototype-event-main-scene" src="Resource Asset/Event chính.jpg" alt="Selected Dragon Mania Legends event" />
       <header class="tycoon-topbar">
         <div class="tycoon-brand">Dragon Kingdom <small>Tycoon Lobby</small></div>
         <div class="tycoon-resources" aria-label="Kingdom resources">
@@ -3948,24 +4247,25 @@
       <button id="prototypeEventTag" class="tycoon-event-tag" type="button" aria-controls="prototypeEventPanel" aria-expanded="false">
         <span class="event-new-badge">NEW</span>
         <span class="event-tag-crest" aria-hidden="true">D⚔M</span>
+        <img class="event-tag-boss" src="Resource Asset/Boss 1.png" alt="" />
         <strong>Dragons vs Monsters</strong>
-        <small>Battle Event</small>
+        <small>20-Wave Battle Event</small>
       </button>
 
       <aside id="prototypeEventPanel" class="tycoon-event-panel" aria-hidden="true" aria-labelledby="prototypeEventTitle">
+        <button id="prototypeEventCloseV2" class="event-panel-close event-panel-close-v2" type="button" aria-label="Close event panel">×</button>
+        <img class="event-hub-boss" src="Resource Asset/Boss 1.png" alt="Three-headed Boss Dragon" />
         <header class="event-panel-header">
           <div>
-            <p class="event-panel-kicker">Selected Event</p>
+            <p class="event-panel-kicker">Limited-Time Battle Event</p>
             <h2 id="prototypeEventTitle" class="event-panel-title">Dragons vs Monsters</h2>
           </div>
-          <button id="prototypeEventClose" class="event-panel-close" type="button" aria-label="Close event panel">×</button>
         </header>
         <div class="event-banner-wrap">
-          <img src="Resource Asset/Prototype Event/dragons-vs-monsters-event-banner.webp" alt="Colorful dragons facing a monster army" />
-          <div class="event-banner-copy">Defend the Dragon Keep, build your team and defeat every monster wave.</div>
+          <div class="event-banner-copy">Build your dragon team, combine their powers and defend the Dragon Keep through all 20 monster waves.</div>
         </div>
         <footer class="event-panel-footer">
-          <div class="event-status">Current selection<strong>Dragons vs Monsters</strong></div>
+          <div class="event-status">Event objective<strong>Seal both Boss Dragons</strong></div>
           <button id="prototypeBattleButton" class="event-battle-button" type="button">BATTLE</button>
         </footer>
       </aside>
@@ -3975,6 +4275,8 @@
         <span class="event-step-hint">Choose the Dragons vs Monsters Event Tag to begin</span>
       </div>
     </section>
+      <div class="prototype-rotate-hint">Rotate your phone to landscape<br />to enter the Event Lobby.</div>
+    </div>
   </div>
   <div class="app">
     <div class="topbar prototype-topbar">
@@ -4180,7 +4482,7 @@
     const prototypeEventBack = document.getElementById("prototypeEventBack");
     const prototypeEventTag = document.getElementById("prototypeEventTag");
     const prototypeEventPanel = document.getElementById("prototypeEventPanel");
-    const prototypeEventClose = document.getElementById("prototypeEventClose");
+    const prototypeEventClose = document.getElementById("prototypeEventCloseV2");
     const prototypeBattleButton = document.getElementById("prototypeBattleButton");
 
     if (prototypeCheatMode) {
@@ -4195,6 +4497,7 @@
     function setPrototypeEventOpen(open) {
       prototypeEventPanel.classList.toggle("is-open", open);
       prototypeEventPanel.setAttribute("aria-hidden", String(!open));
+      prototypeTycoon.classList.toggle("has-event-selected", open);
       prototypeEventTag.classList.toggle("is-selected", open);
       prototypeEventTag.setAttribute("aria-expanded", String(open));
       if (open) {
@@ -4225,9 +4528,12 @@
 
     Promise.all([
       new Promise(resolve => window.setTimeout(resolve, 2600)),
-      preloadPrototypeImage("Resource Asset/Prototype Event/dml-lobby-from-video.webp"),
-      preloadPrototypeImage("Resource Asset/Prototype Event/dml-events-from-video.webp"),
-      preloadPrototypeImage("Resource Asset/Prototype Event/dragons-vs-monsters-event-banner.webp")
+      preloadPrototypeImage("Resource Asset/Tycoon.jpg"),
+      preloadPrototypeImage("Resource Asset/Event Menu.jpg"),
+      preloadPrototypeImage("Resource Asset/Event chính.jpg"),
+      preloadPrototypeImage("Resource Asset/Prototype Event/dvm-event-tag-bg-v3.jpg"),
+      preloadPrototypeImage("Resource Asset/Prototype Event/dvm-event-hub-bg-v3.jpg"),
+      preloadPrototypeImage("Resource Asset/Boss 1.png")
     ]).then(() => {
       prototypeLoading.classList.add("is-complete");
       prototypeLoading.setAttribute("aria-hidden", "true");
@@ -4247,6 +4553,7 @@
       prototypeEventPanel.setAttribute("aria-hidden", "true");
       window.setTimeout(() => {
         prototypePregame.hidden = true;
+        prototypePregame.setAttribute("aria-hidden", "true");
         document.body.classList.remove("prototype-pregame-active");
         requestAnimationFrame(() => {
           fitCanvasToScreen();
@@ -6244,6 +6551,7 @@
       }
       resetGame();
       prototypePregame.hidden = false;
+      prototypePregame.setAttribute("aria-hidden", "false");
       prototypePregame.classList.remove("is-leaving");
       document.body.classList.add("prototype-pregame-active");
       setPrototypeEventsSection(true);
