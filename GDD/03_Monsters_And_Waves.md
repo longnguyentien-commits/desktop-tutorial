@@ -41,10 +41,10 @@ The attacking side uses animated monster assets from multiple folders. The curre
 
 | Boss | Asset | Base HP | Speed | Notes |
 | --- | --- | ---: | ---: | --- |
-| Big Bad Boss | `Resource Asset/Boss 1.png` | 20800 | 7.5 | Wave 10 boss. Appears after the wave 10 normal monster group is cleared. |
-| Big Bad Boss | `Resource Asset/Boss 2.png` | 41600 | 6.5 | Wave 20 final boss. Appears after the wave 20 normal monster group is cleared. |
+| Big Bad Boss | `Resource Asset/Boss 1.png` | 24000 | 5.2 | Wave 10 boss. Uses fire/stun attacks and summons 3 reinforcements at 50% HP. |
+| Big Bad Boss | `Resource Asset/Boss 2.png` | 46000 | 4.5 | Wave 20 final boss. Uses fire/stun/blast attacks and summons at 70% and 35% HP. |
 
-Bosses use one shared large body and hitbox instead of five separate lane bodies. Dragons from all 5 lanes can target and damage the boss. Bosses face left, spawn from one giant portal, and are immune to elemental trait effects such as burn, slow, knockback, and chain splash. They still receive direct projectile damage.
+Bosses use one shared large body and hitbox instead of five separate lane bodies. Dragons from all 5 lanes can target and damage the boss. Bosses face left, spawn from one giant portal, and are immune to elemental trait effects such as burn, slow, knockback, and chain splash. They still receive direct projectile damage. A centered 5-second warning plays before the portal opens and the boss enters.
 
 ## Enemy Scaling
 
@@ -64,14 +64,15 @@ Bosses use one shared large body and hitbox instead of five separate lane bodies
 | --- | ---: |
 | Wave 1 | `occupied dragon rows x 3` |
 | Waves 2-9 and 11-19 | `min(50, 11 + floor(wave x 2.15))` |
-| Wave 10 | 14 normal monsters, then 1 Big Bad Boss |
-| Wave 20 | 22 normal monsters, then 1 Big Bad Boss |
+| Wave 10 | 1 Big Bad Boss |
+| Wave 20 | 1 Big Bad Boss |
 
 Boss wave rule:
 
-- Normal monsters spawn first.
-- The boss does not appear until all normal monsters in that boss wave are cleared.
-- The boss counts as the final spawn of that wave.
+- Boss waves currently skip the normal monster preparation group.
+- A centered warning appears first, followed by one giant portal and the boss entrance.
+- Bosses can summon normal reinforcements during combat at configured HP thresholds.
+- The boss counts as the final required enemy of that wave.
 
 Wave 1 special rule:
 

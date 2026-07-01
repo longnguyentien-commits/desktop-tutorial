@@ -3837,10 +3837,9 @@
       font-weight: 1000;
       pointer-events: none;
     }
-    .card.dragon-tracked,
     .bench-slot.dragon-tracked {
       border-color: #ffe56f !important;
-      box-shadow: 0 0 0 3px rgba(255,229,111,.55), 0 0 22px rgba(100,240,178,.95) !important;
+      box-shadow: 0 0 0 3px rgba(255,229,111,.55), 0 0 22px rgba(100,240,178,.95);
       filter: brightness(1.15);
     }
     @media (max-width: 820px) {
@@ -4518,16 +4517,16 @@
     </section>
   </div>
   <aside id="tutorialReplayNotice" class="tutorial-replay-notice" role="status" aria-live="polite" hidden>
-    <strong>Tutorial hoàn tất!</strong>
-    <p>Bạn có thể mở Guide Center bất cứ lúc nào bằng nút <b>?</b> cạnh SFX trên Topbar.</p>
-    <button id="tutorialReplayNoticeClose" type="button" aria-label="Đóng thông báo">×</button>
+    <strong>Tutorial complete!</strong>
+    <p>You can open the Guide Center at any time with the <b>?</b> button beside SFX on the top bar.</p>
+    <button id="tutorialReplayNoticeClose" type="button" aria-label="Close notification">×</button>
   </aside>
   <div id="guideCenter" class="guide-center" aria-hidden="true" hidden>
     <section class="guide-window" role="dialog" aria-modal="true" aria-labelledby="guideCenterTitle">
       <header class="guide-header">
         <div>
           <h2 id="guideCenterTitle">Guide Center</h2>
-          <p>Xem hướng dẫn mà không làm mất tiến trình trận hiện tại.</p>
+          <p>Review the game guide without losing your current match progress.</p>
         </div>
         <button id="guideCenterClose" class="guide-close" type="button" aria-label="Close Guide Center">×</button>
       </header>
@@ -4538,24 +4537,24 @@
       <div class="guide-body">
         <section class="guide-page" data-guide-page="tutorial">
           <div class="guide-step-grid">
-            <article class="guide-step"><strong>1. Buy & Gold</strong><span>Kiểm tra Gold và giá trên thẻ trước khi mua rồng.</span></article>
-            <article class="guide-step"><strong>2. Bench & Board</strong><span>Bấm hoặc kéo rồng từ Bench vào Slot trên Board.</span></article>
-            <article class="guide-step"><strong>3. Merge</strong><span>Ba rồng cùng tên và cùng sao sẽ Merge lên cấp sao tiếp theo.</span></article>
-            <article class="guide-step"><strong>4. Traits</strong><span>Kết hợp rồng cùng hệ để kích hoạt các mốc 2/4/6/8.</span></article>
-            <article class="guide-step"><strong>5. Level & XP</strong><span>Level tăng Board Capacity và cơ hội xuất hiện rồng hiếm.</span></article>
-            <article class="guide-step"><strong>6. Shop Tools</strong><span>Reroll đổi lựa chọn; Lock giữ Shop qua Wave tiếp theo.</span></article>
+            <article class="guide-step"><strong>1. Buy & Gold</strong><span>Check your Gold and the card price before buying a dragon.</span></article>
+            <article class="guide-step"><strong>2. Bench & Board</strong><span>Click or drag a dragon from the Bench into a Board slot.</span></article>
+            <article class="guide-step"><strong>3. Merge</strong><span>Three dragons with the same name and star level merge into the next star level.</span></article>
+            <article class="guide-step"><strong>4. Traits</strong><span>Combine dragons with matching elements to activate the 2/4/6/8 milestones.</span></article>
+            <article class="guide-step"><strong>5. Level & XP</strong><span>Keeper Levels increase Dragon Limit and improve the odds of finding rare dragons.</span></article>
+            <article class="guide-step"><strong>6. Shop Tools</strong><span>Reroll changes the selection; Lock keeps the Shop for the next Wave.</span></article>
           </div>
           <div class="guide-practice">
             <div>
-              <strong>Muốn thực hành lại?</strong>
-              <p>Interactive Tutorial sẽ mở trong tab riêng. Trận hiện tại ở tab này không bị reset.</p>
+              <strong>Want to practice again?</strong>
+              <p>The interactive tutorial opens in a separate tab, so the current match will not reset.</p>
             </div>
             <button id="openTutorialPracticeBtn" type="button">Practice Tutorial</button>
           </div>
         </section>
         <section class="guide-page" data-guide-page="dragons" hidden>
           <div class="dragon-guide-toolbar">
-            <input id="dragonGuideSearch" class="dragon-guide-search" type="search" placeholder="Tìm theo tên hoặc hệ rồng…" autocomplete="off" />
+            <input id="dragonGuideSearch" class="dragon-guide-search" type="search" placeholder="Search by dragon name or element..." autocomplete="off" />
             <div id="dragonElementFilters" class="dragon-filter-group" aria-label="Filter by dragon element"></div>
             <div id="dragonRarityFilters" class="dragon-filter-group" aria-label="Filter by rarity"></div>
             <button id="dragonFiltersClear" class="dragon-filter-clear" type="button">Clear</button>
@@ -5314,7 +5313,7 @@
           </div>
           <button class="dragon-guide-locate" type="button" ${locations.length ? "" : "disabled"}>${locations.length ? "Highlight on Board & Bench" : "No owned copy to highlight"}</button>
         </article>`;
-      }).join("") : `<div class="trait-empty">Không tìm thấy rồng phù hợp.</div>`;
+      }).join("") : `<div class="trait-empty">No matching dragons found.</div>`;
 
       grid.querySelectorAll("[data-guide-dragon]").forEach(card => {
         const name = decodeURIComponent(card.dataset.guideDragon || "");
@@ -5460,19 +5459,19 @@
     function tutorialLevelDetailPages() {
       return [
         {
-          title: "Level và XP",
-          text: () => `Keeper hiện ở <strong>Level ${state.keeperLevel}</strong>. Thanh Next Level đang có <strong>${state.keeperXp}/${xpNeededForCurrentLevel()} XP</strong>; Buy XP hoặc hoàn thành Wave để tiến tới cấp tiếp theo.`,
+          title: "Level and XP",
+          text: () => `Your Keeper is currently <strong>Level ${state.keeperLevel}</strong>. The Next Level bar has <strong>${state.keeperXp}/${xpNeededForCurrentLevel()} XP</strong>. Buy XP or complete Waves to reach the next level.`,
           target: () => document.querySelector(".keeper-pill"),
         },
         {
-          title: "Giới hạn rồng trên sân",
-          text: () => `Chỉ số Board hiện là <strong>${state.dragons.length}/${boardCapForLevel()}</strong>. Số bên phải là lượng rồng tối đa được đặt trên sân ở Level hiện tại.`,
+          title: "Dragon Limit",
+          text: () => `Your current Dragon Limit is <strong>${state.dragons.length}/${boardCapForLevel()}</strong>. The number on the right is the maximum number of dragons you can place at the current Keeper Level.`,
           target: tutorialBoardCapRect,
           placement: "below",
         },
         {
-          title: "Drop Rates của Shop",
-          text: () => "Hàng được Highlight trong Drop Rates cho biết tỉ lệ xuất hiện rồng theo giá ở Level hiện tại. Level càng cao, cơ hội gặp rồng hiếm càng lớn.",
+          title: "Shop Drop Rates",
+          text: () => "The highlighted Drop Rates row shows the chance of finding each dragon cost at your current Keeper Level. Higher levels improve your odds of finding rare dragons.",
           target: () => document.querySelector(".drop-rate-panel"),
         },
       ];
@@ -5522,38 +5521,38 @@
       return [
         {
           id: "gold",
-          title: "Gold và tài nguyên",
-          text: "Đây là số <strong>Gold</strong> hiện có. Mua rồng, Reroll và Buy XP đều tiêu Gold, vì vậy hãy luôn kiểm tra con số này trước khi thao tác.",
+          title: "Gold and Resources",
+          text: "This is your current <strong>Gold</strong>. Buying dragons, rerolling, and buying XP all cost Gold, so check this value before taking an action.",
           target: () => document.querySelector(".gold-pill"),
         },
         {
           id: "shop",
-          title: "Shop rồng",
-          text: "Shop có 5 lựa chọn. Mỗi thẻ hiển thị <strong>tên, hệ và giá</strong> của rồng. Shop có thể mở hoặc đóng bằng nút Shop phía trên Bench.",
+          title: "Dragon Shop",
+          text: "The Shop offers 5 dragons. Each card shows the dragon's <strong>name, elements, and price</strong>. Use the Shop button above the Bench to open or close it.",
           target: () => document.getElementById("shopDrawer"),
         },
         {
           id: "buy",
-          title: "Mua rồng",
-          text: "Bấm vào thẻ rồng được đánh sáng để mua. Rồng sẽ chuyển xuống <strong>Bench</strong> và Gold sẽ bị trừ theo giá trên thẻ.",
+          title: "Buy a Dragon",
+          text: "Click the highlighted dragon card to buy it. The dragon moves to your <strong>Bench</strong>, and its card price is deducted from your Gold.",
           target: () => document.querySelector('[data-shop="0"]'),
           action: true,
           done: () => tutorialOwnedUnits().length >= 1,
         },
         {
           id: "select-bench",
-          title: "Chọn rồng ở Bench",
-          text: "Bench là nơi tạm giữ rồng chưa ra sân. Bấm vào rồng đang được đánh sáng để chọn nó.",
+          title: "Select a Bench Dragon",
+          text: "The Bench stores dragons that are not on the battlefield. Click the highlighted dragon to select it.",
           target: () => document.querySelector(".bench-slot.filled"),
           action: true,
           done: () => state.selected?.source === "bench",
         },
         {
           id: "place",
-          title: "Đặt rồng lên Board",
+          title: "Place a Dragon on the Board",
           text: () => isTouchUi()
-            ? "Trên Android/iOS: <strong>bấm vào rồng rồi bấm vào Slot</strong> để đặt. Bạn cũng có thể giữ và kéo rồng vào đúng ô mình muốn."
-            : "<strong>Giữ và kéo rồng từ Bench vào Slot màu xanh</strong>. Bạn cũng có thể bấm vào rồng rồi bấm vào Board để đặt rồng vào ô mình muốn.",
+            ? "On Android/iOS, <strong>tap the dragon and then tap a slot</strong> to place it. You can also hold and drag the dragon into the desired cell."
+            : "<strong>Drag the dragon from the Bench into the highlighted green slot</strong>. You can also click the dragon and then click a Board cell.",
           target: () => tutorialBoardCellRect(tutorialState.targetCell.row, tutorialState.targetCell.col),
           interactionRect: tutorialPlaceInteractionRect,
           secondaryTarget: tutorialPlaceSource,
@@ -5563,14 +5562,14 @@
         },
         {
           id: "traits",
-          title: "Hệ rồng và Traits",
-          text: "Mỗi rồng có một hoặc nhiều <strong>hệ</strong>. Các rồng khác tên nhưng cùng hệ sẽ cộng mốc 2/4/6/8 trong bảng Traits và mở thêm hiệu ứng chiến đấu.",
+          title: "Dragon Elements and Traits",
+          text: "Each dragon has one or more <strong>elements</strong>. Unique dragons with matching elements build the 2/4/6/8 Trait milestones and unlock additional combat effects.",
           target: () => document.querySelector("[data-trait]") || document.getElementById("traitPanel"),
         },
         {
           id: "merge",
-          title: "Merge lên 2 sao",
-          text: "Mua thêm <strong>2 bản sao cùng tên và cùng cấp sao</strong>. Ba rồng giống nhau sẽ tự Merge thành một rồng 2 sao mạnh hơn.",
+          title: "Merge into a 2-Star Dragon",
+          text: "Buy <strong>2 more copies with the same name and star level</strong>. Three matching dragons automatically merge into a stronger 2-star dragon.",
           target: tutorialMergeCard,
           interactionRect: tutorialMergeInteractionRect,
           secondaryTarget: tutorialMergeSecondCard,
@@ -5580,16 +5579,16 @@
         },
         {
           id: "xp",
-          title: "Nâng Level",
-          text: "Bấm <strong>Buy XP</strong>. Level cao hơn tăng giới hạn rồng trên Board và thay đổi tỉ lệ xuất hiện rồng hiếm trong Drop Rates.",
+          title: "Increase Keeper Level",
+          text: "Click <strong>Buy XP</strong>. Higher Keeper Levels increase your Dragon Limit and improve rare-dragon odds in the Drop Rates table.",
           target: () => document.getElementById("buyXpBtn"),
           action: true,
           done: () => state.keeperLevel >= 2,
         },
         {
           id: "level-glow",
-          title: "Hiệu ứng Level Up",
-          text: "Khi lên cấp, <strong>toàn bộ Board phát sáng</strong> và khu vực Level nháy sáng. Đây là tín hiệu trực quan để bạn biết giới hạn đội hình và tỉ lệ Shop vừa thay đổi.",
+          title: "Level-Up Effect",
+          text: "When you level up, <strong>the entire Board glows</strong> and the Level area flashes. This indicates that your Dragon Limit and Shop odds have changed.",
           target: () => canvas,
         },
         {
@@ -5602,23 +5601,23 @@
         {
           id: "reroll",
           title: "Reroll Shop",
-          text: "Reroll tiêu Gold để đổi toàn bộ lựa chọn trong Shop. Hãy dùng khi đội hình hiện tại không tìm được rồng phù hợp.",
+          text: "Reroll costs Gold and replaces every current Shop offer. Use it when the Shop does not provide a dragon that fits your team.",
           target: () => document.getElementById("rerollBtn"),
           action: true,
           done: () => tutorialState.rerolls > 0,
         },
         {
           id: "lock",
-          title: "Khóa Shop",
-          text: "Bấm nút Lock/Unlock để giữ nguyên Shop qua Wave tiếp theo. Tính năng này hữu ích khi chưa đủ Gold mua rồng cần thiết.",
+          title: "Lock the Shop",
+          text: "Click Lock/Unlock to keep the current Shop offers for the next Wave. This is useful when you cannot yet afford a dragon you need.",
           target: () => document.getElementById("lockShopBtn"),
           action: true,
           done: () => state.shopLocked,
         },
         {
           id: "start-wave",
-          title: "Sẵn sàng chiến đấu",
-          text: "Bạn đã biết các thao tác chính. Bấm <strong>Start Wave</strong> để bắt đầu chiến đấu và hoàn thành Tutorial.",
+          title: "Ready for Battle",
+          text: "You now know the core controls. Click <strong>Start Wave</strong> to begin combat and complete the tutorial.",
           target: () => document.getElementById("spawnBtn"),
           action: true,
           done: () => state.waveRunning,
@@ -5747,14 +5746,14 @@
         }
       }
       tutorialOverlay.hidden = false;
-      tutorialProgress.textContent = `Hướng dẫn ${tutorialState.index + 1} / ${steps.length}`;
+      tutorialProgress.textContent = `Tutorial ${tutorialState.index + 1} / ${steps.length}`;
       tutorialTitle.textContent = typeof step.title === "function" ? step.title() : step.title;
       tutorialText.innerHTML = typeof step.text === "function" ? step.text() : step.text;
       tutorialNextBtn.hidden = !!step.action;
       tutorialActionNote.hidden = !step.action;
       tutorialActionNote.textContent = step.id === "place"
-        ? (isTouchUi() ? "Bấm rồng rồi bấm Slot" : "Kéo rồng từ Bench vào Slot")
-        : "Thực hiện thao tác được đánh sáng";
+        ? (isTouchUi() ? "Tap the dragon, then tap a slot" : "Drag the dragon from the Bench into the slot")
+        : "Perform the highlighted action";
       tutorialTargetBlocker.hidden = !!step.action;
       document.body.classList.toggle("tutorial-level-focus", step.id === "level-glow");
       if (step.id === "level-glow" && !tutorialState.levelEffectShown) {
@@ -8767,8 +8766,7 @@
       }
       drawTowerAsset();
       drawPortal();
-      if (state.dragging || state.pendingMerge || state.selected) {
-        const pulse = 0.45 + Math.sin(performance.now() / 120) * 0.25;
+      if (state.dragging || state.selected) {
         ctx.save();
         for (let r = 0; r < ROWS; r++) {
           for (let c = 0; c < COLS; c++) {
@@ -8777,17 +8775,14 @@
             const y = r * CELL_H;
             const cellDragon = dragonAtCell(r, c);
             const isHover = state.hoverCell?.row === r && state.hoverCell?.col === c;
-            const isMergeTarget = cellDragon && isBlinkCandidate(cellDragon);
             const isOccupied = !!cellDragon;
-            const baseAlpha = isHover || isMergeTarget ? .92 : isOccupied ? .32 : .42;
-            ctx.strokeStyle = isMergeTarget
-              ? `rgba(255, 224, 80, ${Math.min(1, baseAlpha + pulse * .35)})`
-              : isHover
-                ? "rgba(255, 236, 166, .95)"
-                : `rgba(255, 244, 190, ${baseAlpha})`;
-            ctx.lineWidth = isHover || isMergeTarget ? 4 : 2;
-            ctx.shadowColor = isMergeTarget ? "#ffe050" : isHover ? "#fff0a8" : "rgba(255, 224, 138, .65)";
-            ctx.shadowBlur = isHover || isMergeTarget ? 16 : 7;
+            const baseAlpha = isHover ? .92 : isOccupied ? .32 : .42;
+            ctx.strokeStyle = isHover
+              ? "rgba(255, 236, 166, .95)"
+              : `rgba(255, 244, 190, ${baseAlpha})`;
+            ctx.lineWidth = isHover ? 4 : 2;
+            ctx.shadowColor = isHover ? "#fff0a8" : "rgba(255, 224, 138, .65)";
+            ctx.shadowBlur = isHover ? 16 : 7;
             ctx.strokeRect(x + 7, y + 7, CELL_W - 14, CELL_H - 14);
           }
         }
@@ -9063,14 +9058,20 @@
       const visualY = d.row === 0 ? Math.max(d.y, size / 2 + 30) : d.y;
       let drawn = { width: size, height: size };
       const rarityColor = tierColor(d.cost);
-      if (trackedDragonName && d.name === trackedDragonName) {
-        const pulse = .55 + Math.sin(performance.now() / 170) * .18;
+      const mergeReadyRing = isBlinkCandidate(d);
+      const trackedRing = trackedDragonName && d.name === trackedDragonName;
+      const selectedRing = state.selected?.source === "board" && state.selected.id === d.id;
+      if (mergeReadyRing || trackedRing || selectedRing) {
+        const pulse = mergeReadyRing ? .72 + Math.sin(performance.now() / 85) * .22 : .9;
+        const ringColor = mergeReadyRing || selectedRing ? "255, 224, 80" : "255, 231, 103";
         ctx.save();
-        ctx.strokeStyle = `rgba(255, 231, 103, ${Math.max(.35, pulse)})`;
-        ctx.fillStyle = `rgba(95, 240, 178, ${Math.max(.08, pulse * .16)})`;
-        ctx.lineWidth = 5;
-        ctx.shadowColor = "#70f0b6";
-        ctx.shadowBlur = 18;
+        ctx.strokeStyle = `rgba(${ringColor}, ${pulse})`;
+        ctx.fillStyle = trackedRing && !mergeReadyRing
+          ? "rgba(95, 240, 178, .10)"
+          : `rgba(255, 224, 80, ${mergeReadyRing ? .08 + pulse * .05 : .08})`;
+        ctx.lineWidth = mergeReadyRing ? 5 : 4;
+        ctx.shadowColor = mergeReadyRing || selectedRing ? "#ffe050" : "#70f0b6";
+        ctx.shadowBlur = mergeReadyRing ? 20 : 12;
         ctx.beginPath();
         ctx.ellipse(d.x, visualY, size * .62, size * .55, 0, 0, Math.PI * 2);
         ctx.fill();
@@ -9173,27 +9174,6 @@
       ctx.restore();
       ctx.textAlign = "left";
 
-      if (state.selected?.source === "board" && state.selected.id === d.id) {
-        const pulse = 0.72 + Math.sin(performance.now() / 130) * 0.18;
-        ctx.save();
-        ctx.strokeStyle = `rgba(255, 224, 80, ${pulse})`;
-        ctx.lineWidth = 5;
-        ctx.shadowColor = "#ffe050";
-        ctx.shadowBlur = 18;
-        ctx.strokeRect(cellLeft(d.col) + 7, d.row * CELL_H + 7, CELL_W - 14, CELL_H - 14);
-        ctx.restore();
-      }
-
-      if (isBlinkCandidate(d)) {
-        const pulse = 0.45 + Math.sin(performance.now() / 85) * 0.25;
-        ctx.save();
-        ctx.strokeStyle = `rgba(255, 224, 80, ${pulse + 0.35})`;
-        ctx.lineWidth = 5;
-        ctx.shadowColor = "#ffe050";
-        ctx.shadowBlur = 18;
-        ctx.strokeRect(cellLeft(d.col) + 8, d.row * CELL_H + 8, CELL_W - 16, CELL_H - 16);
-        ctx.restore();
-      }
     }
 
     function drawEnemy(e) {

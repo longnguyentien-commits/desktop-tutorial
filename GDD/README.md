@@ -35,6 +35,9 @@ Tagline: **Buy dragons, merge stars, and protect the Dragon Egg.**
 - 3 matching dragons merge into higher-star dragons.
 - 20 waves, with Big Bad Boss encounters on waves 10 and 20.
 - From wave 2 onward, players get a 30-second planning timer before the next wave auto-starts.
+- The game opens through a Dragon Mania Legends-style Event Lobby before entering the battle screen.
+- An English interactive tutorial teaches Gold, Shop, Bench, Board placement, Traits, merging, Keeper XP, Reroll, Lock, and Start Wave.
+- The Guide Center can reopen the tutorial in a separate tab and provides a searchable dragon-form reference.
 
 ## Build Notes
 
@@ -47,4 +50,4 @@ Tagline: **Buy dragons, merge stars, and protect the Dragon Egg.**
   - Below 50% HP: smoke rises from the Dragon Egg.
   - Below 20% HP: fire appears on the Dragon Egg, clipped so it stays on the asset.
 - GitHub Pages target URL format:
-  - `https://longnguyentien-commits.github.io/desktop-tutorial/`
+  - `https://qa-vibejam.github.io/Dragons-vs-Monsters/`

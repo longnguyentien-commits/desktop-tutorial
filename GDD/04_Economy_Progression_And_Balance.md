@@ -174,8 +174,8 @@ Earth knockback distance remains tuned in combat as 32px / 48px / 64px / 80px fo
 | --- | --- | --- |
 | Wave 1 | `occupied dragon rows x 3` | 10 Gold |
 | Waves 2-9 and 11-19 | `min(50, 11 + floor(wave x 2.15))` | `8 + floor(wave x 2)` Gold |
-| Wave 10 | 14 normal monsters, then 1 Big Bad Boss | 30 Gold |
-| Wave 20 | 22 normal monsters, then 1 Big Bad Boss | 40 Gold and win |
+| Wave 10 | 1 Big Bad Boss | 30 Gold |
+| Wave 20 | 1 Big Bad Boss | 40 Gold and win |
 
 ## Current Testing Questions
 

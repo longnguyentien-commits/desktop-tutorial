@@ -20,6 +20,7 @@
 - From wave 2 onward, the preparation phase has a **30-second planning timer**.
 - A 10-second center-screen warning appears near the end of planning time.
 - The Planning HUD uses 10 progress dots per wave set. Wave 1-10 fills the first set, wave 11 resets to dot 1 for the wave 11-20 set, and dot 10 is always red to mark a boss wave.
+- Boss waves display a 5-second red warning centered on the battlefield before the giant portal and boss entrance.
 - The player can press **Start Wave** to begin early.
 - Once a wave starts, it cannot be stopped.
 - When a wave ends:
@@ -153,6 +154,13 @@ XP rules:
 - If 2 copies are on the board and the third copy is bought/dragged, both existing board copies blink; the player chooses which board position receives the upgraded dragon.
 - If a player has 2 copies on bench and buys/drags the third, it merges automatically.
 - Merge is allowed even when the board is already at cap, because merging reduces or preserves total unit count.
+- Merge and ownership feedback:
+  - Merge-ready Shop cards pulse their rectangular tier border.
+  - Merge-ready Bench slots pulse their rectangular border like Shop cards.
+  - Merge-ready Board dragons use a pulsing circular ring around the dragon body; Board cells do not pulse.
+  - Hovering a Shop dragon gives matching Bench copies a static glowing border.
+  - Hovering a Shop dragon gives matching Board copies a static circular ring.
+  - Board grid squares remain reserved for drag/drop placement feedback.
 - Star visuals:
   - 1-star: bronze star without a number.
   - 2-star: silver star without a number.
@@ -258,11 +266,21 @@ Projectile travel speed is intentionally different by element. Energy is the fas
   - Dragons currently on board are bright.
   - Dragons not on board are gray.
 
+## Tutorial And Guide Center
+
+- First-time players can enter an interactive tutorial scenario without using the normal match economy.
+- All tutorial, action-note, completion-notice, search, and Guide Center text is in English.
+- Tutorial steps cover Gold, Shop cards, buying, Bench selection, Board placement, elements/Traits, 3-copy merging, Keeper XP, level-up feedback, Drop Rates, Reroll, Lock, and Start Wave.
+- The `?` button beside SFX opens the Guide Center without resetting the active match.
+- Practice Tutorial opens in a separate tab so the current run remains intact.
+- Dragon Forms provides searchable/filterable Baby and Adult references and can highlight owned copies on Board and Bench.
+
 ## Required UI
 
 - Top bar: Wave, 10-dot wave-set tracker, planning timer, Dragon Egg HP, Gold, Keeper Level/XP, and Dragon Limit.
 - Gold is displayed as `current Gold (+wave clear reward)`.
 - Left layout: active Trait panel and Drop Rate panel.
+- Pregame: loading screen, DML-style Tycoon Lobby, Events section, event panel, and Battle entry button.
 - Board: 5 lanes x 9 columns, map background, Dragon Egg on the left, lane portals on normal spawns, and one large portal for boss spawns.
 - Bench: 10 visible slots.
 - Shop: 5 visible slots with tier colors, dragon image, elements, and Gold price.
