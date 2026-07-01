@@ -36,7 +36,8 @@ Tagline: **Buy dragons, merge stars, and protect the Dragon Egg.**
 - 20 waves, with Big Bad Boss encounters on waves 10 and 20.
 - From wave 2 onward, players get a 30-second planning timer before the next wave auto-starts.
 - The game opens through a Dragon Mania Legends-style Event Lobby before entering the battle screen.
-- An English interactive tutorial teaches Gold, Shop, Bench, Board placement, Traits, merging, Keeper XP, Reroll, Lock, and Start Wave.
+- Entering Battle from the Main Menu/Event Lobby always opens the English interactive tutorial; the player can skip it for that run.
+- The tutorial teaches Gold, Shop, Bench, Board placement, Traits, merging, Keeper XP, Reroll, Lock, and Start Wave.
 - The Guide Center can reopen the tutorial in a separate tab and provides a searchable dragon-form reference.
 
 ## Build Notes

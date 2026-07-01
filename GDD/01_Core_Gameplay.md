@@ -268,7 +268,9 @@ Projectile travel speed is intentionally different by element. Energy is the fas
 
 ## Tutorial And Guide Center
 
-- First-time players can enter an interactive tutorial scenario without using the normal match economy.
+- Players enter an interactive tutorial scenario without using the normal match economy.
+- Pressing **BATTLE** from the Main Menu/Event Lobby always starts the tutorial instead of suppressing it through a previous localStorage completion flag.
+- **Skip Tutorial** closes the tutorial and starts a normal run for the current entry.
 - All tutorial, action-note, completion-notice, search, and Guide Center text is in English.
 - Tutorial steps cover Gold, Shop cards, buying, Bench selection, Board placement, elements/Traits, 3-copy merging, Keeper XP, level-up feedback, Drop Rates, Reroll, Lock, and Start Wave.
 - The `?` button beside SFX opens the Guide Center without resetting the active match.

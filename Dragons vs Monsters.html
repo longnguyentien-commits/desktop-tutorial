@@ -5882,9 +5882,7 @@
 
     function maybeStartTutorial() {
       if (bossPlaytestMode) return;
-      let completed = false;
-      try { completed = localStorage.getItem(TUTORIAL_STORAGE_KEY) === "1"; } catch {}
-      if (pageParams.has("tutorial") || !completed) startTutorial(true);
+      startTutorial(true);
     }
 
     tutorialNextBtn.addEventListener("click", advanceTutorial);
