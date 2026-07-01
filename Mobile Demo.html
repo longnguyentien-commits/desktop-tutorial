@@ -10,6 +10,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#05070d" />
+  <link rel="manifest" href="mobile-demo.webmanifest" />
+  <link rel="apple-touch-icon" href="Resource%20Asset/Unlock_Icon.png" />
   <title>Dragons vs Monsters - Mobile Demo</title>
   <style>
     :root {
@@ -128,6 +130,62 @@
 
     button:active { transform: translateY(1px) scale(0.99); }
 
+    button.secondary {
+      border-color: rgba(166, 202, 255, 0.65);
+      color: #e8f1ff;
+      background: rgba(31, 48, 78, 0.92);
+      box-shadow: none;
+    }
+
+    .start-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #deviceTip {
+      min-height: 18px;
+      margin: 12px 0 0;
+      color: #9fb0ca;
+      font-size: 12px;
+    }
+
+    #fullscreenButton {
+      position: fixed;
+      top: max(8px, var(--safe-top));
+      right: max(8px, var(--safe-right));
+      z-index: 16;
+      min-width: 46px;
+      min-height: 46px;
+      padding: 8px 12px;
+      border-color: rgba(228, 238, 255, 0.72);
+      color: #f5f8ff;
+      background: rgba(5, 10, 21, 0.82);
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.36);
+      font-size: 22px;
+    }
+
+    #fullscreenButton[hidden] { display: none; }
+
+    #deviceHelp {
+      position: fixed;
+      left: max(8px, var(--safe-left));
+      bottom: max(8px, var(--safe-bottom));
+      z-index: 16;
+      max-width: min(520px, 82vw);
+      margin: 0;
+      padding: 8px 12px;
+      border: 1px solid rgba(155, 190, 244, 0.32);
+      border-radius: 10px;
+      color: #d9e6f8;
+      background: rgba(5, 10, 21, 0.88);
+      font-size: 12px;
+      pointer-events: none;
+    }
+
+    #deviceHelp[hidden] { display: none; }
+
     #rotateOverlay { display: none; }
 
     #rotateIcon {
@@ -183,7 +241,11 @@
     <section class="panel">
       <h1>Dragons vs Monsters</h1>
       <p>Bản Mobile Demo được tối ưu để chơi ở màn hình ngang.</p>
-      <button id="startButton" type="button">VÀO GAME</button>
+      <div class="start-actions">
+        <button id="startButton" type="button">VÀO GAME</button>
+        <button id="installButton" class="secondary" type="button" hidden>CÀI TOÀN MÀN HÌNH</button>
+      </div>
+      <p id="deviceTip"></p>
     </section>
   </div>
 
@@ -196,6 +258,8 @@
   </div>
 
   <div id="hint">Mobile Demo · Landscape</div>
+  <button id="fullscreenButton" type="button" aria-label="Bật toàn màn hình" title="Bật toàn màn hình" hidden>⛶</button>
+  <p id="deviceHelp" hidden></p>
 
   <script>
     (() => {
@@ -205,6 +269,44 @@
       const stage = document.getElementById('stage');
       const startOverlay = document.getElementById('startOverlay');
       const startButton = document.getElementById('startButton');
+      const installButton = document.getElementById('installButton');
+      const fullscreenButton = document.getElementById('fullscreenButton');
+      const deviceTip = document.getElementById('deviceTip');
+      const deviceHelp = document.getElementById('deviceHelp');
+      const ua = navigator.userAgent || '';
+      const isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isInAppBrowser = /FBAN|FBAV|Instagram|Zalo|Line\//i.test(ua);
+      let deferredInstallPrompt = null;
+      let wakeLock = null;
+
+      function isStandalone() {
+        return window.matchMedia('(display-mode: fullscreen)').matches ||
+          window.matchMedia('(display-mode: standalone)').matches ||
+          window.navigator.standalone === true;
+      }
+
+      function isFullscreen() {
+        return Boolean(document.fullscreenElement || document.webkitFullscreenElement || isStandalone());
+      }
+
+      function fullscreenAvailable() {
+        const root = document.documentElement;
+        return Boolean(root.requestFullscreen || root.webkitRequestFullscreen);
+      }
+
+      function deviceInstruction() {
+        if (isInAppBrowser) return 'Hãy mở link bằng Chrome hoặc Safari để dùng toàn màn hình.';
+        if (isIos && !isStandalone()) return 'iPhone: Safari → Chia sẻ → Thêm vào Màn hình chính để ẩn thanh trình duyệt.';
+        if (!fullscreenAvailable() && !isStandalone()) return 'Trình duyệt này không hỗ trợ toàn màn hình. Hãy mở bằng Chrome/Safari.';
+        return 'Xoay ngang và chạm Vào Game để bật toàn màn hình.';
+      }
+
+      function updateFullscreenControls(showFailureHelp = false) {
+        const needsFullscreen = startOverlay.hidden && !isFullscreen();
+        fullscreenButton.hidden = !needsFullscreen || !fullscreenAvailable();
+        deviceHelp.hidden = !needsFullscreen || (!showFailureHelp && !isIos && !isInAppBrowser);
+        if (!deviceHelp.hidden) deviceHelp.textContent = deviceInstruction();
+      }
 
       function fitStage() {
         const rect = viewport.getBoundingClientRect();
@@ -215,16 +317,35 @@
         stage.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${scale})`;
       }
 
-      async function enterGame() {
-        startOverlay.hidden = true;
-
+      async function requestGameFullscreen() {
+        const root = document.documentElement;
         try {
-          if (document.documentElement.requestFullscreen) {
-            await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+          if (root.requestFullscreen) {
+            await root.requestFullscreen();
+          } else if (root.webkitRequestFullscreen) {
+            root.webkitRequestFullscreen();
+          } else {
+            return false;
           }
+          return isFullscreen();
         } catch (_) {
-          // iOS Safari may decline fullscreen; the demo still works in-browser.
+          return false;
         }
+      }
+
+      async function requestWakeLock() {
+        if (!('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+        } catch (_) {
+          wakeLock = null;
+        }
+      }
+
+      async function enterGame() {
+        const fullscreenPromise = requestGameFullscreen();
+        startOverlay.hidden = true;
+        const enteredFullscreen = await fullscreenPromise;
 
         try {
           if (screen.orientation && screen.orientation.lock) {
@@ -234,16 +355,54 @@
           // Orientation lock requires platform support and is optional.
         }
 
+        await requestWakeLock();
+        updateFullscreenControls(!enteredFullscreen);
         fitStage();
       }
 
       startButton.addEventListener('click', enterGame);
+      fullscreenButton.addEventListener('click', async () => {
+        const enteredFullscreen = await requestGameFullscreen();
+        if (enteredFullscreen && screen.orientation?.lock) {
+          try { await screen.orientation.lock('landscape'); } catch (_) {}
+        }
+        updateFullscreenControls(!enteredFullscreen);
+        fitStage();
+      });
+
+      installButton.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        const choice = await deferredInstallPrompt.userChoice;
+        if (choice.outcome === 'accepted') installButton.hidden = true;
+        deferredInstallPrompt = null;
+      });
+
+      window.addEventListener('beforeinstallprompt', event => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        installButton.hidden = false;
+      });
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        installButton.hidden = true;
+      });
+      document.addEventListener('fullscreenchange', () => updateFullscreenControls(false));
+      document.addEventListener('webkitfullscreenchange', () => updateFullscreenControls(false));
       window.addEventListener('resize', fitStage, { passive: true });
       window.addEventListener('orientationchange', () => setTimeout(fitStage, 120), { passive: true });
       window.visualViewport?.addEventListener('resize', fitStage, { passive: true });
       document.addEventListener('contextmenu', event => event.preventDefault());
       document.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && startOverlay.hidden) requestWakeLock();
+      });
 
+      if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+        navigator.serviceWorker.register('./mobile-demo-sw.js').catch(() => {});
+      }
+
+      deviceTip.textContent = deviceInstruction();
       fitStage();
     })();
   </script>

@@ -1,0 +1,27 @@
+{
+  "name": "Dragons vs Monsters - Mobile Demo",
+  "short_name": "DVM Demo",
+  "description": "Landscape mobile demo for Dragons vs Monsters.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "orientation": "landscape",
+  "background_color": "#05070d",
+  "theme_color": "#05070d",
+  "icons": [
+    {
+      "src": "Resource Asset/Health_Icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "Resource Asset/Unlock_Icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
